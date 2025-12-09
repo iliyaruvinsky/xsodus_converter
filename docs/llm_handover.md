@@ -7,6 +7,68 @@
 
 ---
 
+## ⚡ IMMEDIATE ACTIONS - Do This NOW
+
+**You are starting a NEW session in a FRESH monorepo.**
+
+### Step 1: Read Context (5 minutes)
+```
+MANDATORY - Read these 3 files FIRST:
+1. .claude/CLAUDE.md (behavior rules)
+2. .claude/MANDATORY_PROCEDURES.md (procedures)
+3. .claude/PIPELINE_ISOLATION_RULES.md (context rules)
+```
+
+### Step 2: Understand Current State (5 minutes)
+```
+Read:
+- pipelines/xml-to-sql/GOLDEN_COMMIT.yaml (baseline status)
+- pipelines/xml-to-sql/docs/BUG_TRACKER.md (active bugs)
+- This handover (rest of document below)
+```
+
+### Step 3: Setup Development Environment (10 minutes)
+```powershell
+# Install core
+cd core
+pip install -e .
+cd ..
+
+# Install xml-to-sql pipeline
+cd pipelines/xml-to-sql
+pip install -e .
+cd ../..
+```
+
+### Step 4: Start Server (if web UI needed)
+```powershell
+cd pipelines/xml-to-sql
+python -m uvicorn src.api.routes:app --reload --port 8000
+```
+
+### Step 5: Verify Working Baseline (10 minutes)
+```
+Test one validated XML:
+1. Upload CV_EQUIPMENT_STATUSES.xml via web UI (http://localhost:8000)
+2. Convert
+3. Check LATEST_SQL_FROM_DB.txt auto-saved
+4. Compare with pipelines/xml-to-sql/VALIDATED/hana/CV_EQUIPMENT_STATUSES.sql
+5. Should match exactly
+```
+
+### Step 6: Ask User What to Work On
+```
+User will tell you:
+- Test remaining XMLs?
+- Fix specific bug?
+- Add new feature?
+- Migrate another pipeline?
+
+WAIT for user direction before proceeding.
+```
+
+---
+
 ## 🚀 START HERE - First Session in New Repo
 
 ### What This Repo Is
