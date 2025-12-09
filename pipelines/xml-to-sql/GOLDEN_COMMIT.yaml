@@ -1,0 +1,196 @@
+# Golden Commit Tracking
+# This file tracks the last fully validated commit with HANA Studio testing
+# DO NOT update without actual HANA Studio validation of ALL listed XMLs
+
+last_validated_commit: "680ad44-plus-fixes"
+commit_date: "2025-12-08"
+commit_message: "WORKING BASELINE: Commit 680ad44 + catalog fixes (DATE, DAYSBETWEEN, NOW, view_schema)"
+validation_date: "2025-12-08"
+validated_by: "User (HANA Studio execution)"
+instance_type: "BW BID system"
+notes: "WORKING STATE ACHIEVED at commit 680ad44 with catalog fixes. Added DATE→TO_DATE, DAYSBETWEEN→DAYS_BETWEEN to functions.yaml. Changed NOW to template handler (removes parentheses). Fixed view_schema default from _SYS_BIC to SAPABAP1. Config.yaml requires: database_mode=hana, schema_overrides ABAP→SAPABAP1. Validated: CV_EQUIPMENT_STATUSES (26ms), CV_TOP_PTHLGY (195ms)."
+
+# XMLs validated in HANA Studio with this commit
+validated_xmls:
+  count: 13
+  success_rate: "100%"
+  files:
+    - name: "CV_CNCLD_EVNTS.xml"
+      source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+      execution_time: "74ms"
+      notes: "Clean - no bugs"
+    - name: "CV_INVENTORY_ORDERS.xml"
+      source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+      execution_time: "42ms"
+      notes: "Working"
+    - name: "CV_PURCHASE_ORDERS.xml"
+      source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+      execution_time: "46ms"
+      notes: "Working"
+    - name: "CV_EQUIPMENT_STATUSES.xml"
+      source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+      execution_time: "26ms"
+      validation_date: "2025-12-08"
+      notes: "Revalidated with fixes: DATE→TO_DATE, DAYSBETWEEN→DAYS_BETWEEN, NOW template, view_schema=SAPABAP1"
+    - name: "CV_TOP_PTHLGY.xml"
+      source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+      execution_time: "195ms"
+      validation_date: "2025-12-08"
+      notes: "Revalidated with fixes: DATE→TO_DATE, DAYSBETWEEN→DAYS_BETWEEN, NOW template, view_schema defaults. Package path auto-detected."
+    - name: "CV_MCM_CNTRL_Q51.xml"
+      source: "Source (XML Files)/ECC_ON_HANA/"
+      execution_time: "82ms"
+      notes: "BUG-021 fixed - empty string IN numeric cleanup"
+    - name: "CV_MCM_CNTRL_REJECTED.xml"
+      source: "Source (XML Files)/ECC_ON_HANA/"
+      execution_time: "53ms"
+      notes: "BUG-022 fixed - empty WHERE clause prevention"
+    - name: "CV_CT02_CT03.xml"
+      source: "Source (XML Files)/ECC_ON_HANA/"
+      execution_time: "N/A"
+      status: "NOT VALIDATABLE"
+      notes: "BUG-019 (REGEXP_LIKE with calculated columns) + BUG-003 (REGEXP_LIKE parameter patterns) - Active limitations. Source XML may have issues. Deferred for future research."
+    - name: "CV_UPRT_PTLG.xml"
+      source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+      execution_time: "27ms"
+      notes: "BUG-026 validated - parameter cleanup"
+    - name: "CV_ELIG_TRANS_01.xml"
+      source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+      execution_time: "28ms"
+      notes: "BUG-026, BUG-027, BUG-028, BUG-029, BUG-030 validated - complex CV with CV-to-CV references"
+    - name: "CV_COMMACT_UNION.xml"
+      source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+      execution_time: "N/A"
+      notes: "Validated in SESSION 7"
+    - name: "CV_INVENTORY_STO.xml"
+      source: "Source (XML Files)/"
+      execution_time: "59ms"
+      notes: "SESSION 8 - BUG-032 validated - WEEKDAY references YEAR calculated column"
+    - name: "CV_PURCHASING_YASMIN.xml"
+      source: "Source (XML Files)/"
+      execution_time: "70ms"
+      notes: "SESSION 8 - BUG-033 validated - CC_NETWR references EBELN_EKKN, EBELP_EKKN mapped columns"
+
+# Critical patterns that MUST NOT be changed without HANA testing
+critical_patterns:
+  hana_view_creation:
+    file: "src/xml_to_sql/sql/renderer.py"
+    lines: "1594-1606"
+    function: "_generate_view_statement()"
+    pattern: 'return f"DROP VIEW {quoted_name} CASCADE;\nCREATE VIEW {quoted_name} AS"'
+    why_critical: "HANA does not support CREATE OR REPLACE VIEW for our use case"
+    tested_alternative_that_failed: "CREATE OR REPLACE VIEW"
+    error_when_alternative_used: "cannot use duplicate view name"
+    bug_reference: "BUG-029 (view name quoting - surgical fix)"
+    incident_reference: "docs/SESSION_7_FALSE_DOCUMENTATION_INCIDENT.md"
+
+  view_name_quoting:
+    file: "src/xml_to_sql/sql/renderer.py"
+    lines: "1594-1606"
+    function: "_generate_view_statement()"
+    why_critical: "Surgical quoting ONLY in DDL - preserves case-insensitive column matching"
+    bug_reference: "BUG-029"
+    validated_commit: "e809a4d + SESSION 7 fixes"
+    regression_prevented: "Aggressive quoting broke CV_TOP_PTHLGY case-insensitive matching"
+
+  cv_reference_package_path:
+    file: "src/xml_to_sql/sql/renderer.py"
+    lines: "954-962"
+    function: "_render_from()"
+    why_critical: "Package paths contain '.' that are NOT schema separators - must quote as single identifier"
+    bug_reference: "BUG-030"
+    validated_commit: "e809a4d + SESSION 7 fixes"
+
+  parameter_cleanup_12_patterns:
+    file: "src/xml_to_sql/sql/renderer.py"
+    lines: "1383-1491"
+    function: "_cleanup_hana_parameter_conditions()"
+    why_critical: "12 comprehensive patterns clean malformed parameter substitutions"
+    bug_reference: "BUG-021, BUG-022, BUG-026"
+    validated_commit: "e809a4d"
+
+  cte_topological_sort:
+    file: "src/xml_to_sql/sql/renderer.py"
+    lines: "298-313"
+    function: "_topological_sort()"
+    why_critical: "Proper input ID normalization ensures CTEs defined before referenced"
+    bug_reference: "BUG-028"
+    validated_commit: "e809a4d + SESSION 7 fixes"
+
+  join_column_qualification:
+    file: "src/xml_to_sql/sql/renderer.py"
+    lines: "996-1007"
+    function: "_render_expression()"
+    why_critical: "RAW expressions in JOINs must be qualified to avoid ambiguity"
+    bug_reference: "BUG-027"
+    validated_commit: "e809a4d + SESSION 7 fixes"
+
+  aggregation_calc_column_expansion:
+    file: "src/xml_to_sql/sql/renderer.py"
+    lines: "761-790"
+    function: "_render_aggregation()"
+    why_critical: "Expands calculated column references to prevent forward references in aggregations"
+    bug_reference: "BUG-032"
+    validated_commit: "SESSION 8"
+    pattern: "WEEKDAY references YEAR - both calculated columns in same SELECT"
+    validated_xml: "CV_INVENTORY_STO.xml"
+
+  join_calc_column_expansion:
+    file: "src/xml_to_sql/sql/renderer.py"
+    lines: "592-638"
+    function: "_render_join()"
+    why_critical: "Expands calculated column references to mapped column source expressions in JOINs"
+    bug_reference: "BUG-033"
+    validated_commit: "SESSION 8"
+    pattern: "CC_NETWR references EBELN_EKKN, EBELP_EKKN - aliases defined in same SELECT"
+    validated_xml: "CV_PURCHASING_YASMIN.xml"
+
+# Golden SQL copies location
+golden_sql_location: "Target (SQL Scripts)/VALIDATED/"
+golden_sql_count: 13
+
+# SESSION 8 additions:
+session_8_validated:
+  - name: "CV_INVENTORY_STO.xml"
+    execution_time: "59ms"
+    bugs_fixed: "BUG-032 (aggregation calc column expansion), STRLEN function"
+    notes: "WEEKDAY references YEAR - both calculated columns in aggregation outer SELECT"
+  - name: "CV_PURCHASING_YASMIN.xml"
+    execution_time: "70ms"
+    bugs_fixed: "BUG-033 (JOIN calc column expansion), TIME function"
+    notes: "CC_NETWR references EBELN_EKKN, EBELP_EKKN - aliases in same JOIN SELECT"
+
+# Function mappings added in SESSION 8:
+session_8_function_mappings:
+  - name: "STRLEN"
+    target: "LENGTH"
+    notes: "Legacy function mapping for HANA compatibility"
+  - name: "TIME"
+    target: "TO_TIME"
+    notes: "Type conversion function mapping for HANA compatibility"
+
+# Validation commands
+validation_commands:
+  regenerate_sql: "python -m xml_to_sql.cli.app convert --config config.yaml --mode hana --file 'Source (XML Files)/...'"
+  compare_with_golden: "python regression_test.py --compare-with-golden"
+  run_critical_tests: "pytest tests/test_critical_patterns.py"
+
+# Update instructions
+update_instructions: |
+  To update this golden commit:
+  1. Test ALL validated XMLs in HANA Studio
+  2. Document execution times and any errors
+  3. If all pass, update last_validated_commit
+  4. Update validation_date
+  5. Update validated_xmls section with new results
+  6. Commit this file with message: "Update GOLDEN_COMMIT after HANA validation"
+
+# Session 7 lessons learned
+incident_log:
+  - date: "2025-11-18"
+    session: "SESSION 7"
+    issue: "False documentation claiming CREATE OR REPLACE VIEW works"
+    impact: "Code was changed to CREATE OR REPLACE VIEW, broke all SQL generation"
+    resolution: "Reverted to commit 4eff5fb, reapplied BUG-019 and BUG-020 fixes"
+    lesson: "Documentation can lie, working code and HANA execution results cannot"
+    reference: "FIXES_AFTER_COMMIT_4eff5fb.md"

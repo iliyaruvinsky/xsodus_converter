@@ -1,0 +1,73 @@
+# Expression Pattern Catalog
+#
+# This catalog defines regex-based pattern rewrites for expressions that cannot
+# be handled by simple function name substitution (functions.yaml).
+#
+# Pattern matching is applied BEFORE function name rewrites in translate_raw_formula().
+#
+# Pattern syntax:
+# - Use Python regex syntax (will be compiled with re.IGNORECASE)
+# - Capture groups: Use (\d+) or ([^)]+) to capture parts of the expression
+# - Replacements: Use $1, $2, etc. to reference capture groups (converted to \1, \2 in code)
+#
+# Version: 1.0.0
+# Created: 2025-11-16
+
+patterns:
+  # ============================================================================
+  # DATE ARITHMETIC PATTERNS
+  # ============================================================================
+  # HANA doesn't support direct arithmetic on TIMESTAMP/DATE types.
+  # Must use ADD_DAYS(), ADD_MONTHS(), etc.
+  #
+  # IMPORTANT: Patterns are processed in order. More specific patterns must
+  # come BEFORE more general patterns to avoid partial matches.
+
+  - name: "date_now_minus_days"
+    match: "date\\s*\\(\\s*NOW\\s*\\(\\s*\\)\\s*-\\s*(\\d+)\\s*\\)"
+    hana: "TO_DATE(ADD_DAYS(CURRENT_TIMESTAMP, -$1))"
+    snowflake: "DATEADD(DAY, -$1, CURRENT_DATE)"
+    description: >
+      Legacy pattern date(NOW() - N) for "N days ago". This is MORE SPECIFIC
+      than now_minus_days, so it must be processed first. After catalog rewrites
+      NOW→CURRENT_TIMESTAMP and date→TO_DATE, this becomes
+      TO_DATE(CURRENT_TIMESTAMP - N) which is invalid in HANA.
+      We catch the pattern early and convert directly to ADD_DAYS with TO_DATE wrapper.
+      Example: date(NOW() - 270) → TO_DATE(ADD_DAYS(CURRENT_TIMESTAMP, -270))
+
+  - name: "now_minus_days"
+    match: "NOW\\s*\\(\\s*\\)\\s*-\\s*(\\d+)"
+    hana: "ADD_DAYS(CURRENT_DATE, -$1)"
+    snowflake: "DATEADD(DAY, -$1, CURRENT_TIMESTAMP)"
+    description: >
+      Subtract days from NOW(). HANA doesn't support direct arithmetic on
+      timestamps, so we convert to ADD_DAYS(CURRENT_DATE, -N).
+      This is LESS SPECIFIC than date_now_minus_days, so it comes after.
+      Example: NOW() - 365 → ADD_DAYS(CURRENT_DATE, -365)
+
+  - name: "timestamp_minus_days"
+    match: "CURRENT_TIMESTAMP\\s*-\\s*(\\d+)"
+    hana: "ADD_DAYS(CURRENT_TIMESTAMP, -$1)"
+    snowflake: "DATEADD(DAY, -$1, CURRENT_TIMESTAMP)"
+    description: >
+      Direct TIMESTAMP arithmetic. This appears when NOW() has already been
+      converted to CURRENT_TIMESTAMP but arithmetic hasn't been handled yet.
+      Example: CURRENT_TIMESTAMP - 365 → ADD_DAYS(CURRENT_TIMESTAMP, -365)
+
+  # ============================================================================
+  # FUTURE PATTERNS (Discovered During Testing)
+  # ============================================================================
+  # Uncomment and add new patterns as they are discovered in XML formulas.
+  # Examples of patterns that might be needed:
+  #
+  # - name: "now_plus_days"
+  #   match: "NOW\\s*\\(\\s*\\)\\s*\\+\\s*(\\d+)"
+  #   hana: "ADD_DAYS(CURRENT_DATE, $1)"
+  #   snowflake: "DATEADD(DAY, $1, CURRENT_TIMESTAMP)"
+  #   description: "Add days to NOW()"
+  #
+  # - name: "date_arithmetic_months"
+  #   match: "ADD_MONTHS\\s*\\(\\s*NOW\\s*\\(\\s*\\)\\s*,\\s*(-?\\d+)\\s*\\)"
+  #   hana: "ADD_MONTHS(CURRENT_DATE, $1)"
+  #   snowflake: "DATEADD(MONTH, $1, CURRENT_DATE)"
+  #   description: "Month arithmetic on NOW()"

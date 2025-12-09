@@ -1,0 +1,165 @@
+# Function Catalog - Legacy Function Rewrites
+#
+# This catalog defines function name mappings for legacy HANA helpers and
+# non-standard functions that need to be converted to standard HANA/Snowflake SQL.
+#
+# Handler types:
+#   - rename: Simple function name replacement (most common)
+#   - template: Complex rewrite with argument reordering (use $1, $2, etc.)
+#
+# The catalog is loaded by loader.py and applied via _apply_catalog_rewrites()
+# in function_translator.py AFTER pattern rewrites.
+#
+# Version: 1.0.0
+# Created: 2025-11-16
+# Last Updated: 2025-11-22
+
+functions:
+  # ============================================================================
+  # STRING/TYPE CONVERSION FUNCTIONS
+  # ============================================================================
+
+  - name: STRING
+    handler: rename
+    target: "TO_VARCHAR"
+    description: >
+      Legacy STRING() function mapped to TO_VARCHAR() for type conversion to string/varchar.
+      Discovered in CV_TOP_PTHLGY.xml (BUG-013/SOLVED-013).
+
+  - name: INT
+    handler: rename
+    target: "TO_INTEGER"
+    description: >
+      Legacy INT() function mapped to TO_INTEGER() for type conversion to integer.
+      Discovered in CV_TOP_PTHLGY.xml (BUG-017/SOLVED-017).
+
+  # ============================================================================
+  # DATE/TIME FUNCTIONS
+  # ============================================================================
+
+  - name: ADDDAYS
+    handler: rename
+    target: "ADD_DAYS"
+    description: >
+      Legacy adddays() (lowercase) mapped to ADD_DAYS() (uppercase, proper HANA function).
+      HANA function names are case-sensitive. Discovered in CV_EQUIPMENT_STATUSES (BUG-016/SOLVED-016).
+
+  - name: TIME
+    handler: rename
+    target: "TO_TIME"
+    description: >
+      Convert time() to TO_TIME() for HANA compatibility.
+      Discovered in CV_PURCHASING_YASMIN.xml (SESSION 8B).
+
+  - name: DATE
+    handler: rename
+    target: "TO_DATE"
+    description: >
+      Convert date() to TO_DATE() for HANA compatibility.
+      Legacy date() function does not exist in HANA SQL.
+      Discovered in CV_EQUIPMENT_STATUSES.xml validation (2025-12-08).
+
+  - name: DAYSBETWEEN
+    handler: rename
+    target: "DAYS_BETWEEN"
+    description: >
+      Convert daysbetween() to DAYS_BETWEEN() for HANA compatibility.
+      HANA function names require uppercase with underscore.
+      Discovered in CV_EQUIPMENT_STATUSES.xml validation (2025-12-08).
+
+  # ============================================================================
+  # STRING MANIPULATION FUNCTIONS
+  # ============================================================================
+
+  - name: LEFTSTR
+    handler: rename
+    target: "LEFT"
+    description: >
+      Legacy LEFTSTR() mapped to LEFT() for string substring from start.
+      In HANA 2.0+, can also use SUBSTRING(str, 1, n).
+
+  - name: RIGHTSTR
+    handler: rename
+    target: "RIGHT"
+    description: >
+      Legacy RIGHTSTR() mapped to RIGHT() for string substring from end.
+
+  - name: STRLEN
+    handler: rename
+    target: "LENGTH"
+    description: >
+      Convert strlen() to LENGTH() for HANA compatibility.
+      Discovered in CV_INVENTORY_STO.xml (SESSION 8B).
+
+  - name: LPAD
+    handler: rename
+    target: "LPAD"
+    description: >
+      LPAD is natively supported in HANA, keep as-is but ensure uppercase.
+
+  - name: RPAD
+    handler: rename
+    target: "RPAD"
+    description: >
+      RPAD is natively supported in HANA, keep as-is but ensure uppercase.
+
+  # ============================================================================
+  # PATTERN MATCHING FUNCTIONS
+  # ============================================================================
+
+  - name: MATCH
+    handler: rename
+    target: "REGEXP_LIKE"
+    description: >
+      Legacy match() mapped to REGEXP_LIKE for pattern matching.
+      HANA's LIKE is an operator (col LIKE pattern), not a function.
+      For regex matching in function syntax, use REGEXP_LIKE.
+
+  - name: REGEXP
+    handler: rename
+    target: "LIKE_REGEXPR"
+    description: >
+      Convert regexp() to LIKE_REGEXPR() for HANA regex pattern matching.
+
+  # ============================================================================
+  # NULL HANDLING FUNCTIONS
+  # ============================================================================
+
+  # BUG-045 FIX: REMOVED INCORRECT ISNULL->IFNULL MAPPING
+  # isnull(x) is a boolean null check, NOT null coalescing
+  # Handled by patterns.yaml "isnull_boolean_check" pattern instead
+
+  - name: NVL
+    handler: rename
+    target: "COALESCE"
+    description: >
+      Oracle-style NVL() mapped to COALESCE() for portability.
+
+  # ============================================================================
+  # AGGREGATION FUNCTIONS
+  # ============================================================================
+
+  - name: COUNT_DISTINCT
+    handler: rename
+    target: "COUNT(DISTINCT"
+    description: >
+      Legacy count_distinct() mapped to COUNT(DISTINCT expr).
+      Note: Requires special handling for closing parenthesis.
+
+  # ============================================================================
+  # DATE EXTRACTION FUNCTIONS
+  # ============================================================================
+
+  - name: DAYOFWEEK
+    handler: rename
+    target: "WEEKDAY"
+    description: >
+      Convert dayofweek() to WEEKDAY() for HANA compatibility.
+
+  - name: NOW
+    handler: template
+    template: "CURRENT_TIMESTAMP"
+    description: >
+      Convert NOW() to CURRENT_TIMESTAMP (without parentheses) for HANA compatibility.
+      Note: CURRENT_TIMESTAMP is a special register, not a function - no parentheses allowed.
+      For date-only, use CURRENT_DATE instead.

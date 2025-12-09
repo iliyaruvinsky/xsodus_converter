@@ -1,0 +1,21 @@
+# Configuration file for xml-to-sql conversion
+# HANA mode configuration
+
+defaults:
+  client: "PROD"
+  language: "EN"
+  database_mode: "hana"
+  hana_version: "2.0"
+
+paths:
+  source: "Source (XML Files)"
+  target: "Target (SQL Scripts)"
+
+schema_overrides:
+  ABAP: "SAPABAP1"  # Map XML schema ABAP to actual HANA schema SAPABAP1
+
+scenarios:
+  - id: "CV_EQUIPMENT_STATUSES"
+    source: "HANA 1.XX XML Views/BW_ON_HANA/CV_EQUIPMENT_STATUSES.xml"
+    output: "CV_EQUIPMENT_STATUSES"
+    enabled: true
