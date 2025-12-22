@@ -1811,12 +1811,77 @@ projection_3 AS (
 
 ---
 
+### BUG-040: SUM Aggregation on NVARCHAR Column Causes Datatype Error
+
+**⚠️ PERMANENT ID**: BUG-040 (kept throughout lifecycle per new numbering system)
+**Discovered**: 2025-12-22, COPYOF_CV_ACOUSTIC_1_09072023.xml
+**Resolved**: 2025-12-22
+**Validation Time**: 127ms (DROP: 9ms, CREATE: 118ms)
+
+**Error**:
+```
+SAP DBTech JDBC: [266]: inconsistent datatype: only numeric type is available for SUM/AVG/STDDEV/VAR function
+```
+
+**Root Cause**:
+XML defined `aggregationBehavior="SUM"` on column `ZZHOUR_MIDL_ZPA0002` which has type `NVARCHAR(3)`. HANA cannot SUM non-numeric columns. The renderer applied aggregation functions directly without checking data type compatibility.
+
+**XML Definition**:
+```xml
+<element name="ZZHOUR_MIDL_ZPA0002" aggregationBehavior="SUM" engineAggregation="COUNT">
+  <inlineType primitiveType="NVARCHAR" length="3" precision="3" scale="0"/>
+</element>
+```
+
+**Solution Implemented**:
+Added automatic `TO_INTEGER()` cast when aggregating non-numeric columns with SUM/AVG/STDDEV/VAR:
+
+```python
+# In _render_aggregation() function (renderer.py lines 740-751):
+# BUG-040: Check if aggregation function requires numeric type but column is VARCHAR/NVARCHAR
+if agg_func in ('SUM', 'AVG', 'STDDEV', 'VAR') and ctx.database_mode == DatabaseMode.HANA:
+    data_type = agg_spec.data_type or agg_spec.expression.data_type
+    if data_type:
+        type_str = str(data_type).upper() if data_type else ''
+        if 'VARCHAR' in type_str or 'CHAR' in type_str or 'STRING' in type_str or 'NVARCHAR' in type_str:
+            agg_expr = f"TO_INTEGER({agg_expr})"
+```
+
+**Files Modified**:
+- `src/xml_to_sql/sql/renderer.py`: Lines 740-751 (_render_aggregation function)
+
+**Generated SQL - CORRECT**:
+```sql
+SUM(TO_INTEGER(join_8.ZZHOUR_MIDL_ZPA0002)) AS ZZHOUR_MIDL_ZPA0002
+```
+
+**Validation**:
+- ✅ COPYOF_CV_ACOUSTIC_1_09072023.XML: HANA validated, 127ms total execution
+
+**Scope**: ⚠️ UNIVERSAL FIX - Applies to ALL XMLs automatically
+- This fix is built into the renderer and runs on EVERY conversion
+- No manual intervention needed - automatic detection and correction
+- Not specific to any XML - applies universally
+
+**Associated Conversion Rule**:
+- **RULE**: When `aggregationBehavior` is SUM/AVG/STDDEV/VAR but column type is VARCHAR/NVARCHAR, wrap in TO_INTEGER()
+- **Pattern**: Data model issue in source XML - numeric aggregation defined on string column
+- **Trigger**: Renderer checks data type of EVERY aggregated column during SQL generation
+
+**Discovery Example**:
+- COPYOF_CV_ACOUSTIC_1_09072023.xml (where bug was first encountered)
+
+**Applies To**:
+- ALL XMLs with numeric aggregations (SUM/AVG/STDDEV/VAR) on non-numeric columns
+
+---
+
 ## Statistics
 
-**Total Solved**: 29 (SOLVED-001 through SOLVED-028, BUG-029, BUG-030, BUG-032, BUG-033, BUG-034, BUG-035)
+**Total Solved**: 30 (SOLVED-001 through SOLVED-028, BUG-029, BUG-030, BUG-032, BUG-033, BUG-034, BUG-035, BUG-040)
 **Total Pending**: 3 (BUG-019, BUG-002, BUG-003)
-**XMLs Validated**: 14 (CV_CNCLD_EVNTS, CV_INVENTORY_ORDERS, CV_PURCHASE_ORDERS, CV_EQUIPMENT_STATUSES, CV_TOP_PTHLGY, CV_MCM_CNTRL_Q51, CV_MCM_CNTRL_REJECTED, CV_COMMACT_UNION, CV_ELIG_TRANS_01, CV_UPRT_PTLG, CV_CT02_CT03, CV_INVENTORY_STO, CV_PURCHASING_YASMIN, DATA_SOURCES)
-**Latest Success**: DATA_SOURCES (ECC_DATA_SOURCES) - BUG-034 + BUG-035 fixes (SESSION 9)
+**XMLs Validated**: 15 (CV_CNCLD_EVNTS, CV_INVENTORY_ORDERS, CV_PURCHASE_ORDERS, CV_EQUIPMENT_STATUSES, CV_TOP_PTHLGY, CV_MCM_CNTRL_Q51, CV_MCM_CNTRL_REJECTED, CV_COMMACT_UNION, CV_ELIG_TRANS_01, CV_UPRT_PTLG, CV_CT02_CT03, CV_INVENTORY_STO, CV_PURCHASING_YASMIN, DATA_SOURCES, COPYOF_CV_ACOUSTIC_1_09072023)
+**Latest Success**: COPYOF_CV_ACOUSTIC_1_09072023 (Maccabi-BW_ON_HANA) - BUG-040 fix (SESSION 11)
 
 **Time to Resolution**:
 - BUG-004: < 1 hour (same session)

@@ -12,8 +12,9 @@ notes: "WORKING STATE ACHIEVED at commit 680ad44 with catalog fixes. Added DATE�
 
 # XMLs validated in HANA Studio with this commit
 validated_xmls:
-  count: 13
+  count: 15
   success_rate: "100%"
+  last_update: "2025-12-22 SESSION 11"
   files:
     - name: "CV_CNCLD_EVNTS.xml"
       source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
@@ -70,6 +71,17 @@ validated_xmls:
       source: "Source (XML Files)/"
       execution_time: "70ms"
       notes: "SESSION 8 - BUG-033 validated - CC_NETWR references EBELN_EKKN, EBELP_EKKN mapped columns"
+    - name: "ASSESSMENT_REPORT.xml"
+      source: "User upload via web UI"
+      execution_time: "21ms"
+      validation_date: "2025-12-10"
+      notes: "SESSION 9 - FORMAT→TO_VARCHAR mapping + nested function rewrite fix"
+    - name: "COPYOF_CV_ACOUSTIC_1_09072023.xml"
+      source: "Source (XML Files)/HANA XML Views/Maccabi-BW_ON_HANA/"
+      execution_time: "127ms"
+      validation_date: "2025-12-22"
+      package_path: "Macabi_BI.HCM"
+      notes: "SESSION 11 - BUG-040 validated - SUM on NVARCHAR column fixed with TO_INTEGER() cast"
 
 # Critical patterns that MUST NOT be changed without HANA testing
 critical_patterns:
@@ -147,7 +159,7 @@ critical_patterns:
 
 # Golden SQL copies location
 golden_sql_location: "Target (SQL Scripts)/VALIDATED/"
-golden_sql_count: 13
+golden_sql_count: 14
 
 # SESSION 8 additions:
 session_8_validated:
@@ -184,6 +196,27 @@ update_instructions: |
   4. Update validation_date
   5. Update validated_xmls section with new results
   6. Commit this file with message: "Update GOLDEN_COMMIT after HANA validation"
+
+# SESSION 9 additions (2025-12-10):
+session_9_validated:
+  - name: "ASSESSMENT_REPORT.xml"
+    execution_time: "21ms"
+    bugs_fixed: "FORMAT→TO_VARCHAR mapping, nested function rewrite fix"
+    notes: "format(format(x)) now properly becomes TO_VARCHAR(TO_VARCHAR(x))"
+
+# Function mappings added in SESSION 9:
+session_9_function_mappings:
+  - name: "FORMAT"
+    target: "TO_VARCHAR"
+    notes: "HANA uses TO_VARCHAR(value, 'format_string') for date/number formatting"
+
+# Code fixes in SESSION 9:
+session_9_code_fixes:
+  - file: "src/xml_to_sql/sql/function_translator.py"
+    lines: "1202-1238"
+    function: "_build_replacement()"
+    fix: "Added recursive processing of arguments to handle nested function calls"
+    pattern: "processed_args = [_apply_catalog_rewrites(arg, ctx) for arg in args]"
 
 # Session 7 lessons learned
 incident_log:

@@ -805,26 +805,456 @@ for target_name, source_name in target_to_source_map.items():
 
 ---
 
+### 🟡 BUG-036: ConstantAttributeMapping Not Rendered in UNION Nodes
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-036) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: Critical
+**Status**: ✅ FIXED - Awaiting HANA Validation (2025-12-11)
+**Discovered**: 2025-12-11, Transformations.XML
+**XML**: Transformations.XML
+**Instance Type**: BW (SAPK5D schema)
+
+**Error**:
+```
+SAP DBTech JDBC: [260]: invalid column name: CODE_TYPE: line 341 col 205 (at pos 13124)
+```
+
+**Problem**:
+```sql
+-- UNION CTE only selects 20 columns (SRC through LINE):
+union_1 AS (
+  SELECT
+      glbcode.SRC AS SRC,
+      ...
+      glbcode.LINE AS LINE
+      -- CODE_TYPE MISSING!
+  FROM glbcode
+  UNION ALL
+  ...
+)
+
+-- But final SELECT expects 21 columns including CODE_TYPE:
+SELECT SRC, ..., LINE_NO, LINE, CODE_TYPE FROM union_1
+                                 ^^^^^^^^^^ NOT DEFINED!
+```
+
+**Root Cause**:
+The XML uses `ConstantAttributeMapping` to define constant values for each UNION branch:
+```xml
+<mapping xsi:type="Calculation:ConstantAttributeMapping" target="CODE_TYPE" null="false" value="GLBCODE_ROUTINE"/>
+```
+
+The UNION renderer in `renderer.py` does NOT handle `ConstantAttributeMapping` entries. It only processes regular `AttributeMapping` entries, so constant columns are completely missing from the generated SQL.
+
+**Expected Output**:
+```sql
+union_1 AS (
+  SELECT
+      glbcode.SRC AS SRC,
+      ...
+      glbcode.LINE AS LINE,
+      'GLBCODE_ROUTINE' AS CODE_TYPE  -- SHOULD BE HERE
+  FROM glbcode
+  UNION ALL
+  SELECT
+      glbcode2.SRC AS SRC,
+      ...
+      glbcode2.LINE AS LINE,
+      'GLBCODE2_ROUTINE' AS CODE_TYPE  -- SHOULD BE HERE
+  FROM glbcode2
+  ...
+)
+```
+
+**Related Rules**: None - new pattern not previously encountered
+
+**Impact**: Affects ANY XML with UNION nodes that use constant column mappings
+
+**Affected XMLs**:
+- Transformations.XML (5 UNION branches, each needs CODE_TYPE constant)
+
+**Solution Implemented**:
+Root cause was in the **parser**, not renderer. `_parse_mappings()` skipped ConstantAttributeMapping entries because they have no `source` attribute.
+
+```python
+# BUG-036 FIX in scenario_parser.py lines 413-427:
+# Check for ConstantAttributeMapping type (xsi:type attribute)
+mapping_type = mapping_el.get("{http://www.w3.org/2001/XMLSchema-instance}type", "")
+if "ConstantAttributeMapping" in mapping_type:
+    constant_value = mapping_el.get("value", "")
+    if not target:
+        continue
+    data_type = guess_attribute_type(target)
+    expr = Expression(ExpressionType.LITERAL, constant_value, data_type)
+elif not target or not source:
+    continue
+else:
+    data_type = guess_attribute_type(target)
+    expr = Expression(ExpressionType.COLUMN, source, data_type)
+```
+
+**Files Modified**:
+- `src/xml_to_sql/parser/scenario_parser.py`: Lines 413-427 (_parse_mappings function)
+  - Added detection of ConstantAttributeMapping xsi:type
+  - Creates LITERAL expression with constant value instead of COLUMN expression
+
+**Next Steps**:
+1. Restart server: `utilities\restart_server.bat`
+2. Re-convert Transformations.XML
+3. Verify CODE_TYPE column appears in UNION branches
+4. Test in HANA
+
+---
+
+### 🟡 BUG-037: CV Reference Path Includes Folder Prefix When No Package Mapping
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-037) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: Critical
+**Status**: ✅ FIXED - Awaiting HANA Validation (2025-12-15)
+**Discovered**: 2025-12-15, Transformations.XML
+**XML**: Transformations.XML
+**Instance Type**: BW (SAPK5D schema)
+
+**Error**:
+```
+SAP DBTech JDBC: [259]: invalid table name: Could not find table/view Assesment/ASSESSMENT_REPORT in schema _SYS_BIC
+```
+
+**Problem**:
+```sql
+-- Generated SQL includes folder prefix from resourceUri:
+FROM "_SYS_BIC"."Assesment/ASSESSMENT_REPORT"
+                ^^^^^^^^^^ folder prefix should NOT be included!
+
+-- Correct format:
+FROM "_SYS_BIC"."ASSESSMENT_REPORT"
+```
+
+**Root Cause**:
+When parsing DataSource elements with `resourceUri="/Assesment/calculationviews/ASSESSMENT_REPORT"`, the parser extracts `cv_name = "Assesment/ASSESSMENT_REPORT"` (folder + view name). When no package mapping exists, the renderer was using this full path directly instead of extracting just the view name.
+
+In HANA, CV views under `_SYS_BIC` are referenced by view name only, not by folder path.
+
+**Solution**:
+In `renderer.py`, when no package mapping is found, extract just the view name (after last "/"):
+```python
+# BUG-037 FIX in renderer.py lines 987-993 and 1015-1021:
+view_name_only = cv_name.split('/')[-1] if '/' in cv_name else cv_name
+return f'"_SYS_BIC"."{view_name_only}"'
+```
+
+**Files Modified**:
+- `src\xml_to_sql\sql\renderer.py`: Lines 987-993 and 1017-1021 (_resolve_input_table function)
+  - Added path extraction for cv_name when no package mapping exists
+  - Two occurrences: both fallback paths now extract view name only
+
+**Next Steps**:
+1. Restart server: `utilities\restart_server.bat`
+2. Re-convert Transformations.XML
+3. Verify CV reference is `"_SYS_BIC"."ASSESSMENT_REPORT"` (no path prefix)
+4. Test in HANA
+
+---
+
+### 🟡 BUG-038: ABAP Generation Fails Due to SQL Comments
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-038) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: High
+**Status**: ✅ FIXED - Awaiting Validation (2025-12-15)
+**Discovered**: 2025-12-15, Transformations.XML (ABAP tab)
+**Component**: sql_to_abap.py (Pure ABAP Generator)
+
+**Error**:
+```
+ABAP generation failed: SQL must have WITH clause with CTEs for Pure ABAP conversion
+```
+
+**Problem**:
+The SQL generated by the renderer includes header comments:
+```sql
+-- Last generated: 2025-12-15 11:39:17
+-- Scenario ID: TRANFORMATIONS
+
+-- Warnings:
+--   Package not found for CV Assesment/ASSESSMENT_REPORT, using _SYS_BIC without path
+
+DROP VIEW "_SYS_BIC"."TRANFORMATIONS" CASCADE;
+CREATE VIEW "_SYS_BIC"."TRANFORMATIONS" AS
+WITH
+  aggregation_1 AS (
+```
+
+The `parse_sql()` function checks `sql_upper.startswith('DROP VIEW')` but after whitespace normalization, the SQL starts with `-- LAST GENERATED...` not `DROP VIEW`, so the DROP/CREATE/WITH detection fails.
+
+**Root Cause**:
+The `parse_sql()` function in `sql_to_abap.py` didn't strip SQL comments before checking for DROP VIEW/CREATE VIEW/WITH patterns.
+
+**Solution**:
+Added SQL comment stripping at the beginning of `parse_sql()` (lines 128-142):
+```python
+# BUG-038: Strip SQL comments before processing
+# Comments at the beginning (-- ...) prevent detection of DROP VIEW/CREATE VIEW
+lines = sql.strip().split('\n')
+non_comment_lines = []
+for line in lines:
+    stripped = line.strip()
+    # Skip pure comment lines and empty lines
+    if stripped.startswith('--') or stripped == '':
+        continue
+    # Handle inline comments (remove everything after --)
+    if '--' in stripped:
+        stripped = stripped[:stripped.index('--')].strip()
+    if stripped:
+        non_comment_lines.append(stripped)
+sql = ' '.join(non_comment_lines)
+```
+
+**Files Modified**:
+- `src/xml_to_sql/abap/sql_to_abap.py`: Lines 128-142 (parse_sql function)
+  - Added comment stripping before pattern detection
+
+**Next Steps**:
+1. Restart server: `utilities\restart_server.bat`
+2. Convert Transformations.XML
+3. Click "Generate ABAP Report" on ABAP tab
+4. Verify ABAP generation succeeds
+
+---
+
+### 🟡 BUG-039: ABAP Internal Table Naming Mismatch (CTE Case Sensitivity)
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-039) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: Critical
+**Status**: ✅ FIXED - Awaiting Validation (2025-12-15)
+**Discovered**: 2025-12-15, Transformations.XML (ABAP generation)
+**Component**: sql_to_abap.py (Pure ABAP Generator)
+
+**Error**:
+```
+SAP ECC: The field 'LT_AGGREGATION_1' is unknown, but there is a field with the similar name 'LT_AGGREGATION_2'
+Line 374: LOOP AT lt_aggregation_1 INTO ls_aggregation_1.
+```
+
+**Problem**:
+The generated ABAP code references internal tables that were never declared:
+```abap
+" DATA declarations contain:
+DATA: lt_aggregation_2 TYPE TABLE OF ty_aggregation_2.
+
+" But code tries to LOOP AT:
+LOOP AT lt_aggregation_1 INTO ls_aggregation_1.   " <-- ERROR: lt_aggregation_1 not declared!
+```
+
+**Root Cause**:
+Case mismatch between CTE dictionary keys and input references in sql_to_abap.py:
+1. CTE names stored in `result.ctes` with **original case** from SQL: `result.ctes['Aggregation_1']`
+2. Input references (union_inputs, left_input, right_input) stored **lowercased**: `union_inputs = ['aggregation_1']`
+3. When `_get_intermediate_ctes()` checks `if name in required_inputs`, it fails because:
+   - `'Aggregation_1' in {'aggregation_1'}` = **FALSE**
+4. CTE doesn't get added to intermediate_ctes, so no DATA declaration is generated
+5. But other code still references `lt_aggregation_1` expecting it to exist
+
+**Solution**:
+Lowercase CTE keys consistently in `parse_sql()` (line 184):
+```python
+# BUG-039 FIX: Lowercase CTE keys for consistent lookup
+# Input references (union_inputs, left_input, right_input, filter_input) are all lowercased
+# So CTE keys must also be lowercased to match
+for cte_name, cte_body in cte_defs:
+    parsed_cte = _parse_cte_body(cte_name, cte_body)
+    result.ctes[cte_name.lower()] = parsed_cte
+```
+
+**Files Modified**:
+- `src/xml_to_sql/abap/sql_to_abap.py`: Line 184 (parse_sql function)
+  - Changed `result.ctes[cte_name]` to `result.ctes[cte_name.lower()]`
+
+**Cross-Reference**: Also tracked as ABAP-003 in sql-to-abap pipeline docs
+
+**Next Steps**:
+1. Reinstall package: `pip install -e .`
+2. Restart server: `utilities\restart_server.bat`
+3. Convert Transformations.XML
+4. Generate ABAP Report
+5. Test in SAP (SE38 syntax check)
+
+---
+
 ## Resolved Bugs
 
 *(Will move BUG-004 here after HANA validation confirms it works)*
 
 ---
 
+### ✅ BUG-040: SUM Aggregation on NVARCHAR Column Causes Datatype Error
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-040) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: Critical
+**Status**: ✅ VALIDATED IN HANA (2025-12-22) - 127ms execution time
+**Discovered**: 2025-12-22, COPYOF_CV_ACOUSTIC_1_09072023.xml
+**XML**: COPYOF_CV_ACOUSTIC_1_09072023.xml
+**Instance Type**: BW (Maccabi-BW_ON_HANA)
+
+**Error**:
+```
+SAP DBTech JDBC: [266]: inconsistent datatype: only numeric type is available for SUM/AVG/STDDEV/VAR function: line 1454 col 9 (at pos 71927)
+```
+
+**Problem**:
+```sql
+-- Line 1458 in aggregation CTE:
+SUM(join_8.ZZHOUR_MIDL_ZPA0002) AS ZZHOUR_MIDL_ZPA0002
+```
+
+The column `ZZHOUR_MIDL_ZPA0002` has `aggregationBehavior="SUM"` in the XML, but its data type is `NVARCHAR(3)` (not numeric). HANA cannot SUM non-numeric columns.
+
+**XML Definition**:
+```xml
+<element name="ZZHOUR_MIDL_ZPA0002" aggregationBehavior="SUM" engineAggregation="COUNT">
+  <inlineType primitiveType="NVARCHAR" length="3" precision="3" scale="0"/>
+</element>
+```
+
+**Root Cause**:
+The renderer applies aggregation functions (SUM, AVG, etc.) directly from `aggregationBehavior` without checking if the column's data type is numeric. When the source XML has a data model issue (SUM on VARCHAR), the renderer generates invalid SQL.
+
+**Proposed Solution**:
+When rendering aggregations, check the column data type:
+1. If data type is NVARCHAR/VARCHAR and aggregation is SUM/AVG: CAST to numeric
+2. Or use COUNT instead of SUM for non-numeric columns
+3. Or emit a warning and skip the aggregation
+
+**Solution Implemented**:
+Added TO_INTEGER() cast for SUM/AVG/STDDEV/VAR aggregations on non-numeric columns:
+
+```python
+# In _render_aggregation() function (renderer.py lines 740-751):
+# BUG-040: Check if aggregation function requires numeric type but column is VARCHAR/NVARCHAR
+if agg_func in ('SUM', 'AVG', 'STDDEV', 'VAR') and ctx.database_mode == DatabaseMode.HANA:
+    data_type = agg_spec.data_type or agg_spec.expression.data_type
+    if data_type:
+        type_str = str(data_type).upper() if data_type else ''
+        if 'VARCHAR' in type_str or 'CHAR' in type_str or 'STRING' in type_str or 'NVARCHAR' in type_str:
+            agg_expr = f"TO_INTEGER({agg_expr})"
+            ctx.warnings.append(f"BUG-040: Column {agg_spec.target_name} is {data_type} but has {agg_func} aggregation - casting to integer")
+```
+
+**Result - CORRECT**:
+```sql
+SUM(TO_INTEGER(join_8.ZZHOUR_MIDL_ZPA0002)) AS ZZHOUR_MIDL_ZPA0002
+```
+
+**Files Modified**:
+- `src/xml_to_sql/sql/renderer.py`: Lines 740-751 (_render_aggregation function)
+
+**Next Steps**:
+1. Re-convert COPYOF_CV_ACOUSTIC_1_09072023.xml
+2. Test in HANA
+3. Move to SOLVED_BUGS.md if successful
+
+---
+
+### 🟠 BUG-041: DROP VIEW Fails on Non-Existent View (First-Time Conversion)
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-041) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: Low (workaround available)
+**Status**: 🟠 REVERTED - IF EXISTS not supported in user's HANA version (2025-12-22)
+**Discovered**: 2025-12-22, COPYOF_CV_ACOUSTIC_1_09072023.xml
+**XML**: COPYOF_CV_ACOUSTIC_1_09072023.xml
+**Instance Type**: BW (Maccabi-BW_ON_HANA)
+
+**Error**:
+```
+SAP DBTech JDBC: [321]: invalid view name: COPYOF_CV_ACOUSTIC_1_09072023: line 1 col 22 (at pos 21)
+```
+
+**Problem**:
+```sql
+DROP VIEW "_SYS_BIC"."COPYOF_CV_ACOUSTIC_1_09072023" CASCADE;
+CREATE VIEW "_SYS_BIC"."COPYOF_CV_ACOUSTIC_1_09072023" AS
+```
+
+When running a conversion for the first time, the view doesn't exist yet. The `DROP VIEW` statement fails because HANA cannot find the view to drop.
+
+**Root Cause**:
+Current code uses `DROP VIEW ... CASCADE` without `IF EXISTS`. HANA 2.0 SPS03+ supports `IF EXISTS` but earlier versions don't.
+
+**Current Code** (renderer.py line 1738):
+```python
+return f"DROP VIEW {quoted_name} CASCADE;\nCREATE VIEW {quoted_name} AS"
+```
+
+**Proposed Solution**:
+1. For HANA 2.0 SPS03+: Use `DROP VIEW IF EXISTS ... CASCADE`
+2. For older versions: Document that first DROP failure is expected and can be ignored
+3. Or: Generate separate DROP and CREATE statements so user can run CREATE only
+
+**Solution Implemented**:
+Added `IF EXISTS` to DROP VIEW statement for HANA 2.0 SPS03+:
+
+```python
+# In _generate_view_statement() function (renderer.py line 1754):
+# BUG-041: Added IF EXISTS for HANA 2.0 SPS03+ (released 2017+)
+return f"DROP VIEW IF EXISTS {quoted_name} CASCADE;\nCREATE VIEW {quoted_name} AS"
+```
+
+**Result - CORRECT**:
+```sql
+DROP VIEW IF EXISTS "_SYS_BIC"."COPYOF_CV_ACOUSTIC_1_09072023" CASCADE;
+CREATE VIEW "_SYS_BIC"."COPYOF_CV_ACOUSTIC_1_09072023" AS
+```
+
+**Files Modified**:
+- `src/xml_to_sql/sql/renderer.py`: Line 1754 (_generate_view_statement function)
+
+**REVERTED (2025-12-22)**:
+User's HANA version does NOT support `IF EXISTS`. Got error:
+```
+[257]: sql syntax error: incorrect syntax near "IF": line 1 col 11 (at pos 11)
+```
+
+The `IF EXISTS` syntax was removed. Original behavior restored.
+
+**Workaround for First-Time Conversion**:
+1. Run the generated SQL
+2. If DROP VIEW fails with `[321] invalid view name`, that's expected (view doesn't exist)
+3. Manually run only the `CREATE VIEW ...` part (skip the DROP)
+4. Subsequent runs will work because view now exists
+
+**Note**: This is a HANA version limitation, not a converter bug. Low priority since workaround is simple.
+
+---
+
 ## Bug Statistics
 
-**Total Bugs Tracked**: 35
+**Total Bugs Tracked**: 41
 **Open**: 1 (BUG-019)
-**Fixed - Awaiting HANA Validation**: 0 (all validated!)
-**Solved**: 29 (see SOLVED_BUGS.md)
+**Fixed - Awaiting Validation**: 4 (BUG-036, BUG-037, BUG-038, BUG-039)
+**Workaround Only**: 1 (BUG-041 - HANA version limitation)
+**Solved**: 30 (see SOLVED_BUGS.md) - BUG-040 VALIDATED 2025-12-22
 **Deferred**: 2 (BUG-002, BUG-003)
+**SESSION 11 Additions**: BUG-040 ✅ VALIDATED (SUM on NVARCHAR, 127ms), BUG-041 🟠 (IF EXISTS reverted)
 **SESSION 9 Additions**: BUG-034 ✅, BUG-035 ✅
+**SESSION 10 Additions**: BUG-036 ✅, BUG-037 ✅, BUG-038 ✅, BUG-039 ✅ (awaiting validation)
 
 **By Category**:
 - Core IR/Rendering: 2 (BUG-001 ✅, BUG-028 ✅)
+- UNION Constant Mapping: 1 (BUG-036 ✅ awaiting validation)
 - Parameter Handling: 3 (BUG-002, BUG-003, BUG-026 ✅ VALIDATED)
 - Column Mapping: 2 (BUG-004 ✅, BUG-027 ✅ VALIDATED)
-- CV References: 3 (BUG-023 ✅ VALIDATED, BUG-025 ✅ VALIDATED, BUG-030 ✅ VALIDATED)
+- CV References: 4 (BUG-023 ✅ VALIDATED, BUG-025 ✅ VALIDATED, BUG-030 ✅ VALIDATED, BUG-037 ✅ awaiting validation)
 - Filter Rendering: 3 (BUG-019, BUG-034 ✅ VALIDATED, BUG-035 ✅ VALIDATED)
 - Identifier Quoting: 1 (BUG-029 ✅ VALIDATED)
 - Calculated Column Expansion: 2 (BUG-032 ✅ VALIDATED, BUG-033 ✅ VALIDATED)
@@ -840,6 +1270,7 @@ for target_name, source_name in target_to_source_map.items():
 - CV_INVENTORY_STO: 1 bug (BUG-032 ✅ VALIDATED 59ms) - SESSION 8B
 - CV_PURCHASING_YASMIN: 1 bug (BUG-033 ✅ VALIDATED 70ms) - SESSION 8B
 - DATA_SOURCES: 2 bugs (BUG-034 ✅ VALIDATED, BUG-035 ✅ VALIDATED) - SESSION 9
+- TRANSFORMATIONS: 2 bugs (BUG-036 ✅, BUG-037 ✅ awaiting validation) - SESSION 10
 
 ---
 

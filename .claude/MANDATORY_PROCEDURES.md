@@ -147,7 +147,7 @@ ALL generated SQL views go to _SYS_BIC > Views - ALWAYS.
 
 ## 📋 QUICK REFERENCE
 
-**Latest SQL Location:** `xml2sql/LATEST_SQL_FROM_DB.txt`
+**Latest SQL Location:** `xsodus_converter/LATEST_SQL_FROM_DB.txt`
 **Action:** READ IT YOURSELF, NEVER ASK USER TO PASTE
 
 **Process Flow:**
@@ -240,6 +240,41 @@ CORRECT FORMAT:
 WHERE (column IN (...))
 
 BUG REFERENCE: BUG-021
+```
+
+#### Check 5: SUM/AVG on Non-Numeric Columns (BUG-040) - UNIVERSAL CHECK
+```
+⚠️ APPLIES TO ALL XMLs - Not XML-specific
+
+PATTERN TO FIND (in ANY XML):
+- aggregationBehavior="SUM" with primitiveType="NVARCHAR" or "VARCHAR"
+- aggregationBehavior="AVG" with primitiveType="NVARCHAR" or "VARCHAR"
+
+PROBLEM:
+Source XML may incorrectly define numeric aggregation on string columns.
+This is a DATA MODEL issue in the source XML, not a converter bug.
+HANA cannot SUM/AVG non-numeric types.
+
+HANA ERROR:
+[266]: inconsistent datatype: only numeric type is available for SUM/AVG/STDDEV/VAR function
+
+HOW TO DETECT:
+1. If error [266] occurs, check the column's data type in XML
+2. Search XML for: aggregationBehavior="SUM" near primitiveType="NVARCHAR"
+3. Generated SQL shows SUM/AVG on VARCHAR column without TO_INTEGER()
+
+AUTOMATIC FIX (BUILT INTO RENDERER):
+The renderer automatically detects this and wraps in TO_INTEGER():
+  SUM(TO_INTEGER(column_name)) AS column_name
+
+This fix applies to ALL XMLs during conversion - no manual intervention needed.
+
+EXAMPLE (discovered in COPYOF_CV_ACOUSTIC_1_09072023.xml):
+  <element name="ZZHOUR_MIDL_ZPA0002" aggregationBehavior="SUM">
+    <inlineType primitiveType="NVARCHAR" length="3"/>
+  </element>
+
+BUG REFERENCE: BUG-040 (VALIDATED 2025-12-22, 127ms)
 ```
 
 ## ⚠️ VALIDATION WORKFLOW

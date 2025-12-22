@@ -1,9 +1,37 @@
 # LLM Handover - X2S Converter Monorepo
 
-**Last Updated**: 2025-12-08  
-**Repo**: https://github.com/iliyaruvinsky/xsodus_converter  
-**Structure**: Optimal monorepo with pipeline isolation  
-**Status**: ✅ xml-to-sql pipeline WORKING (6 XMLs validated)
+**Last Updated**: 2025-12-22 (SESSION 11: BUG-040 VALIDATED, 15 XMLs)
+**Repo**: https://github.com/iliyaruvinsky/xsodus_converter
+**Structure**: Optimal monorepo with pipeline isolation
+**Status**: ✅ xml-to-sql pipeline FULLY MIGRATED & WORKING (15 XMLs validated)
+**SDLC**: ✅ 7-process framework with procedures in `pipelines/xml-to-sql/docs/procedures/`
+
+---
+
+## 📋 SESSION 11 Summary (2025-12-22) - SUCCESS
+
+**XML Tested**: COPYOF_CV_ACOUSTIC_1_09072023.xml (Maccabi-BW_ON_HANA)
+**Validation Time**: 127ms (DROP: 9ms, CREATE: 118ms)
+
+**Errors Encountered & Fixed**:
+1. `[266]: SUM on NVARCHAR` → **BUG-040 VALIDATED** - TO_INTEGER() cast works
+2. `[257]: IF EXISTS syntax error` → **BUG-041 REVERTED** - User's HANA is pre-SPS03
+
+**Bugs Resolved**:
+- **BUG-040**: ✅ VALIDATED - Added TO_INTEGER() cast for SUM/AVG on VARCHAR columns
+- **BUG-041**: 🟠 REVERTED - IF EXISTS not supported in user's HANA version (workaround: skip DROP on first run)
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`:
+  - Lines 740-751: Added TO_INTEGER cast for SUM/AVG on VARCHAR columns ✅ WORKS
+  - Line 1754: IF EXISTS REVERTED (pre-SPS03 HANA doesn't support it)
+
+**Documentation Updated**:
+- SOLVED_BUGS.md: BUG-040 added with full solution
+- MANDATORY_PROCEDURES.md: Added Check 5 for SUM/AVG on non-numeric columns
+- BUG_TRACKER.md: Statistics updated, BUG-040 marked validated
+
+**New Validated XML**: COPYOF_CV_ACOUSTIC_1_09072023.xml (15th XML)
 
 ---
 
@@ -43,7 +71,8 @@ cd ../..
 ### Step 4: Start Server (if web UI needed)
 ```powershell
 cd pipelines/xml-to-sql
-python -m uvicorn src.api.routes:app --reload --port 8000
+python run_server.py
+# Server runs at http://localhost:8000
 ```
 
 ### Step 5: Verify Working Baseline (10 minutes)
@@ -76,9 +105,15 @@ WAIT for user direction before proceeding.
 **X2S (XML-to-SQL-to-X) Converter** - Multi-pipeline SAP data conversion system with strict pipeline isolation.
 
 **Current State**:
-- ✅ **xml-to-sql pipeline**: PRODUCTION READY (6 XMLs validated in HANA)
+- ✅ **xml-to-sql pipeline**: FULLY MIGRATED & PRODUCTION READY (13 XMLs validated in HANA)
 - ⏳ **sql-to-abap pipeline**: Structure created, not yet migrated
 - ⏳ **csv-to-json pipeline**: Structure created, not yet migrated
+
+**Migration Completed**: 2025-12-10
+- Copied complete `xml_to_sql` package from old repo
+- Frontend migrated to `pipelines/xml-to-sql/web_frontend/`
+- All Source XMLs, Target SQL scripts, package mappings migrated
+- Server tested and working at http://localhost:8000
 
 ### Critical Files to Read FIRST
 
@@ -292,18 +327,36 @@ git tag xml-to-sql/v3.0.1 -m "Description"
 ## 📚 Documentation Map
 
 ### AI Rules (MUST READ FIRST)
-- `.claude/CLAUDE.md` - 18 behavior rules
+- `.claude/CLAUDE.md` - 19 behavior rules (including Rule 19: SDLC Procedures)
 - `.claude/MANDATORY_PROCEDURES.md` - Bug-checking, SQL analysis
 - `.claude/PIPELINE_ISOLATION_RULES.md` - Context management
+- `.claude/SDLC_MASTER_PROCEDURE.md` - **MASTER INDEX for all 7 SDLC processes**
+
+### SDLC Procedures (NEW - 2025-12-10)
+| Process | Procedure | Location |
+|---------|-----------|----------|
+| 1. Planning | `1_PLANNING_PROCEDURE.md` | `pipelines/xml-to-sql/docs/procedures/` |
+| 2. Development | `2_DEVELOPMENT_PROCEDURE.md` | `pipelines/xml-to-sql/docs/procedures/` |
+| 3. Testing | `3_TESTING_PROCEDURE.md` | `pipelines/xml-to-sql/docs/procedures/` |
+| 4. Debugging | `4_DEBUGGING_PROCEDURE.md` | `pipelines/xml-to-sql/docs/procedures/` |
+| 5. Bug Fixing | `5_BUG_FIX_PROCEDURE.md` | `pipelines/xml-to-sql/docs/procedures/` |
+| 6. Documentation | `6_DOCUMENTATION_PROCEDURE.md` | `pipelines/xml-to-sql/docs/procedures/` |
+| 7. Refactoring | `7_REFACTORING_PROCEDURE.md` | `pipelines/xml-to-sql/docs/procedures/` |
+
+### Existing Error/Success Procedures
+- `ERROR_PROCEDURE_NO_BASELINE.md` - 12-step debug (new XMLs)
+- `SQL_ERROR_INVESTIGATION_PROCEDURE.md` - 10-step debug (has baseline)
+- `SUCCESS_PROCEDURE.md` - Post-success documentation
+
+### Automation Scripts
+- `utilities/restart_server.bat` - Restart server after changes
+- `utilities/validate_all_xmls.bat` - Regression test all 13 XMLs
 
 ### xml-to-sql Pipeline Docs
 - `pipelines/xml-to-sql/rules/hana/HANA_CONVERSION_RULES.md` - Transformation rules
 - `pipelines/xml-to-sql/docs/BUG_TRACKER.md` - Active bugs
 - `pipelines/xml-to-sql/docs/SOLVED_BUGS.md` - Historical solutions
 - `pipelines/xml-to-sql/docs/CONVERSION_FLOW_MAP.md` - Pipeline flow
-- `pipelines/xml-to-sql/docs/SQL_ERROR_INVESTIGATION_PROCEDURE.md` - Debug steps
-- `pipelines/xml-to-sql/docs/SUCCESS_PROCEDURE.md` - What to do after success
-- `pipelines/xml-to-sql/docs/ERROR_PROCEDURE_NO_BASELINE.md` - No VALIDATED SQL case
 
 ### Project-Wide Docs
 - `docs/ARCHITECTURE.md` - Monorepo structure explanation
@@ -633,10 +686,65 @@ After making changes:
 
 ---
 
-**Last Updated**: 2025-12-08  
-**Version**: 1.0 (First monorepo handover)  
-**Status**: xml-to-sql pipeline READY, other pipelines pending migration
+**Last Updated**: 2025-12-10
+**Version**: 1.1 (SDLC Framework Added)
+**Status**: xml-to-sql pipeline READY with full SDLC process documentation
 
-**For questions**: Review procedures in `pipelines/xml-to-sql/docs/`  
+---
+
+## Session Update: 2025-12-10
+
+### SDLC Framework Implementation
+Created comprehensive 7-process SDLC framework:
+- Master index: `.claude/SDLC_MASTER_PROCEDURE.md`
+- 7 numbered procedures in `pipelines/xml-to-sql/docs/procedures/`
+- Automation scripts in `utilities/`
+- Updated CLAUDE.md Rule 19 for SDLC enforcement
+
+### Files Created
+- `.claude/SDLC_MASTER_PROCEDURE.md` - Master index
+- `pipelines/xml-to-sql/docs/procedures/1_PLANNING_PROCEDURE.md`
+- `pipelines/xml-to-sql/docs/procedures/2_DEVELOPMENT_PROCEDURE.md`
+- `pipelines/xml-to-sql/docs/procedures/3_TESTING_PROCEDURE.md`
+- `pipelines/xml-to-sql/docs/procedures/4_DEBUGGING_PROCEDURE.md`
+- `pipelines/xml-to-sql/docs/procedures/5_BUG_FIX_PROCEDURE.md`
+- `pipelines/xml-to-sql/docs/procedures/6_DOCUMENTATION_PROCEDURE.md`
+- `pipelines/xml-to-sql/docs/procedures/7_REFACTORING_PROCEDURE.md`
+- `utilities/validate_all_xmls.bat`
+
+### Previous Session Fixes (2025-12-10)
+- Fixed `restart_server.bat` path issues
+- Added `FORMAT → TO_VARCHAR` function mapping
+- Added input parameter substitution with default values
+- Fixed SQL auto-save path to `C:\Users\iliya\OneDrive\Desktop\X2S\xsodus_converter\LATEST_SQL_FROM_DB.txt`
+
+---
+
+## Session 9 Update: 2025-12-10 (ASSESSMENT_REPORT Validated)
+
+### XML Validated
+| XML | Execution Time | Status |
+|-----|----------------|--------|
+| ASSESSMENT_REPORT.xml | 21ms | ✅ PASS |
+
+### Bugs Fixed
+1. **Nested function rewrite fix** - `_build_replacement()` now recursively processes arguments
+   - Before: `format(format(x))` → `TO_VARCHAR(format(x))` ❌
+   - After: `format(format(x))` → `TO_VARCHAR(TO_VARCHAR(x))` ✅
+
+2. **FORMAT → TO_VARCHAR mapping** - Added to functions.yaml catalog
+
+### Code Changes
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/function_translator.py` lines 1202-1238
+  - Added `processed_args = [_apply_catalog_rewrites(arg, ctx) for arg in args]`
+  - Updated all handlers to use `processed_args`
+
+- `pipelines/xml-to-sql/src/xml_to_sql/web/api/routes.py` lines 44-54
+  - Fixed path calculation for LATEST_SQL_FROM_DB.txt (7 levels up, not 6)
+
+### Validated XMLs Count
+**Total: 14 XMLs validated** (was 13)
+
+**For questions**: Review procedures in `pipelines/xml-to-sql/docs/`
 **For context**: This is a CLEAN START with lessons learned from old repo
 
