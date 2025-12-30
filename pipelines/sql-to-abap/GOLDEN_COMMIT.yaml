@@ -1,0 +1,68 @@
+# Golden Commit Tracking - SQL-to-ABAP Pipeline
+# This file tracks the last fully validated commit with SE38 testing
+# DO NOT update without actual SE38 validation of generated ABAP
+
+last_validated_commit: "pending"
+commit_date: "pending"
+commit_message: "Awaiting first SE38 validation"
+validation_date: "pending"
+validated_by: "pending"
+instance_type: "pending"
+notes: "SQL-to-ABAP pipeline ready for testing. Pure ABAP generator wired to UI."
+
+# ABAP programs validated in SE38 with this commit
+validated_programs:
+  count: 0
+  success_rate: "0%"
+  files: []
+  # Example entry:
+  # - name: "Z_PURE_ASSESSMENT_REPORT"
+  #   source_xml: "ASSESSMENT_REPORT.xml"
+  #   source_sql: "ASSESSMENT_REPORT.sql"
+  #   se38_result: "Syntax check passed"
+  #   execution_result: "N/A or execution time"
+  #   validation_date: "YYYY-MM-DD"
+  #   notes: "First validated ABAP program"
+
+# Critical code patterns that MUST NOT be changed without SE38 testing
+critical_patterns:
+  for_all_entries_guard:
+    file: "pipelines/xml-to-sql/src/xml_to_sql/abap/sql_to_abap.py"
+    why_critical: "FOR ALL ENTRIES on empty table returns ALL rows"
+    pattern: "IF lt_keys IS NOT INITIAL before SELECT"
+
+  cte_execution_order:
+    file: "pipelines/xml-to-sql/src/xml_to_sql/abap/sql_to_abap.py"
+    function: "_determine_execution_order()"
+    why_critical: "Topological sort ensures CTEs defined before use"
+
+  business_filters:
+    file: "pipelines/xml-to-sql/src/xml_to_sql/abap/sql_to_abap.py"
+    lines: "38-52"
+    why_critical: "Prevents TIME_OUT dumps on BW metadata tables"
+
+# Validation workflow
+validation_workflow:
+  1_generate: "Click 'Generate ABAP' button in UI ABAP tab"
+  2_download: "Download .abap file"
+  3_upload: "Upload to SAP via SE38 or ADT"
+  4_syntax_check: "Run syntax check (Ctrl+F2)"
+  5_execute: "Execute if syntax passes (F8)"
+  6_document: "Record results in this file"
+
+# Update instructions
+update_instructions: |
+  To update this golden commit:
+  1. Generate ABAP for at least one validated SQL
+  2. Test in SE38 - syntax check MUST pass
+  3. Optionally execute and record runtime
+  4. Update validated_programs section
+  5. Update last_validated_commit
+  6. Commit with message: "ABAP-GOLDEN: Update after SE38 validation"
+
+# Known limitations (document here to avoid repeated debugging)
+known_limitations:
+  - description: "Complex calculated columns may need manual adjustment"
+    workaround: "Review generated ABAP and adjust expressions"
+  - description: "Window functions (ROW_NUMBER, RANK) not auto-converted"
+    workaround: "Manual LOOP-based implementation required"

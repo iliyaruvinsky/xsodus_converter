@@ -1,0 +1,187 @@
+/**
+ * Xsodus App Layout Styles
+ * Brand Header: #14ADDB (Cyan)
+ */
+
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-secondary);
+}
+
+/* ============================================
+   HEADER - Xsodus Cyan Brand
+   ============================================ */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  height: var(--header-height);
+  min-height: var(--header-height);
+  max-height: var(--header-height);
+  background: var(--header-bg);
+  border-bottom: none;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-fixed);
+  box-sizing: border-box;
+  box-shadow: var(--shadow-md);
+}
+
+.app-header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.app-header-logo {
+  height: 28px;
+  width: auto;
+}
+
+.app-header-logo svg {
+  height: 28px;
+  width: auto;
+}
+
+.app-header h1 {
+  font-size: var(--text-body);
+  margin: 0;
+  color: var(--header-text);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.02em;
+}
+
+.app-header p {
+  display: none;
+}
+
+/* ============================================
+   MODE SELECTOR TABS
+   ============================================ */
+.mode-selector {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.mode-selector button {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-body-sm);
+  border: none;
+  background: var(--header-tab-bg);
+  color: var(--header-tab-text);
+  border-radius: var(--btn-radius);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-weight: var(--font-medium);
+  font-family: var(--font-family);
+}
+
+.mode-selector button:hover {
+  background: var(--header-tab-hover);
+  color: var(--header-tab-active-text);
+}
+
+.mode-selector button.active {
+  background: var(--header-tab-active-bg);
+  color: var(--header-tab-active-text);
+  font-weight: var(--font-semibold);
+}
+
+/* ============================================
+   MAIN LAYOUT
+   ============================================ */
+.main-content {
+  display: flex;
+  flex: 1;
+  margin-top: var(--header-height);
+  overflow: hidden;
+}
+
+/* ============================================
+   LEFT PANEL - Configuration Sidebar
+   ============================================ */
+.left-panel {
+  width: 360px;
+  min-width: 360px;
+  max-width: 360px;
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  background: var(--color-bg-primary);
+  border-right: var(--panel-border);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ============================================
+   RIGHT PANEL - Content Area
+   ============================================ */
+.right-panel {
+  flex: 1;
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+  padding: var(--space-6);
+  background: var(--color-bg-secondary);
+}
+
+/* ============================================
+   RESPONSIVE LAYOUT
+   ============================================ */
+@media (max-width: 1024px) {
+  .app-header {
+    padding: 0 var(--space-4);
+  }
+
+  .main-content {
+    flex-direction: column;
+  }
+
+  .left-panel {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    height: auto;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: var(--panel-border);
+  }
+
+  .right-panel {
+    height: auto;
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    height: 48px;
+    min-height: 48px;
+    max-height: 48px;
+  }
+
+  .app-header-logo {
+    height: 22px;
+  }
+
+  .main-content {
+    margin-top: 48px;
+  }
+
+  .left-panel,
+  .right-panel {
+    height: calc(100vh - 48px);
+  }
+
+  .mode-selector button {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-caption);
+  }
+}

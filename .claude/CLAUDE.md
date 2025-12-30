@@ -182,6 +182,31 @@ When you realize you violated any rule:
 - **Don't blame "the complexity" or "the scope" - violations are YOUR fault**
 - **User is paying for professional work - violations waste their money**
 
+### **RULE 19: MANDATORY SDLC PROCEDURE FLOW**
+
+**EVERY development activity MUST follow the appropriate procedure from SDLC_MASTER_PROCEDURE.md:**
+
+**Master Index**: `.claude/SDLC_MASTER_PROCEDURE.md`
+
+| Trigger | Procedure |
+|---------|-----------|
+| New feature/change request | `1_PLANNING_PROCEDURE.md` |
+| Writing/modifying code | `2_DEVELOPMENT_PROCEDURE.md` |
+| Testing XML conversion | `3_TESTING_PROCEDURE.md` |
+| HANA error (new XML) | `ERROR_PROCEDURE_NO_BASELINE.md` |
+| HANA error (has baseline) | `SQL_ERROR_INVESTIGATION_PROCEDURE.md` |
+| Implementing a fix | `5_BUG_FIX_PROCEDURE.md` |
+| HANA success | `SUCCESS_PROCEDURE.md` + `6_DOCUMENTATION_PROCEDURE.md` |
+| Code cleanup | `7_REFACTORING_PROCEDURE.md` |
+
+**Execution requirements:**
+- **ALWAYS explicitly state which procedure you are following** (e.g., "Following 5_BUG_FIX_PROCEDURE.md")
+- **ALWAYS cite step numbers as you execute them** (e.g., "STEP 3: Make SURGICAL Change")
+- **NEVER improvise or skip steps** - the procedures exist for a reason
+- **If a step doesn't apply, explicitly state why** (e.g., "STEP 4: N/A - catalog fix, not code fix")
+
+**NO EXCEPTIONS** - every development activity must follow the appropriate procedure.
+
 ---
 
 ## ENFORCEMENT MECHANISMS

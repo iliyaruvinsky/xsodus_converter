@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=67", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "x2s-xml-to-sql"
+version = "3.0.0"
+description = "XML to SQL Pipeline - Convert SAP HANA calculation view XML to SQL"
+requires-python = ">=3.11"
+dependencies = [
+    "lxml>=5.2.0",
+    "typer>=0.12.3",
+    "pyyaml>=6.0.1",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "python-multipart>=0.0.6",
+    "sqlalchemy>=2.0.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2.0",
+]
+
+[project.scripts]
+xml-to-sql = "xml_to_sql.cli.app:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]

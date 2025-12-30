@@ -1,8 +1,8 @@
 # XML-to-SQL Conversion Flow Map
 
 **Purpose**: Complete visual representation of the conversion pipeline
-**Date**: 2025-11-20
-**Session**: 8
+**Date**: 2025-12-15 (Updated for xsodus_converter monorepo)
+**Session**: 10 (BUG-036 to BUG-039 fixes)
 
 ---
 

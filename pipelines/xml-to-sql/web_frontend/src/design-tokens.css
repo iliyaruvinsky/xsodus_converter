@@ -1,0 +1,240 @@
+/**
+ * Xsodus Design System Tokens
+ * Brand-aligned CSS custom properties
+ *
+ * Primary Brand Color: #14ADDB (from Xsodus logo)
+ * Revert point: git checkout 41ae7a5 -- pipelines/xml-to-sql/web_frontend/
+ */
+
+:root {
+  /* ============================================
+     XSODUS BRAND COLORS
+     ============================================ */
+
+  /* Primary brand colors - derived from logo #14ADDB */
+  --xsodus-primary: #14ADDB;
+  --xsodus-primary-dark: #0D8FBA;
+  --xsodus-primary-darker: #0A7199;
+  --xsodus-primary-light: #56C4E8;
+  --xsodus-primary-pale: #E6F7FC;
+  --xsodus-primary-ghost: #F0FAFD;
+
+  /* Logo secondary colors */
+  --xsodus-gray: #666666;
+  --xsodus-gray-light: #8C8E91;
+
+  /* ============================================
+     SEMANTIC COLORS
+     ============================================ */
+
+  /* Text colors */
+  --color-text-primary: #32363A;
+  --color-text-secondary: #666666;
+  --color-text-muted: #8C8E91;
+  --color-text-inverse: #FFFFFF;
+  --color-text-link: var(--xsodus-primary);
+  --color-text-link-hover: var(--xsodus-primary-dark);
+
+  /* Background colors */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F5F7F9;
+  --color-bg-tertiary: #EBEEF1;
+  --color-bg-active: var(--xsodus-primary-pale);
+  --color-bg-hover: var(--xsodus-primary-ghost);
+
+  /* Border colors */
+  --color-border: #E5E5E5;
+  --color-border-strong: #C4C4C4;
+  --color-border-focus: var(--xsodus-primary);
+
+  /* Functional colors */
+  --color-success: #43A047;
+  --color-success-light: #E8F5E9;
+  --color-error: #E53935;
+  --color-error-light: #FFEBEE;
+  --color-warning: #FFB300;
+  --color-warning-light: #FFF8E1;
+  --color-info: var(--xsodus-primary);
+  --color-info-light: var(--xsodus-primary-pale);
+
+  /* ============================================
+     HEADER SPECIFIC (Cyan header design)
+     ============================================ */
+  --header-bg: var(--xsodus-primary);
+  --header-text: #FFFFFF;
+  --header-height: 56px;
+  --header-tab-bg: transparent;
+  --header-tab-text: rgba(255, 255, 255, 0.85);
+  --header-tab-hover: rgba(255, 255, 255, 0.15);
+  --header-tab-active-bg: rgba(255, 255, 255, 0.2);
+  --header-tab-active-text: #FFFFFF;
+
+  /* ============================================
+     TYPOGRAPHY
+     ============================================ */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Font sizes */
+  --text-h1: 28px;
+  --text-h2: 24px;
+  --text-h3: 20px;
+  --text-body-lg: 17px;
+  --text-body: 15px;
+  --text-body-sm: 13px;
+  --text-caption: 12px;
+  --text-micro: 11px;
+
+  /* Line heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Font weights */
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ============================================
+     SPACING SYSTEM (4px base)
+     ============================================ */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ============================================
+     COMPONENT TOKENS
+     ============================================ */
+
+  /* Buttons */
+  --btn-height: 40px;
+  --btn-height-sm: 32px;
+  --btn-height-lg: 48px;
+  --btn-radius: 8px;
+  --btn-padding-x: 16px;
+  --btn-font-size: 14px;
+  --btn-font-weight: 500;
+
+  --btn-primary-bg: var(--xsodus-primary);
+  --btn-primary-bg-hover: var(--xsodus-primary-dark);
+  --btn-primary-text: #FFFFFF;
+
+  --btn-secondary-bg: transparent;
+  --btn-secondary-border: var(--xsodus-primary);
+  --btn-secondary-text: var(--xsodus-primary);
+  --btn-secondary-hover-bg: var(--xsodus-primary-ghost);
+
+  --btn-ghost-bg: transparent;
+  --btn-ghost-text: var(--xsodus-primary);
+  --btn-ghost-hover-bg: var(--xsodus-primary-ghost);
+
+  --btn-danger-bg: var(--color-error);
+  --btn-danger-hover-bg: #C62828;
+  --btn-danger-text: #FFFFFF;
+
+  /* Cards */
+  --card-bg: var(--color-bg-primary);
+  --card-radius: 12px;
+  --card-radius-sm: 8px;
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --card-padding: 16px;
+  --card-border: 1px solid var(--color-border);
+
+  /* Inputs */
+  --input-height: 40px;
+  --input-height-lg: 48px;
+  --input-radius: 8px;
+  --input-border: 1px solid var(--color-border-strong);
+  --input-border-focus: 2px solid var(--xsodus-primary);
+  --input-bg: var(--color-bg-primary);
+  --input-text: var(--color-text-primary);
+  --input-placeholder: var(--color-text-muted);
+
+  /* Panels */
+  --panel-bg: var(--color-bg-primary);
+  --panel-border: 1px solid var(--color-border);
+  --panel-radius: 8px;
+
+  /* Progress indicators */
+  --progress-bg: var(--color-border);
+  --progress-fill: var(--xsodus-primary);
+  --progress-success: var(--color-success);
+  --progress-error: var(--color-error);
+
+  /* ============================================
+     SHADOWS
+     ============================================ */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.16);
+
+  /* ============================================
+     TRANSITIONS
+     ============================================ */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* ============================================
+     Z-INDEX SCALE
+     ============================================ */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 500;
+  --z-modal-backdrop: 900;
+  --z-modal: 1000;
+  --z-popover: 1100;
+  --z-tooltip: 1200;
+
+  /* ============================================
+     LEGACY SAP VARIABLE MAPPING
+     (For backwards compatibility during transition)
+     ============================================ */
+  --sapShellColor: var(--header-bg);
+  --sapBrandColor: var(--xsodus-primary);
+  --sapHighlightColor: var(--xsodus-primary);
+  --sapBaseColor: var(--color-bg-primary);
+  --sapBackgroundColor: var(--color-bg-secondary);
+  --sapTextColor: var(--color-text-primary);
+  --sapNeutralTextColor: var(--color-text-secondary);
+  --sapNeutralBorderColor: var(--color-border-strong);
+  --sapGroupTitleBorderColor: var(--color-border);
+  --sapErrorColor: var(--color-error);
+  --sapWarningColor: var(--color-warning);
+  --sapSuccessColor: var(--color-success);
+  --sapInformativeColor: var(--color-info);
+}
+
+/* ============================================
+   DARK MODE (Future)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  :root.dark-mode {
+    --color-text-primary: #EEEEEE;
+    --color-text-secondary: #B0BEC5;
+    --color-text-muted: #78909C;
+
+    --color-bg-primary: #1E1E1E;
+    --color-bg-secondary: #121212;
+    --color-bg-tertiary: #2C2C2C;
+
+    --color-border: #424242;
+    --color-border-strong: #616161;
+
+    --xsodus-primary: #56C4E8;
+    --xsodus-primary-dark: #14ADDB;
+
+    --card-bg: #1E1E1E;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}

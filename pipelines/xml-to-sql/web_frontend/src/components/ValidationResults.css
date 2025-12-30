@@ -1,0 +1,269 @@
+/**
+ * Validation Results - Xsodus Design System
+ */
+
+.validation-results {
+  margin-top: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--card-radius-sm);
+  background: var(--color-bg-secondary);
+  padding: var(--space-4);
+}
+
+.validation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.validation-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.validation-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.validation-log-btn {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--xsodus-primary);
+  background: var(--color-bg-primary);
+  color: var(--xsodus-primary);
+  border-radius: var(--btn-radius);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.validation-log-btn:hover {
+  background: var(--xsodus-primary);
+  color: var(--color-text-inverse);
+}
+
+.validation-status {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--card-radius-sm);
+  font-size: 0.9rem;
+  font-weight: var(--font-medium);
+}
+
+.validation-status-success {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.validation-status-error {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+.validation-controls {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  background: var(--color-bg-primary);
+  border-radius: var(--card-radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.validation-filters,
+.validation-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.validation-filters label,
+.validation-sort label {
+  font-size: 0.9rem;
+  font-weight: var(--font-medium);
+  color: var(--color-text-secondary);
+}
+
+.validation-filters select,
+.validation-sort select {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--card-radius-sm);
+  font-size: 0.9rem;
+  background: var(--color-bg-primary);
+  cursor: pointer;
+}
+
+.validation-filters select:focus,
+.validation-sort select:focus {
+  outline: none;
+  border-color: var(--xsodus-primary);
+  box-shadow: 0 0 0 2px rgba(20, 173, 219, 0.2);
+}
+
+.validation-issues-list {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.validation-empty {
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.validation-issue {
+  padding: var(--space-3);
+  border-radius: var(--card-radius-sm);
+  border-left: 4px solid;
+  background: var(--color-bg-primary);
+}
+
+.validation-issue-error {
+  border-left-color: var(--color-error);
+  background-color: var(--color-error-light);
+}
+
+.validation-issue-warning {
+  border-left-color: var(--color-warning);
+  background-color: var(--color-warning-light);
+}
+
+.validation-issue-info {
+  border-left-color: var(--color-info);
+  background-color: var(--color-info-light);
+}
+
+.validation-issue-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.validation-issue-icon {
+  font-size: 1.1rem;
+}
+
+.validation-issue-code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-tertiary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+}
+
+.validation-issue-line {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-left: auto;
+}
+
+.validation-issue-message {
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+/* Scrollbar styling */
+.validation-issues-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.validation-issues-list::-webkit-scrollbar-track {
+  background: var(--color-bg-tertiary);
+  border-radius: 4px;
+}
+
+.validation-issues-list::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 4px;
+}
+
+.validation-issues-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+.validation-log-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-modal);
+  padding: var(--space-4);
+}
+
+.validation-log-popover {
+  background: var(--color-bg-primary);
+  border-radius: var(--card-radius-sm);
+  border: 1px solid var(--color-border);
+  width: min(600px, 100%);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-xl);
+}
+
+.validation-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.validation-log-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: var(--font-semibold);
+  color: var(--color-text-primary);
+}
+
+.validation-log-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-normal);
+}
+
+.validation-log-close:hover {
+  color: var(--color-text-primary);
+}
+
+.validation-log-body {
+  padding: var(--space-4);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.validation-log-entry {
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+  border-radius: var(--btn-radius);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  line-height: 1.4;
+}

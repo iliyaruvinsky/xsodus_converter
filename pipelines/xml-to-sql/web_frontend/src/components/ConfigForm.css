@@ -1,0 +1,462 @@
+/**
+ * Configuration Form - Xsodus Design System
+ */
+
+.config-form-container {
+  width: 100%;
+}
+
+.config-form-container .card {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* Header */
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.config-header h2 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--text-body);
+  font-weight: var(--font-semibold);
+}
+
+.help-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--card-radius-sm);
+  color: var(--color-text-muted);
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: var(--text-caption);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.help-toggle-btn:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-primary);
+}
+
+/* Help overview */
+.config-help-overview {
+  background: var(--color-warning-light);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--card-radius-sm);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.config-help-overview h3 {
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-semibold);
+}
+
+.config-help-overview p {
+  color: var(--color-text-primary);
+  margin: var(--space-1) 0;
+  line-height: var(--line-height-normal);
+  font-size: var(--text-caption);
+}
+
+.config-help-overview code {
+  background: var(--color-bg-primary);
+  padding: 0.125rem 0.25rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: var(--text-micro);
+  color: var(--xsodus-primary);
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: var(--space-3);
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-1);
+  font-weight: var(--font-regular);
+  font-size: var(--text-caption);
+}
+
+/* Input fields */
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: var(--space-2) 0.625rem;
+  border: var(--input-border);
+  border-radius: var(--input-radius);
+  background: var(--color-bg-tertiary);
+  color: var(--input-text);
+  font-size: var(--text-body);
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.form-group input:hover,
+.form-group select:hover {
+  border-color: var(--color-text-muted);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--xsodus-primary);
+  box-shadow: 0 0 0 2px rgba(20, 173, 219, 0.16);
+}
+
+.form-group input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%238C8E91' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem 1rem;
+  padding-right: 2rem;
+}
+
+/* Help icon */
+.help-icon {
+  font-size: 0.625rem;
+  opacity: 0.6;
+  cursor: help;
+  transition: opacity var(--transition-fast);
+  user-select: none;
+}
+
+.help-icon:hover {
+  opacity: 1;
+}
+
+/* Field help content */
+.field-help {
+  background: var(--color-bg-secondary);
+  border-left: 3px solid var(--xsodus-primary);
+  border-radius: 0 var(--card-radius-sm) var(--card-radius-sm) 0;
+  padding: var(--space-2) 0.625rem;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-micro);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}
+
+.field-help strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-semibold);
+}
+
+.field-help code {
+  background: var(--color-bg-primary);
+  padding: 0.125rem 0.25rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.625rem;
+  color: var(--xsodus-primary);
+}
+
+/* Schema overrides */
+.schema-override-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.schema-override-row input {
+  flex: 1;
+  font-size: var(--text-body-sm);
+  padding: var(--space-1) var(--space-2);
+}
+
+.schema-override-row span {
+  color: var(--input-placeholder);
+  font-size: var(--text-caption);
+}
+
+.remove-override-btn {
+  background: transparent;
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--card-radius-sm);
+  cursor: pointer;
+  font-size: var(--text-body);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.remove-override-btn:hover {
+  background: var(--color-error);
+  color: var(--color-text-inverse);
+}
+
+.add-override-btn {
+  width: 100%;
+  padding: var(--space-1);
+  background: transparent;
+  border: 1px dashed var(--input-placeholder);
+  border-radius: var(--card-radius-sm);
+  color: var(--xsodus-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--text-caption);
+  font-weight: var(--font-medium);
+}
+
+.add-override-btn:hover {
+  background: var(--color-bg-secondary);
+  border-color: var(--xsodus-primary);
+}
+
+/* Sections */
+.form-section {
+  margin-top: var(--space-2);
+  padding: 0;
+  border-top: none;
+}
+
+.form-section h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-primary);
+  margin: 0;
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-semibold);
+}
+
+/* Section description */
+.section-description {
+  color: var(--color-text-muted);
+  font-size: var(--text-micro);
+  font-style: normal;
+  margin: var(--space-1) 0 var(--space-2) 0;
+  line-height: 1.4;
+}
+
+/* Checkbox styling */
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  cursor: pointer;
+  margin-bottom: var(--space-1);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  margin-top: 0.0625rem;
+  flex-shrink: 0;
+  accent-color: var(--xsodus-primary);
+}
+
+.checkbox-label span {
+  font-weight: var(--font-regular);
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  font-size: var(--text-body-sm);
+}
+
+/* Field hint */
+.field-hint {
+  font-size: var(--text-micro);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+  line-height: 1.4;
+}
+
+.field-hint code {
+  background: var(--color-bg-secondary);
+  padding: 0.125rem 0.25rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.625rem;
+  color: var(--xsodus-primary);
+}
+
+/* General Section */
+.general-section {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--card-radius-sm);
+  padding: 0.625rem;
+}
+
+/* Mode-specific sections */
+.mode-specific-section {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--card-radius-sm);
+  padding: 0.625rem;
+}
+
+.hana-section {
+  border-left: 3px solid var(--xsodus-primary);
+}
+
+.snowflake-section {
+  border-left: 3px solid var(--xsodus-primary-light);
+}
+
+/* Header with badge */
+.section-header-with-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.section-header-with-badge h3 {
+  margin: 0;
+}
+
+/* Badges */
+.mode-badge,
+.hana-badge,
+.snowflake-badge,
+.optional-badge {
+  display: none;
+}
+
+/* Collapsible sections */
+.collapsible-section {
+  border-top: none;
+  padding: 0.625rem;
+  border-radius: var(--card-radius-sm);
+  margin-top: var(--space-2);
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+}
+
+.collapsible-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast);
+  padding: var(--space-1);
+  margin: calc(-1 * var(--space-1));
+  border-radius: var(--card-radius-sm);
+}
+
+.collapsible-header:hover {
+  background: var(--color-bg-secondary);
+}
+
+.collapsible-header h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.collapse-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.875rem;
+  font-size: 0.5rem;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.collapsible-content {
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Primary section styling */
+.form-section-primary {
+  background: var(--color-bg-primary);
+  padding: 0.625rem;
+  border-radius: var(--card-radius-sm);
+  margin-top: 0;
+  border: 1px solid var(--color-border);
+}
+
+/* Advanced field styling */
+.advanced-field {
+  background: var(--color-bg-secondary);
+  padding: 0.625rem;
+  border-radius: var(--card-radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.advanced-field label {
+  color: var(--color-text-muted);
+}
+
+/* Auto-detect field styling */
+.auto-detect-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0.625rem;
+  background: var(--color-bg-tertiary);
+  border: var(--input-border);
+  border-radius: var(--input-radius);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.auto-detect-text {
+  color: var(--color-text-muted);
+  font-size: var(--text-body);
+}
+
+.override-link {
+  background: transparent;
+  border: none;
+  color: var(--xsodus-primary);
+  font-size: var(--text-caption);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.override-link:hover {
+  color: var(--xsodus-primary-dark);
+}
+
+.use-auto-detect-link {
+  display: block;
+  background: transparent;
+  border: none;
+  color: var(--color-success);
+  font-size: var(--text-micro);
+  cursor: pointer;
+  padding: var(--space-1) 0 0 0;
+  text-decoration: none;
+}
+
+.use-auto-detect-link:hover {
+  text-decoration: underline;
+}

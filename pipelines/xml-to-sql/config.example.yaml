@@ -1,0 +1,45 @@
+# Example configuration file for xml-to-sql conversion
+# Copy this to config.yaml and customize for your environment
+
+defaults:
+  client: "PROD"
+  language: "EN"
+  database_mode: "hana"    # "hana" or "snowflake"
+  hana_version: "2.0"      # HANA version: "1.0", "2.0", "2.0 SPS01", "2.0 SPS03"
+  view_schema: "_SYS_BIC"  # Default schema for generated views
+
+paths:
+  source: "Source (XML Files)"
+  target: "Target (SQL Scripts)"
+
+schema_overrides:
+  # Map XML schema names to actual database schemas
+  ABAP: "SAPABAP1"
+  # SAPK5D: "PRODUCTION_SCHEMA"
+
+currency:
+  udf_name: "CONVERT_CURRENCY"
+  rates_table: "EXCHANGE_RATES"
+  schema: "UTILITY"
+
+# Example scenarios - uncomment and customize as needed
+scenarios:
+  # Basic example
+  - id: "CV_EQUIPMENT_STATUSES"
+    source: "HANA 1.XX XML Views/BW_ON_HANA/CV_EQUIPMENT_STATUSES.xml"
+    output: "CV_EQUIPMENT_STATUSES"
+    enabled: true
+
+  # Example with HANA package path (for CV-to-CV references)
+  # - id: "CV_TOP_PTHLGY"
+  #   source: "HANA 1.XX XML Views/BW_ON_HANA/CV_TOP_PTHLGY.xml"
+  #   output: "CV_TOP_PTHLGY"
+  #   hana_package: "Macabi_BI.EYAL.EYAL_CDS"
+  #   enabled: true
+
+  # Example with client override
+  # - id: "Sold_Materials"
+  #   output: "V_C_SOLD_MATERIALS"
+  #   enabled: true
+  #   overrides:
+  #     client: "100"

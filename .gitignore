@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+*.manifest
+*.spec
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Project-specific exclusions
+*.db
+LATEST_SQL_FROM_DB.txt
+.claude/settings.local.json
+
+# Large binary/data files (keep in separate storage)
+# Uncomment if you want to exclude XML/SQL files from git:
+# Source (XML Files)/
+# Target (SQL Scripts)/
+
+# Node modules (web frontend)
+node_modules/
+
+# Build outputs
+pipelines/xml-to-sql/web_frontend/dist/
