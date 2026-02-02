@@ -1,0 +1,203 @@
+# InfoObject Catalog
+# Maps BEx InfoObjects to HANA table metadata
+#
+# This catalog is used to resolve BEx InfoObject references to actual
+# database tables and columns during CV generation.
+#
+# To add custom InfoObjects, add entries following the format below.
+
+infoobjects:
+  # Characteristics (Dimensions)
+  - name: "0PLANT"
+    description: "Plant"
+    master_data_table: "T001W"
+    text_table: "T001WT"
+    key_column: "WERKS"
+    text_column: "NAME1"
+    data_type: "NVARCHAR"
+    length: 4
+
+  - name: "0MATERIAL"
+    description: "Material"
+    master_data_table: "MARA"
+    text_table: "MAKT"
+    key_column: "MATNR"
+    text_column: "MAKTX"
+    data_type: "NVARCHAR"
+    length: 18
+
+  - name: "0CUSTOMER"
+    description: "Customer"
+    master_data_table: "KNA1"
+    text_table: "KNA1"
+    key_column: "KUNNR"
+    text_column: "NAME1"
+    data_type: "NVARCHAR"
+    length: 10
+
+  - name: "0VENDOR"
+    description: "Vendor"
+    master_data_table: "LFA1"
+    text_table: "LFA1"
+    key_column: "LIFNR"
+    text_column: "NAME1"
+    data_type: "NVARCHAR"
+    length: 10
+
+  - name: "0COMP_CODE"
+    description: "Company Code"
+    master_data_table: "T001"
+    text_table: "T001"
+    key_column: "BUKRS"
+    text_column: "BUTXT"
+    data_type: "NVARCHAR"
+    length: 4
+
+  - name: "0SALESORG"
+    description: "Sales Organization"
+    master_data_table: "TVKO"
+    text_table: "TVKOT"
+    key_column: "VKORG"
+    text_column: "VTEXT"
+    data_type: "NVARCHAR"
+    length: 4
+
+  - name: "0DISTR_CHAN"
+    description: "Distribution Channel"
+    master_data_table: "TVTW"
+    text_table: "TVTWT"
+    key_column: "VTWEG"
+    text_column: "VTEXT"
+    data_type: "NVARCHAR"
+    length: 2
+
+  - name: "0DIVISION"
+    description: "Division"
+    master_data_table: "TSPA"
+    text_table: "TSPAT"
+    key_column: "SPART"
+    text_column: "VTEXT"
+    data_type: "NVARCHAR"
+    length: 2
+
+  - name: "0STOR_LOC"
+    description: "Storage Location"
+    master_data_table: "T001L"
+    text_table: "T001L"
+    key_column: "LGORT"
+    text_column: "LGOBE"
+    data_type: "NVARCHAR"
+    length: 4
+
+  - name: "0BATCH"
+    description: "Batch"
+    master_data_table: "MCHA"
+    text_table: "MCHA"
+    key_column: "CHARG"
+    text_column: "CHARG"
+    data_type: "NVARCHAR"
+    length: 10
+
+  - name: "0MRP_AREA"
+    description: "MRP Area"
+    master_data_table: "T460A"
+    text_table: "T460T"
+    key_column: "BERID"
+    text_column: "BERZS"
+    data_type: "NVARCHAR"
+    length: 10
+
+  # Time Characteristics
+  - name: "0CALDAY"
+    description: "Calendar Day"
+    data_type: "DATE"
+
+  - name: "0CALMONTH"
+    description: "Calendar Month"
+    data_type: "NVARCHAR"
+    length: 6
+
+  - name: "0CALYEAR"
+    description: "Calendar Year"
+    data_type: "NVARCHAR"
+    length: 4
+
+  - name: "0CALWEEK"
+    description: "Calendar Week"
+    data_type: "NVARCHAR"
+    length: 6
+
+  - name: "0CALQUARTER"
+    description: "Calendar Quarter"
+    data_type: "NVARCHAR"
+    length: 5
+
+  - name: "0FISCYEAR"
+    description: "Fiscal Year"
+    data_type: "NVARCHAR"
+    length: 4
+
+  - name: "0FISCPER"
+    description: "Fiscal Period"
+    data_type: "NVARCHAR"
+    length: 7
+
+  # Key Figures (Measures)
+  - name: "0QUANTITY"
+    description: "Quantity"
+    data_type: "DECIMAL"
+    length: 17
+    type: "KYF"
+    aggregation: "SUM"
+
+  - name: "0AMOUNT"
+    description: "Amount"
+    data_type: "DECIMAL"
+    length: 17
+    type: "KYF"
+    aggregation: "SUM"
+
+  - name: "0NETVAL"
+    description: "Net Value"
+    data_type: "DECIMAL"
+    length: 17
+    type: "KYF"
+    aggregation: "SUM"
+
+  - name: "0REVENUE"
+    description: "Revenue"
+    data_type: "DECIMAL"
+    length: 17
+    type: "KYF"
+    aggregation: "SUM"
+
+  - name: "0COST"
+    description: "Cost"
+    data_type: "DECIMAL"
+    length: 17
+    type: "KYF"
+    aggregation: "SUM"
+
+  - name: "0PRICE"
+    description: "Price"
+    data_type: "DECIMAL"
+    length: 13
+    type: "KYF"
+    aggregation: "AVG"
+
+  # Units
+  - name: "0UNIT"
+    description: "Unit of Measure"
+    master_data_table: "T006A"
+    key_column: "MSEHI"
+    text_column: "MSEHT"
+    data_type: "NVARCHAR"
+    length: 3
+
+  - name: "0CURRENCY"
+    description: "Currency"
+    master_data_table: "TCURC"
+    key_column: "WAERS"
+    text_column: "LTEXT"
+    data_type: "NVARCHAR"
+    length: 5

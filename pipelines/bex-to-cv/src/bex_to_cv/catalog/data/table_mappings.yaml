@@ -1,0 +1,38 @@
+# Table Mappings Catalog
+# Maps BEx InfoCubes/InfoProviders to HANA tables
+#
+# This catalog maps InfoCube names to their corresponding HANA fact tables
+# and dimension table references. These mappings are customer-specific
+# and depend on how the BW system was set up.
+#
+# To add mappings for your InfoCubes, follow the format below.
+
+table_mappings:
+  # Example: Standard BW on HANA InfoCube
+  - infocube: "ZSAPLOM"
+    description: "Sample Logistics Monitoring InfoCube"
+    schema: "SAPABAP1"
+    fact_table: "ZSAPLOM"
+    dimension_tables:
+      "0PLANT": "T001W"
+      "0MATERIAL": "MARA"
+      "0MRP_AREA": "T460A"
+
+  # Example: Virtual InfoProvider
+  - infocube: "0SD_C01"
+    description: "Standard Sales Cube"
+    schema: "SAPABAP1"
+    fact_table: "/BIC/A0SD_C0100"
+    dimension_tables:
+      "0CUSTOMER": "KNA1"
+      "0MATERIAL": "MARA"
+      "0SALESORG": "TVKO"
+
+  # Template for adding new InfoCubes:
+  # - infocube: "YOUR_INFOCUBE"
+  #   description: "Description of the InfoCube"
+  #   schema: "SAPABAP1"  # Your HANA schema
+  #   fact_table: "FACT_TABLE_NAME"
+  #   dimension_tables:
+  #     "0PLANT": "PLANT_TABLE"
+  #     "0MATERIAL": "MATERIAL_TABLE"

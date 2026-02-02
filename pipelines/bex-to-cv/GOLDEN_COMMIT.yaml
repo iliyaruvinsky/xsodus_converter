@@ -1,0 +1,60 @@
+# Golden Commit Tracking
+# This file tracks the last fully validated commit with HANA Studio testing
+# DO NOT update without actual HANA Studio validation of ALL listed XMLs
+
+last_validated_commit: null
+commit_date: null
+commit_message: "Initial pipeline setup - not yet validated"
+validation_date: null
+validated_by: null
+instance_type: null
+notes: "Pipeline not yet implemented. Awaiting BEx parser and CV renderer development."
+
+# XMLs validated in HANA Studio with this commit
+validated_xmls:
+  count: 0
+  success_rate: "N/A"
+  last_update: null
+  files: []
+
+# BEx XMLs to validate
+bex_source_xmls:
+  - name: "00O2TN3NK6BZ1GA7XWO79QYF4.xml"
+    infocube: "ZSAPLOM"
+    query_id: "ZSAPLOM_REP_XS"
+    variables: ["VAR_PLANT", "VAR_MATERIAL_OPT", "VAR_MRP_AREA"]
+    notes: "Sample BEx query - use for initial development and testing"
+
+# Critical patterns that MUST NOT be changed without HANA testing
+critical_patterns:
+  cv_xml_structure:
+    why_critical: "Generated CV XML must conform to HANA Calculation View XSD schema"
+    validation_method: "Import to HANA Studio and verify activation"
+
+  infoobject_resolution:
+    why_critical: "BEx InfoObjects (0PLANT, 0MATERIAL) must map to actual HANA tables"
+    validation_method: "Verify table references exist in target HANA system"
+
+  variable_to_parameter:
+    why_critical: "BEx variables must convert to valid CV input parameters"
+    validation_method: "Test CV execution with parameter values"
+
+# Golden CV output location
+golden_cv_location: "Target (CVs)/VALIDATED/"
+golden_cv_count: 0
+
+# Validation commands
+validation_commands:
+  convert_bex: "python -m bex_to_cv.cli.app convert --file 'Source (BEx XMLs)/00O2TN3NK6BZ1GA7XWO79QYF4.xml'"
+  validate_cv: "Import generated .hdbcalculationview into HANA Studio"
+
+# Update instructions
+update_instructions: |
+  To update this golden commit:
+  1. Convert BEx XML to CV using the converter
+  2. Import CV XML into HANA Studio
+  3. Verify CV activates without errors
+  4. Execute CV and verify correct data retrieval
+  5. Document execution results
+  6. Update last_validated_commit
+  7. Commit this file with message: "Update GOLDEN_COMMIT after HANA validation"

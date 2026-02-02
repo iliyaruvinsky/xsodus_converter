@@ -1,0 +1,59 @@
+# Golden Commit Tracking
+# This file tracks the last fully validated commit with CDS validation testing
+# DO NOT update without actual ADT or CAP CLI validation of ALL listed CVs
+
+last_validated_commit: null
+commit_date: null
+commit_message: "Initial pipeline setup - not yet validated"
+validation_date: null
+validated_by: null
+instance_type: null
+notes: "Pipeline not yet implemented. Awaiting CV parser and CDS renderer development."
+
+# CVs validated with this commit
+validated_cvs:
+  count: 0
+  success_rate: "N/A"
+  last_update: null
+  files: []
+
+# CV XMLs to convert (from xml-to-sql validated set)
+cv_source_xmls:
+  - name: "CV_EQUIPMENT_STATUSES.xml"
+    source: "pipelines/xml-to-sql/Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
+    notes: "Use as initial test - validated in xml-to-sql pipeline"
+
+# Critical patterns that MUST NOT be changed without validation
+critical_patterns:
+  cds_syntax_generation:
+    why_critical: "Generated CDS must compile in ADT (ABAP CDS) or CAP CLI"
+    validation_method: "Syntax check in respective tool"
+
+  type_mapping:
+    why_critical: "HANA types must map to valid CDS types (abap.* or CAP types)"
+    validation_method: "Verify no type errors in compilation"
+
+  annotation_generation:
+    why_critical: "@Analytics annotations required for data consumption"
+    validation_method: "Verify annotations recognized by target system"
+
+# Golden CDS output location
+golden_cds_location: "Target (CDS)/VALIDATED/"
+golden_cds_count: 0
+
+# Validation commands
+validation_commands:
+  convert_cv_abap: "python -m cv_to_cds.cli.app convert --syntax abap --file 'Source (CVs)/CV_EXAMPLE.xml'"
+  convert_cv_cap: "python -m cv_to_cds.cli.app convert --syntax cap --file 'Source (CVs)/CV_EXAMPLE.xml'"
+  validate_cap: "cds compile Target/view.cds"
+
+# Update instructions
+update_instructions: |
+  To update this golden commit:
+  1. Convert CV XML to CDS using the converter
+  2. For ABAP CDS: Import to ADT and syntax check
+  3. For CAP CDS: Run 'cds compile' on generated file
+  4. Verify no compilation errors
+  5. Document results
+  6. Update last_validated_commit
+  7. Commit this file with message: "Update GOLDEN_COMMIT after CDS validation"
