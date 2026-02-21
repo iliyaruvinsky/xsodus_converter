@@ -14,33 +14,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Database Targets**: SAP HANA (primary focus), Snowflake
 - **Architecture**: XML Parser → IR (Intermediate Representation) → SQL Renderer
 
-### Project Structure
+### Project Structure (Monorepo)
 ```
-xml2sql/
-├── src/xml_to_sql/
-│   ├── cli/                    # Command-line interface
-│   ├── config/                 # Configuration management (YAML-based)
-│   ├── domain/                 # IR models (CalculationView, Node types)
-│   ├── parser/                 # XML parsing (scenario_parser, column_view_parser)
-│   ├── sql/                    # SQL generation and validation
-│   │   ├── renderer.py         # Main SQL renderer
-│   │   ├── function_translator.py  # Function/expression translation
-│   │   ├── validator.py        # SQL validation
-│   │   └── corrector.py        # Auto-correction
-│   └── catalog/                # Conversion catalogs
-│       ├── data/
-│       │   ├── functions.yaml  # Function mapping catalog
-│       │   └── patterns.yaml   # Expression pattern catalog
-│       ├── loader.py           # Function catalog loader
-│       └── pattern_loader.py   # Pattern catalog loader
-├── tests/                      # Unit and integration tests
-├── docs/                       # Documentation
-│   ├── llm_handover.md         # **AUTHORITATIVE** handover document
-│   ├── rules/                  # Conversion rules (HANA, Snowflake)
-│   ├── bugs/                   # Bug tracking (BUG_TRACKER.md, SOLVED_BUGS.md)
-│   └── implementation/         # Implementation guides
-├── Source (XML Files)/         # Input XML calculation views
-└── Target (SQL Scripts)/       # Generated SQL output
+xsodus_converter/
+├── .claude/                           # Claude Code instructions
+│   ├── CLAUDE.md                      # This file
+│   ├── MANDATORY_PROCEDURES.md        # Bug-checking & code change procedures
+│   └── SDLC_MASTER_PROCEDURE.md       # Development lifecycle procedures
+├── core/                              # Shared core library (x2s_core)
+├── docs/                              # ROOT-level documentation
+│   └── llm_handover.md                # **AUTHORITATIVE** handover document
+├── pipelines/
+│   ├── xml-to-sql/                    # XML to SQL conversion pipeline
+│   │   ├── src/xml_to_sql/            # Python source code
+│   │   │   ├── cli/                   # Command-line interface
+│   │   │   ├── config/                # Configuration management
+│   │   │   ├── domain/                # IR models (CalculationView, Node types)
+│   │   │   ├── parser/                # XML parsing
+│   │   │   ├── sql/                   # SQL generation
+│   │   │   │   ├── renderer.py        # Main SQL renderer
+│   │   │   │   ├── function_translator.py
+│   │   │   │   ├── validator.py
+│   │   │   │   └── corrector.py
+│   │   │   ├── abap/                  # ABAP generators
+│   │   │   └── web/                   # FastAPI backend
+│   │   ├── catalog/hana/data/         # Function/pattern catalogs
+│   │   ├── rules/hana/                # HANA conversion rules
+│   │   │   └── HANA_CONVERSION_RULES.md
+│   │   ├── docs/                      # Pipeline-specific docs
+│   │   │   ├── BUG_TRACKER.md         # Active bugs
+│   │   │   └── SOLVED_BUGS.md         # Solved bugs archive
+│   │   ├── web_frontend/              # React frontend
+│   │   ├── Source (XML Files)/        # Input XMLs
+│   │   ├── Target (SQL Scripts)/      # Output SQL
+│   │   └── GOLDEN_COMMIT.yaml         # Validated XMLs baseline
+│   └── sql-to-abap/                   # SQL to ABAP pipeline
+│       ├── rules/pure/                # Pure ABAP rules
+│       ├── docs/                      # ABAP bug tracking
+│       └── GOLDEN_COMMIT.yaml         # Validated ABAP baseline
+├── utilities/                         # Utility scripts
+│   └── validation_script.py           # Doc/code alignment checker
+└── visual_design/                     # Design assets (logos, etc.)
 ```
 
 ---
@@ -347,7 +361,7 @@ Both use different XML structures and require different parsing strategies.
 ## Critical Documentation
 
 ### Single Source of Truth
-**`docs/llm_handover.md`** is the AUTHORITATIVE handover document. Always check this first when:
+**`docs/llm_handover.md`** (at repository ROOT) is the AUTHORITATIVE handover document. Always check this first when:
 - Starting a new session
 - Understanding project state
 - Finding validated XMLs
@@ -355,16 +369,15 @@ Both use different XML structures and require different parsing strategies.
 - Understanding pending issues
 
 ### Conversion Rules
-- **`docs/rules/HANA_CONVERSION_RULES.md`** - HANA-specific transformation rules (USE THIS for HANA mode)
-- **`docs/rules/SNOWFLAKE_CONVERSION_RULES.md`** - Snowflake rules (USE THIS for Snowflake mode)
+- **`pipelines/xml-to-sql/rules/hana/HANA_CONVERSION_RULES.md`** - HANA-specific transformation rules (USE THIS for HANA mode)
 
 ### Bug Tracking
-- **`docs/bugs/BUG_TRACKER.md`** - Active bugs with root cause analysis
-- **`docs/bugs/SOLVED_BUGS.md`** - Solved bugs archive (critical reference for understanding past solutions)
+- **`pipelines/xml-to-sql/docs/BUG_TRACKER.md`** - Active bugs with root cause analysis
+- **`pipelines/xml-to-sql/docs/SOLVED_BUGS.md`** - Solved bugs archive (critical reference for understanding past solutions)
 
-### Implementation Guides
-- **`docs/implementation/PATTERN_MATCHING_DESIGN.md`** - Pattern matching system (IMPLEMENTED)
-- **`docs/implementation/AUTO_CORRECTION_TESTING_GUIDE.md`** - Auto-correction testing
+### ABAP Pipeline Documentation
+- **`pipelines/sql-to-abap/rules/pure/PURE_ABAP_CONVERSION_RULES.md`** - SQL to Pure ABAP rules
+- **`pipelines/sql-to-abap/docs/BUG_TRACKER.md`** - ABAP-specific bugs
 
 ---
 
@@ -458,18 +471,24 @@ Types: `FEATURE`, `BUGFIX`, `CLEANUP`, `DOCS`, `SUCCESS`
 ## Important File Locations
 
 ### Configuration
-- `config.yaml` - User config (not in git, use config.example.yaml as template)
-- `config.example.yaml` - Configuration template with examples
+- `pipelines/xml-to-sql/config.yaml` - User config (not in git)
+- `pipelines/xml-to-sql/config.example.yaml` - Configuration template
 
 ### Catalog Files
-- `src/xml_to_sql/catalog/data/functions.yaml` - Function mappings
-- `src/xml_to_sql/catalog/data/patterns.yaml` - Expression patterns
+- `pipelines/xml-to-sql/catalog/hana/data/functions.yaml` - Function mappings
+- `pipelines/xml-to-sql/catalog/hana/data/patterns.yaml` - Expression patterns
 
-### Key Source Files
-- `src/xml_to_sql/sql/function_translator.py` - Formula translation (critical for HANA mode)
-- `src/xml_to_sql/sql/renderer.py` - SQL generation
-- `src/xml_to_sql/parser/column_view_parser.py` - ColumnView XML parsing
-- `src/xml_to_sql/parser/scenario_parser.py` - Calculation:scenario parsing
+### Key Source Files (xml-to-sql pipeline)
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py` - Main SQL renderer
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/function_translator.py` - Formula translation
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/column_view_parser.py` - ColumnView XML parsing
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/scenario_parser.py` - Scenario XML parsing
+- `pipelines/xml-to-sql/src/xml_to_sql/abap/sql_to_abap.py` - Pure ABAP generator
+
+### Validation Files
+- `pipelines/xml-to-sql/GOLDEN_COMMIT.yaml` - Validated XMLs baseline (15 XMLs)
+- `pipelines/sql-to-abap/GOLDEN_COMMIT.yaml` - Validated ABAP baseline (awaiting SE38)
+- `utilities/validation_script.py` - Documentation/code alignment checker
 
 ---
 

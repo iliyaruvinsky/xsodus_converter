@@ -179,7 +179,7 @@ elif close_count > open_count:
 **Related Rules**: Will add to HANA_CONVERSION_RULES.md
 
 **Files Modified**:
-- `xml2sql/src/xml_to_sql/sql/renderer.py`: Lines 1383-1491 (_cleanup_hana_parameter_conditions function)
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: Lines 1383-1491 (_cleanup_hana_parameter_conditions function)
   - Added 12 comprehensive cleanup patterns
   - Enhanced parenthesis balancing logic
 
@@ -277,7 +277,7 @@ CREATE VIEW "_SYS_BIC"."CV_ELIG_TRANS_01" AS
 ```
 
 **Files Modified**:
-- `xml2sql/src/xml_to_sql/web/services/converter.py`: Lines 312-319 (removed package path logic)
+- `pipelines/xml-to-sql/src/xml_to_sql/web/services/converter.py`: Lines 312-319 (removed package path logic)
 
 **Impact**: Affects ALL Calculation View conversions in HANA mode
 
@@ -354,7 +354,7 @@ INNER JOIN "_SYS_BIC"."Macabi_BI.Eligibility/CV_MD_EYPOSPER" ON ...
 ```
 
 **Files Modified**:
-- `xml2sql/src/xml_to_sql/sql/renderer.py`: Lines 942-970 (_render_from function)
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: Lines 942-970 (_render_from function)
 - Added import: `DataSourceType` (line 13)
 
 **Documentation**:
@@ -463,7 +463,7 @@ join_1 AS (
 **Related Rules**: Will add to HANA_CONVERSION_RULES.md (Column qualification in JOIN contexts)
 
 **Files Modified**:
-- `xml2sql/src/xml_to_sql/sql/renderer.py`: Lines 996-1007 (_render_expression function)
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: Lines 996-1007 (_render_expression function)
   - Added table_alias qualification for RAW expressions with simple column names
 
 **Next Steps**:
@@ -597,7 +597,7 @@ join_1 AS (                    -- References previous CTEs
 **Related Rules**: Will add to HANA_CONVERSION_RULES.md (CTE ordering requirements)
 
 **Files Modified**:
-- `xml2sql/src/xml_to_sql/sql/renderer.py`: Lines 298-313 (_topological_sort function)
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: Lines 298-313 (_topological_sort function)
   - Changed from `lstrip("#")` to proper `_clean_ref()` + regex normalization
   - Added imports for `_clean_ref` and `re`
 
@@ -605,48 +605,6 @@ join_1 AS (                    -- References previous CTEs
 1. ⏳ Awaiting CV_ELIG_TRANS_01 final validation with BUG-028 fix
 2. Document in HANA_CONVERSION_RULES.md
 3. Move to SOLVED_BUGS.md if successful
-
----
-
-### BUG-001: JOIN Column Resolution - Wrong Projection Reference
-
-**Status**: ✅ **SOLVED** (2025-11-13)  
-**Severity**: High  
-**Discovered**: CV_INVENTORY_ORDERS.xml testing  
-**XML**: CV_INVENTORY_ORDERS.xml  
-**Instance Type**: BW (BID)
-
-**Error**:
-```
-SAP DBTech JDBC: [260]: invalid column name: PROJECTION_6.EINDT: line 103 col 9
-```
-
-**Problem**:
-```sql
--- Line 103 in join_6
-SELECT projection_6.EINDT AS EINDT
-FROM projection_6
-```
-
-But `projection_6` doesn't have column `EINDT` - it's in `projection_8`.
-
-**Root Cause**:
-- JOIN node mapping logic incorrectly resolves which projection exposes which columns
-- CTE column propagation doesn't track which columns come from which input
-- May be parser issue (incorrect mappings in IR) or renderer issue (wrong CTE reference)
-
-**Related Rules**: None - this is a core IR/rendering bug, not a transformation rule issue
-
-**Impact**: Affects any XML with JOINs where columns come from different projections
-
-**Affected XMLs**:
-- CV_INVENTORY_ORDERS.xml
-- Potentially others with complex joins
-
-**Next Steps**:
-1. Debug JOIN node rendering logic
-2. Check how `source_node` is determined in mappings
-3. Verify parser correctly captures which input provides which column
 
 ---
 
@@ -750,58 +708,6 @@ Issues:
 - Or remove parameter logic from REGEXP_LIKE patterns entirely
 
 **Deferred**: For later session
-
----
-
-### BUG-004: Filter Alias vs Source Name Mapping
-
-**Status**: ✅ **SOLVED** (2025-11-13) - Moved to SOLVED_BUGS.md  
-**Severity**: High  
-**Discovered**: CV_INVENTORY_ORDERS.xml testing  
-**XML**: CV_INVENTORY_ORDERS.xml
-
-**Error**:
-```
-SAP DBTech JDBC: [260]: invalid column name: LOEKZ_EKPO: line 67 col 12
-```
-
-**Problem**:
-```sql
-SELECT SAPABAP1."/BIC/AZEKPO2".LOEKZ AS LOEKZ_EKPO ...
-WHERE ("LOEKZ_EKPO" ='')  -- Alias doesn't exist in WHERE context
-```
-
-**Root Cause**:
-- Filters use target/alias column names
-- Base table queries need source column names
-- Mapping: `LOEKZ` (source) → `LOEKZ_EKPO` (target/alias)
-
-**Solution Implemented**:
-```python
-# In _render_projection():
-target_to_source_map = {}
-for mapping in node.mappings:
-    if mapping.expression.expression_type == ExpressionType.COLUMN:
-        source_col = mapping.expression.value
-        target_col = mapping.target_name
-        if source_col != target_col:
-            target_to_source_map[target_col.upper()] = source_col
-
-# Replace target names with source names in WHERE
-for target_name, source_name in target_to_source_map.items():
-    where_clause = where_clause.replace(f'"{target_name}"', f'"{source_name}"')
-```
-
-**Related Rules**: 
-- 🆕 **Rule #12: Filter Source Mapping** (added)
-- Priority: 25
-- Document: Added to HANA_CONVERSION_RULES.md
-
-**Fix Verified**: Code changed, SQL regenerated  
-**Status**: ✅ FIXED (waiting HANA validation)
-
-**Files Modified**:
-- `src/xml_to_sql/sql/renderer.py` - Lines 419-439
 
 ---
 
