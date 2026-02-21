@@ -1,0 +1,134 @@
+================================================================================
+HANA PRIVILEGE GRANT INSTRUCTIONS FOR SAPABAP1 USER
+================================================================================
+
+Purpose: Enable ABAP programs to access HANA Calculation Views via Native SQL
+Issue: "insufficient privilege" error when accessing "_SYS_BIC" schema objects
+Date: 2025-12-15
+
+================================================================================
+PREREQUISITES
+================================================================================
+
+1. Access to SAP HANA Studio or SAP HANA Database Explorer
+2. Login credentials for SYSTEM user (or user with GRANT privileges)
+3. Knowledge of which Calculation Views need to be accessed
+
+================================================================================
+OPTION A: GRANT ACCESS TO SPECIFIC CALCULATION VIEW
+================================================================================
+
+Use this option if you want to grant access to a specific Calculation View only.
+
+Step 1: Connect to HANA as SYSTEM user (or admin user with GRANT privileges)
+
+Step 2: Open SQL Console
+
+Step 3: Run the following SQL command:
+
+    GRANT SELECT ON "_SYS_BIC"."<CALCULATION_VIEW_NAME>" TO SAPABAP1;
+
+Example:
+    GRANT SELECT ON "_SYS_BIC"."ASSESSMENT_REPORT" TO SAPABAP1;
+
+Note: If the Calculation View is in a package, include the package path:
+    GRANT SELECT ON "_SYS_BIC"."Package.Subpackage/CV_NAME" TO SAPABAP1;
+
+Example with package:
+    GRANT SELECT ON "_SYS_BIC"."Macabi_BI.Assessment/ASSESSMENT_REPORT" TO SAPABAP1;
+
+================================================================================
+OPTION B: GRANT ACCESS TO ALL CALCULATION VIEWS (RECOMMENDED)
+================================================================================
+
+Use this option to grant SAPABAP1 access to ALL Calculation Views in _SYS_BIC.
+This is the recommended approach for ongoing converter usage.
+
+Step 1: Connect to HANA as SYSTEM user
+
+Step 2: Open SQL Console
+
+Step 3: Run the following SQL command:
+
+    GRANT SELECT ON SCHEMA "_SYS_BIC" TO SAPABAP1;
+
+This single command grants SELECT access to all objects in the _SYS_BIC schema,
+including all Calculation Views.
+
+================================================================================
+FINDING THE EXACT CALCULATION VIEW NAME
+================================================================================
+
+If you receive "object not found" errors, the Calculation View name may include
+a package path. Run this query to find the exact name:
+
+    SELECT
+        SCHEMA_NAME,
+        VIEW_NAME
+    FROM SYS.VIEWS
+    WHERE VIEW_NAME LIKE '%ASSESSMENT_REPORT%'
+      AND SCHEMA_NAME = '_SYS_BIC';
+
+Replace 'ASSESSMENT_REPORT' with the name of the Calculation View you're looking for.
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After granting privileges, verify they were applied correctly:
+
+    SELECT
+        GRANTEE,
+        SCHEMA_NAME,
+        OBJECT_NAME,
+        PRIVILEGE
+    FROM GRANTED_PRIVILEGES
+    WHERE GRANTEE = 'SAPABAP1'
+      AND SCHEMA_NAME = '_SYS_BIC';
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Problem: "insufficient privilege" when running GRANT command
+Solution: You must be connected as SYSTEM user or a user with GRANT privileges
+
+Problem: "object not found" error
+Solution: The Calculation View name includes a package path. Use the query above
+          to find the exact name.
+
+Problem: Privilege granted but ABAP program still fails
+Solution: The Calculation View may reference OTHER Calculation Views that also
+          need grants. Use Option B (GRANT ON SCHEMA) to resolve this.
+
+Problem: Cannot connect as SYSTEM user
+Solution: Contact your HANA administrator to execute these commands, or request
+          a user with USER ADMIN or ROLE ADMIN privileges.
+
+================================================================================
+ABOUT SAPABAP1 USER
+================================================================================
+
+- SAPABAP1 is the standard database user that SAP ABAP application servers use
+  to connect to SAP HANA.
+- It is NOT a protected system user - privileges CAN be granted to it.
+- It owns the SAPABAP1 schema where ABAP tables are stored.
+- By default, it does NOT have access to _SYS_BIC (Calculation View catalog).
+
+================================================================================
+SECURITY NOTES
+================================================================================
+
+- Granting SELECT ON SCHEMA "_SYS_BIC" allows read-only access to all
+  Calculation Views. No data modification is possible with SELECT privilege.
+- This does not grant access to underlying base tables - only to the CV results.
+- For audit purposes, document which privileges were granted and when.
+
+================================================================================
+CONTACT
+================================================================================
+
+If you have questions or issues executing these commands, please contact your
+SAP HANA database administrator.
+
+================================================================================
