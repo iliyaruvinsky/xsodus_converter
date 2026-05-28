@@ -12,9 +12,9 @@ notes: "WORKING STATE ACHIEVED at commit 680ad44 with catalog fixes. Added DATE�
 
 # XMLs validated in HANA Studio with this commit
 validated_xmls:
-  count: 15
+  count: 22
   success_rate: "100%"
-  last_update: "2025-12-22 SESSION 11"
+  last_update: "2026-05-10 SESSION 16"
   files:
     - name: "CV_CNCLD_EVNTS.xml"
       source: "Source (XML Files)/HANA 1.XX XML Views/BW_ON_HANA/"
@@ -82,6 +82,46 @@ validated_xmls:
       validation_date: "2025-12-22"
       package_path: "Macabi_BI.HCM"
       notes: "SESSION 11 - BUG-040 validated - SUM on NVARCHAR column fixed with TO_INTEGER() cast"
+    - name: "TRANSFORMATIONS_DETAILS.xml"
+      source: "User upload via web UI"
+      execution_time: "N/A"
+      validation_date: "2025-02-26"
+      notes: "SESSION 12 - BUG-042 (+ → ||), BUG-043 (NULL padding in UNION ALL) validated"
+    - name: "INFOOBJECTS.xml"
+      source: "Source (XML Files)/XSODUS_XML_VIEWS/INFOOBJECTS/"
+      execution_time: "51ms"
+      validation_date: "2025-02-28"
+      notes: "SESSION 12/13 - BUG-044 (RIGHTSTRU→RIGHT), BUG-046 (case()→CASE WHEN) validated"
+    - name: "DSO.xml"
+      source: "User upload (C:\\Users\\iliya\\OneDrive\\Desktop\\XSODUS\\1.ASSESSMENT\\xml\\DSO.xml)"
+      execution_time: "N/A"
+      validation_date: "2025-02-26"
+      status: "AWAITING HANA VALIDATION"
+      notes: "SESSION 12 - BUG-045 fixed (BUG-043 regression: UnboundLocalError for data_type in null mapping branch). Conversion successful. 721-line Calculation:scenario, 10 Projections, 6 Joins, 2 Unions, 8 data sources (SAPK5D schema), dataCategory=DIMENSION."
+    - name: "ADSO.xml"
+      source: "User upload (C:\\Users\\iliya\\OneDrive\\Desktop\\XSODUS\\1.ASSESSMENT\\xml\\ADSO.xml)"
+      execution_time: "TBD"
+      validation_date: "2026-03-03"
+      status: "VALIDATED"
+      notes: "SESSION 14 - BUG-047 (single-input Union → pass-through), BUG-048 (DECFLOAT→TO_DECIMAL) fixed and validated. SAPK5D schema, dataCategory=DIMENSION. Single-input Union with column rename (ADSONM→INFOCUBE) and constant injection (SOURCE_TYPE='ADSO')."
+    - name: "TRANFORMATIONS.xml"
+      source: "Source (XML Files)/XSODUS_XML_VIEWS/"
+      execution_time: "N/A"
+      validation_date: "2026-03-26"
+      status: "VALIDATED"
+      notes: "SESSION 15 - BUG-051 (BOOLEAN calc columns → CASE WHEN). Validated on both BID and MBD systems."
+    - name: "USED_HIERARCHIES.xml"
+      source: "Source (XML Files)/XSODUS_XML_VIEWS/"
+      execution_time: "N/A"
+      validation_date: "2026-03-26"
+      status: "VALIDATED"
+      notes: "SESSION 15 - BUG-052 (SqlScriptView definition extraction + auto schema resolution). Validated on both BID (SAPK5D) and MBD (SAPABAP1) systems."
+    - name: "CV_E2E_VST.xml"
+      source: "Source (XML Files)/HANA XML Views/Maccabi-BW_ON_HANA/"
+      execution_time: "75ms"
+      validation_date: "2026-05-10"
+      status: "VALIDATED"
+      notes: "SESSION 16 - BUG-053 (integer calc columns w/ string-literal formulas → TO_INTEGER wrap). Source XML had malformed XML on line 515 (unescaped quotes in rightInput attribute) — fixed with &quot; escaping. CC_PATTEST/CC_COUNTER/CC_PATTEST_N declared SMALLINT/INTEGER but formulas returned string literals. CREATE VIEW: 75ms, DROP: 5ms."
 
 # Critical patterns that MUST NOT be changed without HANA testing
 critical_patterns:
@@ -217,6 +257,21 @@ session_9_code_fixes:
     function: "_build_replacement()"
     fix: "Added recursive processing of arguments to handle nested function calls"
     pattern: "processed_args = [_apply_catalog_rewrites(arg, ctx) for arg in args]"
+
+# SESSION 13 additions (2025-02-28):
+session_13_validated:
+  - name: "INFOOBJECTS.xml"
+    execution_time: "51ms"
+    bugs_fixed: "BUG-046 (case() function → CASE WHEN expression)"
+    notes: "SAP COLUMN_ENGINE case() function not converted to SQL. Added _convert_case_function_to_sql() to function_translator.py"
+
+# SESSION 13 code fixes:
+session_13_code_fixes:
+  - file: "src/xml_to_sql/sql/function_translator.py"
+    lines: "628-706, 241, 250"
+    function: "_convert_case_function_to_sql()"
+    fix: "New function to convert case(value, match1, result1, ..., default) to CASE value WHEN match1 THEN result1 ... END"
+    pattern: "Parenthesis-counting argument extraction, same approach as _convert_if_to_case_for_hana()"
 
 # Session 7 lessons learned
 incident_log:

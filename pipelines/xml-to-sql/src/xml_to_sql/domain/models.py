@@ -247,6 +247,7 @@ class ScenarioMetadata:
     description: Optional[str] = None
     default_client: Optional[str] = None
     default_language: Optional[str] = None
+    default_schema: Optional[str] = None  # BUG-052: <defaultSchema schemaName="..."/>
 
 
 @dataclass(slots=True)

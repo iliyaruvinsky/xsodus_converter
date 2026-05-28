@@ -474,9 +474,12 @@ Types: `FEATURE`, `BUGFIX`, `CLEANUP`, `DOCS`, `SUCCESS`
 - `pipelines/xml-to-sql/config.yaml` - User config (not in git)
 - `pipelines/xml-to-sql/config.example.yaml` - Configuration template
 
-### Catalog Files
-- `pipelines/xml-to-sql/catalog/hana/data/functions.yaml` - Function mappings
-- `pipelines/xml-to-sql/catalog/hana/data/patterns.yaml` - Expression patterns
+### Catalog Files (⚠️ CRITICAL: TWO functions.yaml — ONLY ONE IS USED BY CODE)
+- `pipelines/xml-to-sql/src/xml_to_sql/catalog/data/functions.yaml` - **PRIMARY: USED BY CODE** (Python package `xml_to_sql.catalog.data`)
+- `pipelines/xml-to-sql/src/xml_to_sql/catalog/data/patterns.yaml` - **PRIMARY: USED BY CODE**
+- `pipelines/xml-to-sql/catalog/hana/data/functions.yaml` - **MIRROR ONLY** (documentation, NOT loaded by code)
+- `pipelines/xml-to-sql/catalog/hana/data/patterns.yaml` - **MIRROR ONLY**
+- **⚠️ BUG-044 LESSON**: Always edit the `src/xml_to_sql/catalog/data/` versions. The `catalog/hana/data/` copies are NOT used by running code.
 
 ### Key Source Files (xml-to-sql pipeline)
 - `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py` - Main SQL renderer
@@ -505,8 +508,9 @@ Types: `FEATURE`, `BUGFIX`, `CLEANUP`, `DOCS`, `SUCCESS`
 8. Update HANA_CONVERSION_RULES.md
 
 ### When Adding New Catalog Entries
-1. Add to appropriate catalog (functions.yaml or patterns.yaml)
-2. Reinstall package: `pip install -e .`
+1. **⚠️ Edit the CORRECT file**: `src/xml_to_sql/catalog/data/functions.yaml` (NOT `catalog/hana/data/`)
+2. Also mirror to `catalog/hana/data/functions.yaml` for documentation consistency
+3. Reinstall package: `pip install -e .`
 3. Test with actual XML
 4. Validate in HANA
 5. Commit with description of what mapping does

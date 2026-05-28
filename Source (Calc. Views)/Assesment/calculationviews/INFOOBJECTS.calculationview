@@ -1,0 +1,1107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" schemaVersion="2.3" id="INFOOBJECTS" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="400" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="INFOOBJECTS"/>
+  <metadata activatedAt="2026-03-03 18:22:15.0" changedAt="2026-03-03 18:22:10.343"/>
+  <localVariables>
+    <variable id="Second_Language" parameter="true">
+      <descriptions defaultDescription="Second_Language"/>
+      <variableProperties datatype="NVARCHAR" defaultValue="B" length="1" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+    <variable id="Backdays" parameter="true">
+      <descriptions defaultDescription="Backdays"/>
+      <variableProperties datatype="INTEGER" defaultValue="9999" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings>
+    <mapping xsi:type="Variable:VariableMapping" dataSource="#ASSESSMENT_REPORT">
+      <targetVariable name="Backdays" resourceUri="/Assesment/calculationviews/ASSESSMENT_REPORT"/>
+      <localVariable>#Backdays</localVariable>
+    </mapping>
+  </variableMappings>
+  <informationModelLayout relativeWidthScenario="57"/>
+  <dataSources>
+    <DataSource id="RSDIOBJ" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDIOBJ"/>
+    </DataSource>
+    <DataSource id="RSDCHA" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDCHA"/>
+    </DataSource>
+    <DataSource id="RSDIOBJT" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDIOBJT"/>
+    </DataSource>
+    <DataSource id="RSDCHABAS" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDCHABAS"/>
+    </DataSource>
+    <DataSource id="RSDTIM" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDTIM"/>
+    </DataSource>
+    <DataSource id="RSDUNI" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDUNI"/>
+    </DataSource>
+    <DataSource id="RSDDPA" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDDPA"/>
+    </DataSource>
+    <DataSource id="RSDKYF" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDKYF"/>
+    </DataSource>
+    <DataSource id="Pr_Second_lang$$$$RSDIOBJT$$" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDIOBJT"/>
+    </DataSource>
+    <DataSource id="ASSESSMENT_REPORT" type="CALCULATION_VIEW">
+      <viewAttributes allViewAttributes="true"/>
+      <resourceUri>/Assesment/calculationviews/ASSESSMENT_REPORT</resourceUri>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="IOBJTP"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="NVARCHAR" id="Standard" length="1" expressionLanguage="COLUMN_ENGINE">
+          <formula>if(leftstr(&quot;IOBJNM&quot;,1)='0','Y','N')</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#RSDIOBJ">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHANM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDCHA">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHANM" source="CHANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Pr_English">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="E"/>
+        </viewAttribute>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="TXTSH"/>
+        <viewAttribute id="TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDIOBJT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSH" source="TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_4">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="ATTRIBFL"/>
+        <viewAttribute id="TIMDEPFL"/>
+        <viewAttribute id="TXTTABFL"/>
+        <viewAttribute id="TXTTIMFL"/>
+        <viewAttribute id="NOLANGU"/>
+        <viewAttribute id="TXTSHFL"/>
+        <viewAttribute id="TXTMDFL"/>
+        <viewAttribute id="TXTLGFL"/>
+        <viewAttribute id="HIETABFL"/>
+        <viewAttribute id="HIEVERFL"/>
+        <viewAttribute id="HIENMTFL"/>
+        <viewAttribute id="HIENDTFL"/>
+        <viewAttribute id="HIEINTFL"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="NVARCHAR" id="Standard" length="1" expressionLanguage="COLUMN_ENGINE">
+          <formula>if(leftstr(&quot;CHABASNM&quot;,1)='0','Y','N')</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="INTEGER" id="LENGTH_CHABASNM" expressionLanguage="COLUMN_ENGINE">
+          <formula>strlen(&quot;CHABASNM&quot;)</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="NVARCHAR" id="ROLLNAME" length="30" expressionLanguage="COLUMN_ENGINE">
+          <formula>if(&quot;Standard&quot;='Y','/BI0/OI'+rightstru(&quot;CHABASNM&quot;, &quot;LENGTH_CHABASNM&quot;-1),&#xD;
+ '/BIC/IO' + &quot;CHABASNM&quot;)</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#RSDCHABAS">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="IOBJTP"/>
+        <viewAttribute id="EN_TXTSH"/>
+        <viewAttribute id="EN_TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+      </input>
+      <input node="#Pr_English">
+        <mapping xsi:type="Calculation:AttributeMapping" target="EN_TXTSH" source="TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EN_TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+      </input>
+      <joinAttribute name="IOBJNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHANM"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="ROLLNAME"/>
+        <viewAttribute id="Standard"/>
+        <viewAttribute id="TIMDEPFL"/>
+        <viewAttribute id="TXTTABFL"/>
+        <viewAttribute id="TXTTIMFL"/>
+        <viewAttribute id="NOLANGU"/>
+        <viewAttribute id="TXTSHFL"/>
+        <viewAttribute id="TXTMDFL"/>
+        <viewAttribute id="TXTLGFL"/>
+        <viewAttribute id="HIETABFL"/>
+        <viewAttribute id="HIEVERFL"/>
+        <viewAttribute id="HIENMTFL"/>
+        <viewAttribute id="HIENDTFL"/>
+        <viewAttribute id="HIEINTFL"/>
+        <viewAttribute id="ATTRIBFL"/>
+        <viewAttribute hidden="true" id="JOIN$CHABASNM$CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHANM" source="CHANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CHABASNM$CHABASNM" source="CHABASNM"/>
+      </input>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CHABASNM$CHABASNM" source="CHABASNM"/>
+      </input>
+      <joinAttribute name="JOIN$CHABASNM$CHABASNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_5">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TIMNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDTIM">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMNM" source="TIMNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_6">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="UNINM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDUNI">
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_3" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="UNINM"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="ROLLNAME"/>
+        <viewAttribute id="Standard"/>
+        <viewAttribute id="ATTRIBFL"/>
+        <viewAttribute id="TIMDEPFL"/>
+        <viewAttribute id="TXTTABFL"/>
+        <viewAttribute id="TXTTIMFL"/>
+        <viewAttribute id="NOLANGU"/>
+        <viewAttribute id="TXTSHFL"/>
+        <viewAttribute id="TXTMDFL"/>
+        <viewAttribute id="TXTLGFL"/>
+        <viewAttribute id="HIETABFL"/>
+        <viewAttribute id="HIEVERFL"/>
+        <viewAttribute id="HIENMTFL"/>
+        <viewAttribute id="HIENDTFL"/>
+        <viewAttribute id="HIEINTFL"/>
+        <viewAttribute hidden="true" id="JOIN$CHABASNM$CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_6">
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CHABASNM$CHABASNM" source="CHABASNM"/>
+      </input>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CHABASNM$CHABASNM" source="CHABASNM"/>
+      </input>
+      <joinAttribute name="JOIN$CHABASNM$CHABASNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_4" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TIMNM"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="ROLLNAME"/>
+        <viewAttribute id="Standard"/>
+        <viewAttribute id="ATTRIBFL"/>
+        <viewAttribute id="TIMDEPFL"/>
+        <viewAttribute id="TXTTABFL"/>
+        <viewAttribute id="TXTTIMFL"/>
+        <viewAttribute id="NOLANGU"/>
+        <viewAttribute id="TXTSHFL"/>
+        <viewAttribute id="TXTMDFL"/>
+        <viewAttribute id="TXTLGFL"/>
+        <viewAttribute id="HIETABFL"/>
+        <viewAttribute id="HIEVERFL"/>
+        <viewAttribute id="HIENMTFL"/>
+        <viewAttribute id="HIENDTFL"/>
+        <viewAttribute id="HIEINTFL"/>
+        <viewAttribute hidden="true" id="JOIN$CHABASNM$CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_5">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMNM" source="TIMNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CHABASNM$CHABASNM" source="CHABASNM"/>
+      </input>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CHABASNM$CHABASNM" source="CHABASNM"/>
+      </input>
+      <joinAttribute name="JOIN$CHABASNM$CHABASNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_9">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="DPANM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDDPA">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DPANM" source="DPANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_6" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="DPANM"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="ROLLNAME"/>
+        <viewAttribute id="Standard"/>
+        <viewAttribute id="ATTRIBFL"/>
+        <viewAttribute id="TIMDEPFL"/>
+        <viewAttribute id="TXTTABFL"/>
+        <viewAttribute id="TXTTIMFL"/>
+        <viewAttribute id="NOLANGU"/>
+        <viewAttribute id="TXTSHFL"/>
+        <viewAttribute id="TXTMDFL"/>
+        <viewAttribute id="TXTLGFL"/>
+        <viewAttribute id="HIETABFL"/>
+        <viewAttribute id="HIEVERFL"/>
+        <viewAttribute id="HIENMTFL"/>
+        <viewAttribute id="HIENDTFL"/>
+        <viewAttribute id="HIEINTFL"/>
+        <viewAttribute hidden="true" id="JOIN$CHABASNM$CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_9">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DPANM" source="DPANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CHABASNM$CHABASNM" source="CHABASNM"/>
+      </input>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$CHABASNM$CHABASNM" source="CHABASNM"/>
+      </input>
+      <joinAttribute name="JOIN$CHABASNM$CHABASNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_7">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="KYFNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="KYFTP"/>
+        <viewAttribute id="UNINM"/>
+        <viewAttribute id="DATATP"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="NVARCHAR" id="Standard" length="1" expressionLanguage="COLUMN_ENGINE">
+          <formula>if(leftstr(&quot;KYFNM&quot;,1)='0','Y','N')</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="INTEGER" id="LENGTH_KYFNM" expressionLanguage="COLUMN_ENGINE">
+          <formula>strlen(&quot;KYFNM&quot;)</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="NVARCHAR" id="ROLLNAME" length="30" expressionLanguage="COLUMN_ENGINE">
+          <formula>if(&quot;Standard&quot;='Y','/BI0/OI'+rightstru(&quot;KYFNM&quot;, &quot;LENGTH_KYFNM&quot;-1),&#xD;
+ '/BIC/IO' + &quot;KYFNM&quot;)</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="NVARCHAR" id="INTLEN" length="6" expressionLanguage="COLUMN_ENGINE">
+          <formula>case(&quot;DATATP&quot;,'CURR','000015','DATS','000008','DEC','000017','FLTP','000016','INT4','000010','QUAN','000017','TIMS','000006','000000')</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="NVARCHAR" id="OUTPUTLEN" length="6" expressionLanguage="COLUMN_ENGINE">
+          <formula>case(&quot;DATATP&quot;,'CURR','000023','DATS','000010','DEC','000023','FLTP','000023','INT4','000011','QUAN','000023','TIMS','000006','000000')</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="NVARCHAR" id="DECIMAL" length="2" expressionLanguage="COLUMN_ENGINE">
+          <formula>case(&quot;DATATP&quot;,'CURR','000002','DATS','000000','DEC','000003','FLTP','000016','INT4','000000','QUAN','000003','TIMS','000000','000000')</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#RSDKYF">
+        <mapping xsi:type="Calculation:AttributeMapping" target="KYFNM" source="KYFNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KYFTP" source="KYFTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute datatype="NVARCHAR" id="IOBJNM" length="30" scale="0"/>
+        <viewAttribute id="CHABASNM" transparentFilter="false"/>
+        <viewAttribute id="DATATP" transparentFilter="false"/>
+        <viewAttribute id="INTLEN" transparentFilter="false"/>
+        <viewAttribute id="OUTPUTLEN" transparentFilter="false"/>
+        <viewAttribute id="CONVEXIT" transparentFilter="false"/>
+        <viewAttribute id="ROLLNAME"/>
+        <viewAttribute id="UNINM" transparentFilter="false"/>
+        <viewAttribute id="Standard"/>
+        <viewAttribute id="TIMDEPFL"/>
+        <viewAttribute id="TXTTABFL"/>
+        <viewAttribute id="TXTTIMFL"/>
+        <viewAttribute id="NOLANGU"/>
+        <viewAttribute id="TXTSHFL"/>
+        <viewAttribute id="TXTMDFL"/>
+        <viewAttribute id="TXTLGFL"/>
+        <viewAttribute id="HIETABFL"/>
+        <viewAttribute id="HIEVERFL"/>
+        <viewAttribute id="HIENMTFL"/>
+        <viewAttribute id="HIENDTFL"/>
+        <viewAttribute id="HIEINTFL"/>
+        <viewAttribute id="ATTRIBFL"/>
+        <viewAttribute id="DECIMAL" transparentFilter="false"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="CHANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNINM" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DECIMAL" null="true" value=""/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNINM" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DECIMAL" null="true" value=""/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="TIMNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNINM" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DECIMAL" null="true" value=""/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_6">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="DPANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNINM" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DECIMAL" null="true" value=""/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Projection_7">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="KYFNM"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CHABASNM" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CONVEXIT" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TIMDEPFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TXTTABFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TXTTIMFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="NOLANGU" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TXTSHFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TXTMDFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TXTLGFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIETABFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIEVERFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIENMTFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIENDTFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIEINTFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="ATTRIBFL" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DECIMAL" source="DECIMAL"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Pr_Second_lang">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="$$Second_Language$$"/>
+        </viewAttribute>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="TXTSH"/>
+        <viewAttribute id="TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Pr_Second_lang$$$$RSDIOBJT$$">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSH" source="TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_8" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="IOBJTP"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="EN_TXTSH"/>
+        <viewAttribute id="EN_TXTLG"/>
+        <viewAttribute id="Snd_TXTSH"/>
+        <viewAttribute id="Snd_TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EN_TXTSH" source="EN_TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EN_TXTLG" source="EN_TXTLG"/>
+      </input>
+      <input node="#Pr_Second_lang">
+        <mapping xsi:type="Calculation:AttributeMapping" target="Snd_TXTSH" source="TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Snd_TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+      </input>
+      <joinAttribute name="IOBJNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_7" dynamic="false" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHABASNM" transparentFilter="false"/>
+        <viewAttribute id="ROLLNAME"/>
+        <viewAttribute id="Standard"/>
+        <viewAttribute id="IOBJTP"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="EN_TXTSH"/>
+        <viewAttribute id="EN_TXTLG"/>
+        <viewAttribute id="Snd_TXTSH"/>
+        <viewAttribute id="Snd_TXTLG"/>
+        <viewAttribute id="UNINM" transparentFilter="false"/>
+        <viewAttribute id="TIMDEPFL"/>
+        <viewAttribute id="TXTTABFL"/>
+        <viewAttribute id="TXTTIMFL"/>
+        <viewAttribute id="NOLANGU"/>
+        <viewAttribute id="TXTSHFL"/>
+        <viewAttribute id="TXTMDFL"/>
+        <viewAttribute id="TXTLGFL"/>
+        <viewAttribute id="HIETABFL"/>
+        <viewAttribute id="HIEVERFL"/>
+        <viewAttribute id="HIENMTFL"/>
+        <viewAttribute id="HIENDTFL"/>
+        <viewAttribute id="HIEINTFL"/>
+        <viewAttribute id="ATTRIBFL"/>
+        <viewAttribute id="DATATP" transparentFilter="false"/>
+        <viewAttribute id="INTLEN" transparentFilter="false"/>
+        <viewAttribute id="OUTPUTLEN" transparentFilter="false"/>
+        <viewAttribute id="CONVEXIT" transparentFilter="false"/>
+        <viewAttribute id="DECIMAL" transparentFilter="false"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_8">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EN_TXTSH" source="EN_TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EN_TXTLG" source="EN_TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Snd_TXTSH" source="Snd_TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Snd_TXTLG" source="Snd_TXTLG"/>
+      </input>
+      <input node="#Union_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DECIMAL" source="DECIMAL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+      </input>
+      <joinAttribute name="IOBJNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP">
+          <filter xsi:type="AccessControl:ListValueFilter" operator="IN" including="true">
+            <operands value="IOBJA"/>
+            <operands value="IOBJH"/>
+            <operands value="IOBJT"/>
+          </filter>
+        </viewAttribute>
+        <viewAttribute aggregationType="count" id="Last_Updated_on"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#ASSESSMENT_REPORT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Last_Updated_on" source="DATUM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_5" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="IOBJTP"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="EN_TXTSH"/>
+        <viewAttribute id="EN_TXTLG"/>
+        <viewAttribute id="CHABASNM" transparentFilter="false"/>
+        <viewAttribute id="ROLLNAME"/>
+        <viewAttribute id="Standard"/>
+        <viewAttribute id="Snd_TXTSH"/>
+        <viewAttribute id="Snd_TXTLG"/>
+        <viewAttribute id="UNINM" transparentFilter="false"/>
+        <viewAttribute id="TIMDEPFL"/>
+        <viewAttribute id="TXTTABFL"/>
+        <viewAttribute id="TXTTIMFL"/>
+        <viewAttribute id="NOLANGU"/>
+        <viewAttribute id="TXTSHFL"/>
+        <viewAttribute id="TXTMDFL"/>
+        <viewAttribute id="TXTLGFL"/>
+        <viewAttribute id="HIETABFL"/>
+        <viewAttribute id="HIEVERFL"/>
+        <viewAttribute id="HIENMTFL"/>
+        <viewAttribute id="HIENDTFL"/>
+        <viewAttribute id="HIEINTFL"/>
+        <viewAttribute id="ATTRIBFL"/>
+        <viewAttribute id="DATATP" transparentFilter="false"/>
+        <viewAttribute id="INTLEN" transparentFilter="false"/>
+        <viewAttribute id="OUTPUTLEN" transparentFilter="false"/>
+        <viewAttribute id="CONVEXIT" transparentFilter="false"/>
+        <viewAttribute id="DECIMAL" transparentFilter="false"/>
+        <viewAttribute id="Last_Updated_on"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_7">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EN_TXTSH" source="EN_TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EN_TXTLG" source="EN_TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ROLLNAME" source="ROLLNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Standard" source="Standard"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Snd_TXTSH" source="Snd_TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Snd_TXTLG" source="Snd_TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMDEPFL" source="TIMDEPFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTABFL" source="TXTTABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTTIMFL" source="TXTTIMFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOLANGU" source="NOLANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSHFL" source="TXTSHFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMDFL" source="TXTMDFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLGFL" source="TXTLGFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIETABFL" source="HIETABFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERFL" source="HIEVERFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENMTFL" source="HIENMTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENDTFL" source="HIENDTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEINTFL" source="HIEINTFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ATTRIBFL" source="ATTRIBFL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DECIMAL" source="DECIMAL"/>
+      </input>
+      <input node="#Aggregation_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="Last_Updated_on" source="Last_Updated_on"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="TGT"/>
+      </input>
+      <joinAttribute name="CHABASNM"/>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Join_5">
+    <descriptions/>
+    <attributes>
+      <attribute id="IOBJTP" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="IOBJTP"/>
+        <keyMapping columnObjectName="Join_5" columnName="IOBJTP"/>
+      </attribute>
+      <attribute id="IOBJNM" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="IOBJNM"/>
+        <keyMapping columnObjectName="Join_5" columnName="IOBJNM"/>
+      </attribute>
+      <attribute id="EN_TXTSH" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTSH"/>
+        <keyMapping columnObjectName="Join_5" columnName="EN_TXTSH"/>
+      </attribute>
+      <attribute id="EN_TXTLG" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTLG"/>
+        <keyMapping columnObjectName="Join_5" columnName="EN_TXTLG"/>
+      </attribute>
+      <attribute id="CHABASNM" order="5" attributeHierarchyActive="false" displayAttribute="false" transparentFilter="false">
+        <descriptions defaultDescription="CHABASNM"/>
+        <keyMapping columnObjectName="Join_5" columnName="CHABASNM"/>
+      </attribute>
+      <attribute id="ROLLNAME" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ROLLNAME"/>
+        <keyMapping columnObjectName="Join_5" columnName="ROLLNAME"/>
+      </attribute>
+      <attribute id="Standard" order="7" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Standard"/>
+        <keyMapping columnObjectName="Join_5" columnName="Standard"/>
+      </attribute>
+      <attribute id="Snd_TXTSH" order="8" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Snd_TXTSH"/>
+        <keyMapping columnObjectName="Join_5" columnName="Snd_TXTSH"/>
+      </attribute>
+      <attribute id="Snd_TXTLG" order="9" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Snd_TXTLG"/>
+        <keyMapping columnObjectName="Join_5" columnName="Snd_TXTLG"/>
+      </attribute>
+      <attribute id="UNINM" order="10" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false" transparentFilter="false">
+        <descriptions defaultDescription="UNINM"/>
+        <keyMapping columnObjectName="Join_5" columnName="UNINM"/>
+      </attribute>
+      <attribute id="TIMDEPFL" order="11" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TIMDEPFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="TIMDEPFL"/>
+      </attribute>
+      <attribute id="TXTTABFL" order="12" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTTABFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="TXTTABFL"/>
+      </attribute>
+      <attribute id="TXTTIMFL" order="13" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTTIMFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="TXTTIMFL"/>
+      </attribute>
+      <attribute id="NOLANGU" order="14" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="NOLANGU"/>
+        <keyMapping columnObjectName="Join_5" columnName="NOLANGU"/>
+      </attribute>
+      <attribute id="TXTSHFL" order="15" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTSHFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="TXTSHFL"/>
+      </attribute>
+      <attribute id="TXTMDFL" order="16" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTMDFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="TXTMDFL"/>
+      </attribute>
+      <attribute id="TXTLGFL" order="17" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTLGFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="TXTLGFL"/>
+      </attribute>
+      <attribute id="HIETABFL" order="18" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="HIETABFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="HIETABFL"/>
+      </attribute>
+      <attribute id="HIEVERFL" order="19" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="HIEVERFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="HIEVERFL"/>
+      </attribute>
+      <attribute id="HIENMTFL" order="20" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="HIENMTFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="HIENMTFL"/>
+      </attribute>
+      <attribute id="HIENDTFL" order="21" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="HIENDTFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="HIENDTFL"/>
+      </attribute>
+      <attribute id="HIEINTFL" order="22" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="HIEINTFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="HIEINTFL"/>
+      </attribute>
+      <attribute id="ATTRIBFL" order="23" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ATTRIBFL"/>
+        <keyMapping columnObjectName="Join_5" columnName="ATTRIBFL"/>
+      </attribute>
+      <attribute id="DATATP" order="24" attributeHierarchyActive="false" displayAttribute="false" transparentFilter="false">
+        <descriptions defaultDescription="DATATP"/>
+        <keyMapping columnObjectName="Join_5" columnName="DATATP"/>
+      </attribute>
+      <attribute id="INTLEN" order="25" attributeHierarchyActive="false" displayAttribute="false" transparentFilter="false">
+        <descriptions defaultDescription="INTLEN"/>
+        <keyMapping columnObjectName="Join_5" columnName="INTLEN"/>
+      </attribute>
+      <attribute id="OUTPUTLEN" order="26" attributeHierarchyActive="false" displayAttribute="false" transparentFilter="false">
+        <descriptions defaultDescription="OUTPUTLEN"/>
+        <keyMapping columnObjectName="Join_5" columnName="OUTPUTLEN"/>
+      </attribute>
+      <attribute id="CONVEXIT" order="27" attributeHierarchyActive="false" displayAttribute="false" transparentFilter="false">
+        <descriptions defaultDescription="CONVEXIT"/>
+        <keyMapping columnObjectName="Join_5" columnName="CONVEXIT"/>
+      </attribute>
+      <attribute id="DECIMAL" order="28" attributeHierarchyActive="false" displayAttribute="false" transparentFilter="false">
+        <descriptions defaultDescription="DECIMAL"/>
+        <keyMapping columnObjectName="Join_5" columnName="DECIMAL"/>
+      </attribute>
+      <attribute id="Last_Updated_on" order="29" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Last_Updated_on"/>
+        <keyMapping columnObjectName="Join_5" columnName="Last_Updated_on"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="384" y="87"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="623"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="484" y="623"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Pr_English" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="623"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="792" y="623"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="99" y="527"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="561" y="527"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_5" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="1100" y="623"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_6" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="638" y="623"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="715" y="527"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="1023" y="527"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_9" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="946" y="623"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_6" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="869" y="527"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_7" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="407" y="527"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="672" y="357"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Pr_Second_lang" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="527"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_8" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="357"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_7" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="461" y="261"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="307" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_5" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="384" y="165"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

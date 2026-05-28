@@ -33,6 +33,15 @@ functions:
       Legacy INT() function mapped to TO_INTEGER() for type conversion to integer.
       Discovered in CV_TOP_PTHLGY.xml (BUG-017/SOLVED-017).
 
+  - name: DECFLOAT
+    handler: rename
+    target: "TO_DECIMAL"
+    description: >
+      Column Engine DECFLOAT() cast function mapped to TO_DECIMAL() in HANA SQL.
+      DECFLOAT is not a valid HANA SQL function ([328] error). TO_DECIMAL() is the
+      correct equivalent for converting string/numeric expressions to decimal type.
+      Discovered in ADSO.xml (BUG-048).
+
   # ============================================================================
   # DATE/TIME FUNCTIONS
   # ============================================================================
@@ -83,6 +92,20 @@ functions:
     target: "RIGHT"
     description: >
       Legacy RIGHTSTR() mapped to RIGHT() for string substring from end.
+
+  - name: LEFTSTRU
+    handler: rename
+    target: "LEFT"
+    description: >
+      Unicode-aware variant of LEFTSTR(). HANA LEFT() handles Unicode natively.
+      BUG-044: Discovered in INFOOBJECTS.xml (SESSION 12).
+
+  - name: RIGHTSTRU
+    handler: rename
+    target: "RIGHT"
+    description: >
+      Unicode-aware variant of RIGHTSTR(). HANA RIGHT() handles Unicode natively.
+      BUG-044: Discovered in INFOOBJECTS.xml (SESSION 12).
 
   - name: STRLEN
     handler: rename

@@ -111,7 +111,7 @@ def convert(
                 
                 target_path.parent.mkdir(parents=True, exist_ok=True)
                 target_path.write_text(sql_content, encoding="utf-8")
-                typer.secho(f"  ✓ BW wrapper generated: {target_path}", fg=typer.colors.GREEN)
+                typer.secho(f"  [OK] BW wrapper generated: {target_path}", fg=typer.colors.GREEN)
                 continue
             
             # Determine database mode (priority: CLI > scenario > global config)
@@ -145,7 +145,7 @@ def convert(
             except Exception:
                 xml_format = None
 
-                sql_content, warnings = render_scenario(
+            sql_content, warnings = render_scenario(
                 scenario_ir,
                 schema_overrides=config_obj.schema_overrides,
                 client=client,
@@ -154,22 +154,22 @@ def convert(
                 hana_version=hana_ver_enum,
                 xml_format=xml_format,
                 create_view=True,
-                    view_name=qualified_view_name,
+                view_name=qualified_view_name,
                 currency_udf=config_obj.currency.udf_name,
                 currency_schema=config_obj.currency.schema,
                 currency_table=config_obj.currency.rates_table,
-                return_warnings=True,  # Capture warnings
-                validate=True,  # Re-enable validation
+                return_warnings=True,
+                validate=True,
             )
 
             target_path.parent.mkdir(parents=True, exist_ok=True)
             target_path.write_text(sql_content, encoding="utf-8")
-            typer.secho(f"  ✓ SQL generated: {target_path}", fg=typer.colors.GREEN)
+            typer.secho(f"  [OK] SQL generated: {target_path}", fg=typer.colors.GREEN)
 
             # Display warnings if any
             if warnings:
                 for warning in warnings:
-                    typer.secho(f"  ⚠ WARNING: {warning}", fg=typer.colors.YELLOW)
+                    typer.secho(f"  [WARN] {warning}", fg=typer.colors.YELLOW)
 
         except Exception as e:
             typer.secho(f"  ERROR: {e}", fg=typer.colors.RED)

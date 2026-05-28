@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" schemaVersion="2.3" id="TRANSFORMATIONS_FIELDS_MAPPING" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="400" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="TRANSFORMATIONS_FIELDS_MAPPING"/>
+  <metadata activatedAt="2026-03-21 15:27:19.0" changedAt="2026-03-21 15:27:12.878"/>
+  <localVariables>
+    <variable id="Backdays" parameter="true">
+      <descriptions defaultDescription="Backdays"/>
+      <variableProperties datatype="INTEGER" defaultValue="9999" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings>
+    <mapping xsi:type="Variable:VariableMapping" dataSource="#ASSESSMENT_REPORT">
+      <targetVariable name="Backdays" resourceUri="/Assesment/calculationviews/ASSESSMENT_REPORT"/>
+      <localVariable>#Backdays</localVariable>
+    </mapping>
+  </variableMappings>
+  <informationModelLayout relativeWidthScenario="46"/>
+  <dataSources>
+    <DataSource id="RSTRAN" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSTRAN"/>
+    </DataSource>
+    <DataSource id="RSTRANRULE" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSTRANRULE"/>
+    </DataSource>
+    <DataSource id="RSTRANFIELD" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSTRANFIELD"/>
+    </DataSource>
+    <DataSource id="ASSESSMENT_REPORT" type="CALCULATION_VIEW">
+      <viewAttributes allViewAttributes="true"/>
+      <resourceUri>/Assesment/calculationviews/ASSESSMENT_REPORT</resourceUri>
+    </DataSource>
+    <DataSource id="ZDTP_TRFN" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="ZDTP_TRFN"/>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSTRAN">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="RULEID"/>
+        <viewAttribute id="SEQNR"/>
+        <viewAttribute id="GROUPID"/>
+        <viewAttribute id="GROUPTYPE"/>
+        <viewAttribute id="RULETYPE"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSTRANRULE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULEID" source="RULEID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SEQNR" source="SEQNR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GROUPID" source="GROUPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GROUPTYPE" source="GROUPTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULETYPE" source="RULETYPE"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="SEGID"/>
+        <viewAttribute id="RULEID"/>
+        <viewAttribute id="STEPID"/>
+        <viewAttribute id="PARAMTYPE">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="0"/>
+        </viewAttribute>
+        <viewAttribute id="PARAMNM"/>
+        <viewAttribute id="FIELDNM"/>
+        <viewAttribute id="FIELDTYPE"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="RULEPOSIT"/>
+        <viewAttribute id="AGGR"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSTRANFIELD">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SEGID" source="SEGID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULEID" source="RULEID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STEPID" source="STEPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PARAMTYPE" source="PARAMTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PARAMNM" source="PARAMNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNM" source="FIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDTYPE" source="FIELDTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULEPOSIT" source="RULEPOSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGR" source="AGGR"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_4">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="VARIANTE"/>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#ASSESSMENT_REPORT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARIANTE" source="VARIANTE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_5">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="DTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#ZDTP_TRFN">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTP" source="DTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_3" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="DTP"/>
+        <viewAttribute hidden="true" id="JOIN$VARIANTE$DTP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VARIANTE$DTP" source="VARIANTE"/>
+      </input>
+      <input node="#Projection_5">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTP" source="DTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VARIANTE$DTP" source="DTP"/>
+      </input>
+      <joinAttribute name="JOIN$VARIANTE$DTP"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_4" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+      </input>
+      <input node="#Aggregation_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+      </input>
+      <joinAttribute name="TRANID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="RULEID"/>
+        <viewAttribute id="SEQNR"/>
+        <viewAttribute id="GROUPID"/>
+        <viewAttribute id="GROUPTYPE"/>
+        <viewAttribute id="RULETYPE"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULEID" source="RULEID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SEQNR" source="SEQNR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GROUPID" source="GROUPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GROUPTYPE" source="GROUPTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULETYPE" source="RULETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+      </input>
+      <joinAttribute name="TRANID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="RULEID"/>
+        <viewAttribute id="SEQNR"/>
+        <viewAttribute id="GROUPID"/>
+        <viewAttribute id="GROUPTYPE"/>
+        <viewAttribute id="RULETYPE"/>
+        <viewAttribute id="SEGID"/>
+        <viewAttribute id="STEPID"/>
+        <viewAttribute id="PARAMTYPE"/>
+        <viewAttribute id="PARAMNM"/>
+        <viewAttribute id="FIELDNM"/>
+        <viewAttribute id="FIELDTYPE"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="RULEPOSIT"/>
+        <viewAttribute id="AGGR"/>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULEID" source="RULEID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SEQNR" source="SEQNR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GROUPID" source="GROUPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GROUPTYPE" source="GROUPTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULETYPE" source="RULETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SEGID" source="SEGID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STEPID" source="STEPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PARAMTYPE" source="PARAMTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PARAMNM" source="PARAMNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNM" source="FIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDTYPE" source="FIELDTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULEPOSIT" source="RULEPOSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGR" source="AGGR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RULEID" source="RULEID"/>
+      </input>
+      <joinAttribute name="TRANID"/>
+      <joinAttribute name="RULEID"/>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Join_2">
+    <descriptions/>
+    <attributes>
+      <attribute id="TRANID" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TRANID"/>
+        <keyMapping columnObjectName="Join_2" columnName="TRANID"/>
+      </attribute>
+      <attribute id="OBJVERS" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OBJVERS"/>
+        <keyMapping columnObjectName="Join_2" columnName="OBJVERS"/>
+      </attribute>
+      <attribute id="SOURCETYPE" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCETYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="SOURCETYPE"/>
+      </attribute>
+      <attribute id="SOURCESUBTYPE" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCESUBTYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="SOURCESUBTYPE"/>
+      </attribute>
+      <attribute id="SOURCENAME" order="5" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCENAME"/>
+        <keyMapping columnObjectName="Join_2" columnName="SOURCENAME"/>
+      </attribute>
+      <attribute id="TARGETTYPE" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TARGETTYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="TARGETTYPE"/>
+      </attribute>
+      <attribute id="TARGETSUBTYPE" order="7" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TARGETSUBTYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="TARGETSUBTYPE"/>
+      </attribute>
+      <attribute id="TARGETNAME" order="8" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TARGETNAME"/>
+        <keyMapping columnObjectName="Join_2" columnName="TARGETNAME"/>
+      </attribute>
+      <attribute id="RULEID" order="9" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="RULEID"/>
+        <keyMapping columnObjectName="Join_2" columnName="RULEID"/>
+      </attribute>
+      <attribute id="SEQNR" order="10" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SEQNR"/>
+        <keyMapping columnObjectName="Join_2" columnName="SEQNR"/>
+      </attribute>
+      <attribute id="GROUPID" order="11" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="GROUPID"/>
+        <keyMapping columnObjectName="Join_2" columnName="GROUPID"/>
+      </attribute>
+      <attribute id="GROUPTYPE" order="12" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="GROUPTYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="GROUPTYPE"/>
+      </attribute>
+      <attribute id="RULETYPE" order="13" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="RULETYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="RULETYPE"/>
+      </attribute>
+      <attribute id="SEGID" order="14" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SEGID"/>
+        <keyMapping columnObjectName="Join_2" columnName="SEGID"/>
+      </attribute>
+      <attribute id="STEPID" order="15" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="STEPID"/>
+        <keyMapping columnObjectName="Join_2" columnName="STEPID"/>
+      </attribute>
+      <attribute id="PARAMTYPE" order="16" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="PARAMTYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="PARAMTYPE"/>
+      </attribute>
+      <attribute id="PARAMNM" order="17" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="PARAMNM"/>
+        <keyMapping columnObjectName="Join_2" columnName="PARAMNM"/>
+      </attribute>
+      <attribute id="FIELDNM" order="18" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="FIELDNM"/>
+        <keyMapping columnObjectName="Join_2" columnName="FIELDNM"/>
+      </attribute>
+      <attribute id="FIELDTYPE" order="19" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="FIELDTYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="FIELDTYPE"/>
+      </attribute>
+      <attribute id="KEYFLAG" order="20" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="KEYFLAG"/>
+        <keyMapping columnObjectName="Join_2" columnName="KEYFLAG"/>
+      </attribute>
+      <attribute id="RULEPOSIT" order="21" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="RULEPOSIT"/>
+        <keyMapping columnObjectName="Join_2" columnName="RULEPOSIT"/>
+      </attribute>
+      <attribute id="AGGR" order="22" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="AGGR"/>
+        <keyMapping columnObjectName="Join_2" columnName="AGGR"/>
+      </attribute>
+      <attribute id="SRC" order="23" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SRC"/>
+        <keyMapping columnObjectName="Join_2" columnName="SRC"/>
+      </attribute>
+      <attribute id="SRCTP" order="24" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SRCTP"/>
+        <keyMapping columnObjectName="Join_2" columnName="SRCTP"/>
+      </attribute>
+      <attribute id="TGT" order="25" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TGT"/>
+        <keyMapping columnObjectName="Join_2" columnName="TGT"/>
+      </attribute>
+      <attribute id="TGTTP" order="26" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TGTTP"/>
+        <keyMapping columnObjectName="Join_2" columnName="TGTTP"/>
+      </attribute>
+      <attribute id="ZDTP_SEQ" order="27" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ZDTP_SEQ"/>
+        <keyMapping columnObjectName="Join_2" columnName="ZDTP_SEQ"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="177" y="87"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="98" y="453"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="357"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="254" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="175" y="627"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_5" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="329" y="627"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="252" y="531"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="252" y="453"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="357"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="100" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="177" y="165"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

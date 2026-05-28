@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="DSO_STRUCT" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="400" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="DSO"/>
+  <metadata activatedAt="2026-03-02 18:03:57.0" changedAt="2026-03-02 18:03:25.15" createdAt="2026-03-02 18:03:25.15"/>
+  <localVariables/>
+  <variableMappings/>
+  <informationModelLayout relativeWidthScenario="74"/>
+  <dataSources>
+    <DataSource id="RSDODSOIOBJ" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDODSOIOBJ"/>
+    </DataSource>
+    <DataSource id="RSDIOBJ" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDIOBJ"/>
+    </DataSource>
+    <DataSource id="RSDCHA" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDCHA"/>
+    </DataSource>
+    <DataSource id="RSDTIM" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDTIM"/>
+    </DataSource>
+    <DataSource id="RSDUNI" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDUNI"/>
+    </DataSource>
+    <DataSource id="RSDCHABAS" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDCHABAS"/>
+    </DataSource>
+    <DataSource id="RSDDPA" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDDPA"/>
+    </DataSource>
+    <DataSource id="RSDKYF" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDKYF"/>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="ODSOBJECT"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="IOBJNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDODSOIOBJ">
+        <mapping xsi:type="Calculation:AttributeMapping" target="ODSOBJECT" source="ODSOBJECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="IOBJTP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDIOBJ">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="ODSOBJECT"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="IOBJTP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="ODSOBJECT" source="ODSOBJECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+      </input>
+      <joinAttribute name="IOBJNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHANM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDCHA">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHANM" source="CHANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_4">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TIMNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDTIM">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMNM" source="TIMNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_5">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="UNINM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDUNI">
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_6">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDCHABAS">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHANM"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHANM" source="CHANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+      <input node="#Projection_6">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+      <joinAttribute name="CHABASNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_3" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TIMNM"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMNM" source="TIMNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+      <input node="#Projection_6">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+      <joinAttribute name="CHABASNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_4" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="UNINM"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_5">
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+      <input node="#Projection_6">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+      <joinAttribute name="CHABASNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_10">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="DPANM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDDPA">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DPANM" source="DPANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute datatype="NVARCHAR" id="IOBJNM" length="30"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="CHANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="TIMNM"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="UNINM"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Projection_10">
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="DPANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_5" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="ODSOBJECT"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="IOBJTP"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="ODSOBJECT" source="ODSOBJECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+      </input>
+      <input node="#Union_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+      </input>
+      <joinAttribute name="IOBJNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_7">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="KYFNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="KYFTP"/>
+        <viewAttribute id="AGGRGEN"/>
+        <viewAttribute id="AGGRCHA"/>
+        <viewAttribute id="UNINM"/>
+        <viewAttribute id="DATATP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDKYF">
+        <mapping xsi:type="Calculation:AttributeMapping" target="KYFNM" source="KYFNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KYFTP" source="KYFTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRGEN" source="AGGRGEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRCHA" source="AGGRCHA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_9">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="ODSOBJECT"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="IOBJTP">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="KYF"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_5">
+        <mapping xsi:type="Calculation:AttributeMapping" target="ODSOBJECT" source="ODSOBJECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_6" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="KYFTP"/>
+        <viewAttribute id="AGGRGEN"/>
+        <viewAttribute id="AGGRCHA"/>
+        <viewAttribute id="UNINM"/>
+        <viewAttribute id="ODSOBJECT"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="IOBJTP"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="DATATP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_9">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ODSOBJECT" source="ODSOBJECT"/>
+      </input>
+      <input node="#Projection_7">
+        <mapping xsi:type="Calculation:AttributeMapping" target="KYFTP" source="KYFTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRGEN" source="AGGRGEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRCHA" source="AGGRCHA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="KYFNM"/>
+      </input>
+      <joinAttribute name="IOBJNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_8">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="ODSOBJECT"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="IOBJTP">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="false" value="KYF"/>
+        </viewAttribute>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_5">
+        <mapping xsi:type="Calculation:AttributeMapping" target="ODSOBJECT" source="ODSOBJECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:UnionView" id="Union_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="ODSOBJECT"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="KEYFLAG"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="IOBJTP"/>
+        <viewAttribute id="CHABASNM"/>
+        <viewAttribute id="CHATP"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="OUTPUTLEN"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="DATATP"/>
+        <viewAttribute id="KYFTP"/>
+        <viewAttribute id="AGGRGEN"/>
+        <viewAttribute id="AGGRCHA"/>
+        <viewAttribute id="UNINM"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input emptyUnionBehavior="NO_ROW" node="#Projection_8">
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="KYFTP" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="AGGRGEN" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="AGGRCHA" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNINM" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ODSOBJECT" source="ODSOBJECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_6">
+        <mapping xsi:type="Calculation:AttributeMapping" target="KYFTP" source="KYFTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRGEN" source="AGGRGEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRCHA" source="AGGRCHA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNINM" source="UNINM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ODSOBJECT" source="ODSOBJECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFLAG" source="KEYFLAG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJTP" source="IOBJTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHABASNM" source="CHABASNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHATP" source="CHATP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OUTPUTLEN" source="OUTPUTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATP" source="DATATP"/>
+      </input>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Union_2">
+    <descriptions/>
+    <attributes>
+      <attribute id="ODSOBJECT" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ODSOBJECT"/>
+        <keyMapping columnObjectName="Union_2" columnName="ODSOBJECT"/>
+      </attribute>
+      <attribute id="OBJVERS" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OBJVERS"/>
+        <keyMapping columnObjectName="Union_2" columnName="OBJVERS"/>
+      </attribute>
+      <attribute id="POSIT" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="POSIT"/>
+        <keyMapping columnObjectName="Union_2" columnName="POSIT"/>
+      </attribute>
+      <attribute id="KEYFLAG" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="KEYFLAG"/>
+        <keyMapping columnObjectName="Union_2" columnName="KEYFLAG"/>
+      </attribute>
+      <attribute id="IOBJNM" order="5" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="IOBJNM"/>
+        <keyMapping columnObjectName="Union_2" columnName="IOBJNM"/>
+      </attribute>
+      <attribute id="IOBJTP" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="IOBJTP"/>
+        <keyMapping columnObjectName="Union_2" columnName="IOBJTP"/>
+      </attribute>
+      <attribute id="CHABASNM" order="7" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CHABASNM"/>
+        <keyMapping columnObjectName="Union_2" columnName="CHABASNM"/>
+      </attribute>
+      <attribute id="CHATP" order="8" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CHATP"/>
+        <keyMapping columnObjectName="Union_2" columnName="CHATP"/>
+      </attribute>
+      <attribute id="INTLEN" order="9" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="INTLEN"/>
+        <keyMapping columnObjectName="Union_2" columnName="INTLEN"/>
+      </attribute>
+      <attribute id="OUTPUTLEN" order="10" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OUTPUTLEN"/>
+        <keyMapping columnObjectName="Union_2" columnName="OUTPUTLEN"/>
+      </attribute>
+      <attribute id="CONVEXIT" order="11" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CONVEXIT"/>
+        <keyMapping columnObjectName="Union_2" columnName="CONVEXIT"/>
+      </attribute>
+      <attribute id="DATATP" order="12" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DATATP"/>
+        <keyMapping columnObjectName="Union_2" columnName="DATATP"/>
+      </attribute>
+      <attribute id="KYFTP" order="13" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="KYFTP"/>
+        <keyMapping columnObjectName="Union_2" columnName="KYFTP"/>
+      </attribute>
+      <attribute id="AGGRGEN" order="14" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="AGGRGEN"/>
+        <keyMapping columnObjectName="Union_2" columnName="AGGRGEN"/>
+      </attribute>
+      <attribute id="AGGRCHA" order="15" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="AGGRCHA"/>
+        <keyMapping columnObjectName="Union_2" columnName="AGGRCHA"/>
+      </attribute>
+      <attribute id="UNINM" order="16" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="UNINM"/>
+        <keyMapping columnObjectName="Union_2" columnName="UNINM"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="406" y="87"/>
+        <rectangleSize/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="703"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="703"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="551"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="228" y="799"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="382" y="799"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_5" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="690" y="799"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_6" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="536" y="799"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="330" y="703"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="484" y="703"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="638" y="703"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="484" y="551"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_5" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="329" y="455"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_7" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="571" y="377"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_6" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="483" y="281"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_8" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="329" y="281"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_9" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="417" y="377"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Union_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="406" y="165"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_10" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="792" y="703"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

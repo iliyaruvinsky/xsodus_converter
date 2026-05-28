@@ -89,6 +89,7 @@ class BExVariable:
     is_mandatory: bool = True  # OPTIONFL != 'X' means mandatory
     default_value: str = ""  # DEFAULTV
     description: str = ""  # Description from texts
+    varuniid: str = ""  # VARUNIID — unique variable ID used for LOWFLAG=3 range resolution
 
     def to_input_parameter_name(self) -> str:
         """Generate CV input parameter name."""

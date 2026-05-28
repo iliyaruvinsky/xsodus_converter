@@ -226,6 +226,7 @@ def _parse_variables(parent: ET.Element, warnings: List[str]) -> List[BExVariabl
         varinput = _get_text(item, "VARINPUT", "")
         optionfl = _get_text(item, "OPTIONFL", "")
         defaultv = _get_text(item, "DEFAULTV", "")
+        varuniid = _get_text(item, "VARUNIID", "")
 
         try:
             selection_type = SelectionType(vparsel)
@@ -239,6 +240,7 @@ def _parse_variables(parent: ET.Element, warnings: List[str]) -> List[BExVariabl
             is_input=(varinput == "X"),
             is_mandatory=(optionfl != "X"),  # OPTIONFL='X' means optional
             default_value=defaultv,
+            varuniid=varuniid,
         )
         variables.append(variable)
 

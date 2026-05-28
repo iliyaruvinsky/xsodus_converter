@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="DS_3X" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="DS_3X"/>
+  <metadata activatedAt="2026-02-25 19:23:32.0" changedAt="2026-02-25 19:23:28.722"/>
+  <localVariables>
+    <variable id="Language" parameter="true">
+      <descriptions defaultDescription="Language"/>
+      <variableProperties datatype="NVARCHAR" defaultValue="E" length="1" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings/>
+  <informationModelLayout relativeWidthScenario="51"/>
+  <dataSources>
+    <DataSource id="RSOLTPSOURCE" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSOLTPSOURCE"/>
+    </DataSource>
+    <DataSource id="RSOLTPSOURCET" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSOLTPSOURCET"/>
+    </DataSource>
+    <DataSource id="RSOLTPSOURCEFIE" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSOLTPSOURCEFIE"/>
+    </DataSource>
+    <DataSource id="RSOLTPSOURCEFIET" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSOLTPSOURCEFIET"/>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="TYPE"/>
+        <viewAttribute id="APPLNM"/>
+        <viewAttribute id="DELTA"/>
+        <viewAttribute id="DELTAACT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSOLTPSOURCE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="APPLNM" source="APPLNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DELTA" source="DELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DELTAACT" source="DELTAACT"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="$$Language$$"/>
+        </viewAttribute>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="TXTSH"/>
+        <viewAttribute id="TXTMD"/>
+        <viewAttribute id="TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSOLTPSOURCET">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSH" source="TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTMD" source="TXTMD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="MANDATORY"/>
+        <viewAttribute id="FIELDNM"/>
+        <viewAttribute id="DTELNM"/>
+        <viewAttribute id="DOMANM"/>
+        <viewAttribute id="DATATYPE"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="LENG"/>
+        <viewAttribute id="INTTYPE"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="DECIMALS"/>
+        <viewAttribute id="UNIFIELDNM"/>
+        <viewAttribute id="KEYFIELD"/>
+        <viewAttribute id="SELECTION"/>
+        <viewAttribute id="SELOPTS"/>
+        <viewAttribute id="ORIGIN"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSOLTPSOURCEFIE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="MANDATORY" source="MANDATORY"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNM" source="FIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTELNM" source="DTELNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DOMANM" source="DOMANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATYPE" source="DATATYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LENG" source="LENG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTTYPE" source="INTTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DECIMALS" source="DECIMALS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNIFIELDNM" source="UNIFIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFIELD" source="KEYFIELD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELECTION" source="SELECTION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELOPTS" source="SELOPTS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ORIGIN" source="ORIGIN"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_4">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="$$Language$$"/>
+        </viewAttribute>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="FIELDNM"/>
+        <viewAttribute id="FLD_TXTSH"/>
+        <viewAttribute id="FLD_TXTMD"/>
+        <viewAttribute id="FLD_TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSOLTPSOURCEFIET">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNM" source="FIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FLD_TXTSH" source="TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FLD_TXTMD" source="TXTMD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FLD_TXTLG" source="TXTLG"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="TYPE"/>
+        <viewAttribute id="APPLNM"/>
+        <viewAttribute id="DELTA"/>
+        <viewAttribute id="DELTAACT"/>
+        <viewAttribute id="DS_TXTSH"/>
+        <viewAttribute id="DS_TXTMD"/>
+        <viewAttribute id="DS_TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="APPLNM" source="APPLNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DELTA" source="DELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DELTAACT" source="DELTAACT"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTSH" source="TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTMD" source="TXTMD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+      </input>
+      <joinAttribute name="OLTPSOURCE"/>
+      <joinAttribute name="LOGSYS"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="MANDATORY"/>
+        <viewAttribute id="FIELDNM"/>
+        <viewAttribute id="DTELNM"/>
+        <viewAttribute id="DOMANM"/>
+        <viewAttribute id="DATATYPE"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="LENG"/>
+        <viewAttribute id="INTTYPE"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="DECIMALS"/>
+        <viewAttribute id="UNIFIELDNM"/>
+        <viewAttribute id="KEYFIELD"/>
+        <viewAttribute id="SELECTION"/>
+        <viewAttribute id="SELOPTS"/>
+        <viewAttribute id="ORIGIN"/>
+        <viewAttribute id="TYPE"/>
+        <viewAttribute id="DELTA"/>
+        <viewAttribute id="APPLNM"/>
+        <viewAttribute id="DELTAACT"/>
+        <viewAttribute id="DS_TXTSH"/>
+        <viewAttribute id="DS_TXTMD"/>
+        <viewAttribute id="DS_TXTLG"/>
+        <viewAttribute hidden="true" id="JOIN$OLTPSOURCE$OLTPSOURCE"/>
+        <viewAttribute hidden="true" id="JOIN$LOGSYS$LOGSYS"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DELTA" source="DELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="APPLNM" source="APPLNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DELTAACT" source="DELTAACT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTSH" source="DS_TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTMD" source="DS_TXTMD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTLG" source="DS_TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$OLTPSOURCE$OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$LOGSYS$LOGSYS" source="LOGSYS"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="MANDATORY" source="MANDATORY"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNM" source="FIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTELNM" source="DTELNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DOMANM" source="DOMANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATYPE" source="DATATYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LENG" source="LENG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTTYPE" source="INTTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DECIMALS" source="DECIMALS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNIFIELDNM" source="UNIFIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFIELD" source="KEYFIELD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELECTION" source="SELECTION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELOPTS" source="SELOPTS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ORIGIN" source="ORIGIN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$OLTPSOURCE$OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$LOGSYS$LOGSYS" source="LOGSYS"/>
+      </input>
+      <joinAttribute name="JOIN$OLTPSOURCE$OLTPSOURCE"/>
+      <joinAttribute name="JOIN$LOGSYS$LOGSYS"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_3" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="POSIT"/>
+        <viewAttribute id="MANDATORY"/>
+        <viewAttribute id="FIELDNM"/>
+        <viewAttribute id="DTELNM"/>
+        <viewAttribute id="DOMANM"/>
+        <viewAttribute id="DATATYPE"/>
+        <viewAttribute id="INTLEN"/>
+        <viewAttribute id="LENG"/>
+        <viewAttribute id="INTTYPE"/>
+        <viewAttribute id="CONVEXIT"/>
+        <viewAttribute id="DECIMALS"/>
+        <viewAttribute id="UNIFIELDNM"/>
+        <viewAttribute id="KEYFIELD"/>
+        <viewAttribute id="SELECTION"/>
+        <viewAttribute id="SELOPTS"/>
+        <viewAttribute id="ORIGIN"/>
+        <viewAttribute id="TYPE"/>
+        <viewAttribute id="DELTA"/>
+        <viewAttribute id="APPLNM"/>
+        <viewAttribute id="DELTAACT"/>
+        <viewAttribute id="DS_TXTSH"/>
+        <viewAttribute id="DS_TXTMD"/>
+        <viewAttribute id="DS_TXTLG"/>
+        <viewAttribute id="FLD_TXTSH"/>
+        <viewAttribute id="FLD_TXTMD"/>
+        <viewAttribute id="FLD_TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="MANDATORY" source="MANDATORY"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNM" source="FIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTELNM" source="DTELNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DOMANM" source="DOMANM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATATYPE" source="DATATYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTLEN" source="INTLEN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LENG" source="LENG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INTTYPE" source="INTTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT" source="CONVEXIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DECIMALS" source="DECIMALS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNIFIELDNM" source="UNIFIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KEYFIELD" source="KEYFIELD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELECTION" source="SELECTION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELOPTS" source="SELOPTS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ORIGIN" source="ORIGIN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DELTA" source="DELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="APPLNM" source="APPLNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DELTAACT" source="DELTAACT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTSH" source="DS_TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTMD" source="DS_TXTMD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DS_TXTLG" source="DS_TXTLG"/>
+      </input>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="FLD_TXTSH" source="FLD_TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FLD_TXTMD" source="FLD_TXTMD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FLD_TXTLG" source="FLD_TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="POSIT" source="POSIT"/>
+      </input>
+      <joinAttribute name="OLTPSOURCE"/>
+      <joinAttribute name="LOGSYS"/>
+      <joinAttribute name="POSIT"/>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Join_3">
+    <descriptions/>
+    <attributes>
+      <attribute id="OLTPSOURCE" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OLTPSOURCE"/>
+        <keyMapping columnObjectName="Join_3" columnName="OLTPSOURCE"/>
+      </attribute>
+      <attribute id="LOGSYS" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LOGSYS"/>
+        <keyMapping columnObjectName="Join_3" columnName="LOGSYS"/>
+      </attribute>
+      <attribute id="OBJVERS" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OBJVERS"/>
+        <keyMapping columnObjectName="Join_3" columnName="OBJVERS"/>
+      </attribute>
+      <attribute id="POSIT" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="POSIT"/>
+        <keyMapping columnObjectName="Join_3" columnName="POSIT"/>
+      </attribute>
+      <attribute id="MANDATORY" order="5" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="MANDATORY"/>
+        <keyMapping columnObjectName="Join_3" columnName="MANDATORY"/>
+      </attribute>
+      <attribute id="FIELDNM" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="FIELDNM"/>
+        <keyMapping columnObjectName="Join_3" columnName="FIELDNM"/>
+      </attribute>
+      <attribute id="DTELNM" order="7" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DTELNM"/>
+        <keyMapping columnObjectName="Join_3" columnName="DTELNM"/>
+      </attribute>
+      <attribute id="DOMANM" order="8" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DOMANM"/>
+        <keyMapping columnObjectName="Join_3" columnName="DOMANM"/>
+      </attribute>
+      <attribute id="DATATYPE" order="9" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DATATYPE"/>
+        <keyMapping columnObjectName="Join_3" columnName="DATATYPE"/>
+      </attribute>
+      <attribute id="INTLEN" order="10" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="INTLEN"/>
+        <keyMapping columnObjectName="Join_3" columnName="INTLEN"/>
+      </attribute>
+      <attribute id="LENG" order="11" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LENG"/>
+        <keyMapping columnObjectName="Join_3" columnName="LENG"/>
+      </attribute>
+      <attribute id="INTTYPE" order="12" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="INTTYPE"/>
+        <keyMapping columnObjectName="Join_3" columnName="INTTYPE"/>
+      </attribute>
+      <attribute id="CONVEXIT" order="13" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CONVEXIT"/>
+        <keyMapping columnObjectName="Join_3" columnName="CONVEXIT"/>
+      </attribute>
+      <attribute id="DECIMALS" order="14" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DECIMALS"/>
+        <keyMapping columnObjectName="Join_3" columnName="DECIMALS"/>
+      </attribute>
+      <attribute id="UNIFIELDNM" order="15" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="UNIFIELDNM"/>
+        <keyMapping columnObjectName="Join_3" columnName="UNIFIELDNM"/>
+      </attribute>
+      <attribute id="KEYFIELD" order="16" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="KEYFIELD"/>
+        <keyMapping columnObjectName="Join_3" columnName="KEYFIELD"/>
+      </attribute>
+      <attribute id="SELECTION" order="17" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SELECTION"/>
+        <keyMapping columnObjectName="Join_3" columnName="SELECTION"/>
+      </attribute>
+      <attribute id="SELOPTS" order="18" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SELOPTS"/>
+        <keyMapping columnObjectName="Join_3" columnName="SELOPTS"/>
+      </attribute>
+      <attribute id="ORIGIN" order="19" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ORIGIN"/>
+        <keyMapping columnObjectName="Join_3" columnName="ORIGIN"/>
+      </attribute>
+      <attribute id="TYPE" order="20" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TYPE"/>
+        <keyMapping columnObjectName="Join_3" columnName="TYPE"/>
+      </attribute>
+      <attribute id="DELTA" order="21" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DELTA"/>
+        <keyMapping columnObjectName="Join_3" columnName="DELTA"/>
+      </attribute>
+      <attribute id="APPLNM" order="22" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="APPLNM"/>
+        <keyMapping columnObjectName="Join_3" columnName="APPLNM"/>
+      </attribute>
+      <attribute id="DELTAACT" order="23" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DELTAACT"/>
+        <keyMapping columnObjectName="Join_3" columnName="DELTAACT"/>
+      </attribute>
+      <attribute id="DS_TXTSH" order="24" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DS_TXTSH"/>
+        <keyMapping columnObjectName="Join_3" columnName="DS_TXTSH"/>
+      </attribute>
+      <attribute id="DS_TXTMD" order="25" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DS_TXTMD"/>
+        <keyMapping columnObjectName="Join_3" columnName="DS_TXTMD"/>
+      </attribute>
+      <attribute id="DS_TXTLG" order="26" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DS_TXTLG"/>
+        <keyMapping columnObjectName="Join_3" columnName="DS_TXTLG"/>
+      </attribute>
+      <attribute id="FLD_TXTSH" order="27" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTSH"/>
+        <keyMapping columnObjectName="Join_3" columnName="FLD_TXTSH"/>
+      </attribute>
+      <attribute id="FLD_TXTMD" order="28" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTMD"/>
+        <keyMapping columnObjectName="Join_3" columnName="FLD_TXTMD"/>
+      </attribute>
+      <attribute id="FLD_TXTLG" order="29" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTLG"/>
+        <keyMapping columnObjectName="Join_3" columnName="FLD_TXTLG"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="99" y="87"/>
+        <rectangleSize/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="453"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="453"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="357"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="false" modelObjectName="Projection_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="99" y="357"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="99" y="165"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

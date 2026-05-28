@@ -1,0 +1,848 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" schemaVersion="2.3" id="TRANFORMATIONS" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="400" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="TRANFORMATIONS"/>
+  <metadata activatedAt="2026-03-25 18:25:00.0" changedAt="2026-03-25 18:24:55.983"/>
+  <localVariables>
+    <variable id="Backdays" parameter="true">
+      <descriptions defaultDescription="Backdays"/>
+      <variableProperties datatype="INTEGER" defaultValue="365" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings>
+    <mapping xsi:type="Variable:VariableMapping" dataSource="#ASSESSMENT_REPORT">
+      <targetVariable name="Backdays" resourceUri="/Assesment/calculationviews/ASSESSMENT_REPORT"/>
+      <localVariable>#Backdays</localVariable>
+    </mapping>
+  </variableMappings>
+  <informationModelLayout relativeWidthScenario="47"/>
+  <dataSources>
+    <DataSource id="ASSESSMENT_REPORT" type="CALCULATION_VIEW">
+      <viewAttributes allViewAttributes="true"/>
+      <resourceUri>/Assesment/calculationviews/ASSESSMENT_REPORT</resourceUri>
+    </DataSource>
+    <DataSource id="ZDTP_TRFN" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="ZDTP_TRFN"/>
+    </DataSource>
+    <DataSource id="RSTRAN" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSTRAN"/>
+    </DataSource>
+    <DataSource id="RSAABAP" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSAABAP"/>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="VARIANTE"/>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#ASSESSMENT_REPORT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARIANTE" source="VARIANTE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="DTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="OBJVERS"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#ZDTP_TRFN">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTP" source="DTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="DTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute hidden="true" id="JOIN$VARIANTE$DTP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Aggregation_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VARIANTE$DTP" source="VARIANTE"/>
+      </input>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTP" source="DTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$VARIANTE$DTP" source="DTP"/>
+      </input>
+      <joinAttribute name="JOIN$VARIANTE$DTP"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="CHAIN_ID"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="STARTROUTINE"/>
+        <viewAttribute id="ENDROUTINE"/>
+        <viewAttribute id="EXPERT"/>
+        <viewAttribute id="GLBCODE"/>
+        <viewAttribute id="GLBCODE2"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSTRAN">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="STARTROUTINE"/>
+        <viewAttribute id="ENDROUTINE"/>
+        <viewAttribute id="EXPERT"/>
+        <viewAttribute id="GLBCODE"/>
+        <viewAttribute id="GLBCODE2"/>
+        <viewAttribute id="CHAIN_ID"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Aggregation_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+      </input>
+      <joinAttribute name="TRANID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CODEID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="LINE_NO"/>
+        <viewAttribute id="LINE"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="BOOLEAN" id="Comments" expressionLanguage="COLUMN_ENGINE">
+          <formula>leftstr(&quot;LINE&quot;,1)='*' or leftstr(&quot;LINE&quot;,5) = '... &quot;' or &quot;LINE&quot;='' or leftstr(&quot;LINE&quot;,9) = '    ... &quot;' or leftstr(ltrim(&quot;LINE&quot;),1)='&quot;'</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#RSAABAP">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CODEID" source="CODEID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="GLBCODE" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="STARTROUTINE"/>
+        <viewAttribute id="ENDROUTINE"/>
+        <viewAttribute id="EXPERT"/>
+        <viewAttribute id="GLBCODE"/>
+        <viewAttribute id="GLBCODE2"/>
+        <viewAttribute id="LINE_NO"/>
+        <viewAttribute id="LINE"/>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="Comments"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="CODEID"/>
+      </input>
+      <joinAttribute name="GLBCODE"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="GLBCODE2" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="STARTROUTINE"/>
+        <viewAttribute id="ENDROUTINE"/>
+        <viewAttribute id="EXPERT"/>
+        <viewAttribute id="GLBCODE"/>
+        <viewAttribute id="GLBCODE2"/>
+        <viewAttribute id="LINE_NO"/>
+        <viewAttribute id="LINE"/>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="Comments"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="CODEID"/>
+      </input>
+      <joinAttribute name="GLBCODE2"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="STARTROUTINE" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="STARTROUTINE"/>
+        <viewAttribute id="ENDROUTINE"/>
+        <viewAttribute id="EXPERT"/>
+        <viewAttribute id="GLBCODE"/>
+        <viewAttribute id="GLBCODE2"/>
+        <viewAttribute id="LINE_NO"/>
+        <viewAttribute id="LINE"/>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="Comments"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="CODEID"/>
+      </input>
+      <joinAttribute name="STARTROUTINE"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="ENDROUTINE" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="STARTROUTINE"/>
+        <viewAttribute id="ENDROUTINE"/>
+        <viewAttribute id="EXPERT"/>
+        <viewAttribute id="GLBCODE"/>
+        <viewAttribute id="GLBCODE2"/>
+        <viewAttribute id="LINE_NO"/>
+        <viewAttribute id="LINE"/>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="Comments"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="CODEID"/>
+      </input>
+      <joinAttribute name="ENDROUTINE"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="EXPERT" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="STARTROUTINE"/>
+        <viewAttribute id="ENDROUTINE"/>
+        <viewAttribute id="EXPERT"/>
+        <viewAttribute id="GLBCODE"/>
+        <viewAttribute id="GLBCODE2"/>
+        <viewAttribute id="LINE_NO"/>
+        <viewAttribute id="LINE"/>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="Comments"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="CODEID"/>
+      </input>
+      <joinAttribute name="EXPERT"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="SRC"/>
+        <viewAttribute id="SRCTP"/>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP"/>
+        <viewAttribute id="TRANID"/>
+        <viewAttribute id="ZDTP_SEQ"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCETYPE"/>
+        <viewAttribute id="SOURCESUBTYPE"/>
+        <viewAttribute id="SOURCENAME"/>
+        <viewAttribute id="TARGETTYPE"/>
+        <viewAttribute id="TARGETSUBTYPE"/>
+        <viewAttribute id="TARGETNAME"/>
+        <viewAttribute id="STARTROUTINE"/>
+        <viewAttribute id="ENDROUTINE"/>
+        <viewAttribute id="EXPERT"/>
+        <viewAttribute id="GLBCODE"/>
+        <viewAttribute id="GLBCODE2"/>
+        <viewAttribute id="LINE_NO"/>
+        <viewAttribute id="LINE"/>
+        <viewAttribute datatype="NVARCHAR" id="CODE_TYPE" length="20"/>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="Comments"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input emptyUnionBehavior="NO_ROW" node="#GLBCODE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CODE_TYPE" null="false" value="GLBCODE_ROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#GLBCODE2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CODE_TYPE" null="false" value="GLBCODE2_ROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#STARTROUTINE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CODE_TYPE" null="false" value="START_ROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#ENDROUTINE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CODE_TYPE" null="false" value="END_ROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#EXPERT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRC" source="SRC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SRCTP" source="SRCTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TRANID" source="TRANID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZDTP_SEQ" source="ZDTP_SEQ"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCETYPE" source="SOURCETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCESUBTYPE" source="SOURCESUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCENAME" source="SOURCENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETTYPE" source="TARGETTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETSUBTYPE" source="TARGETSUBTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TARGETNAME" source="TARGETNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STARTROUTINE" source="STARTROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ENDROUTINE" source="ENDROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPERT" source="EXPERT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE" source="GLBCODE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GLBCODE2" source="GLBCODE2"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE_NO" source="LINE_NO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CODE_TYPE" null="false" value="EXPERT_ROUTINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Comments" source="Comments"/>
+      </input>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Union_1">
+    <descriptions/>
+    <attributes>
+      <attribute id="SRC" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SRC"/>
+        <keyMapping columnObjectName="Union_1" columnName="SRC"/>
+      </attribute>
+      <attribute id="SRCTP" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SRCTP"/>
+        <keyMapping columnObjectName="Union_1" columnName="SRCTP"/>
+      </attribute>
+      <attribute id="TGT" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TGT"/>
+        <keyMapping columnObjectName="Union_1" columnName="TGT"/>
+      </attribute>
+      <attribute id="TGTTP" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TGTTP"/>
+        <keyMapping columnObjectName="Union_1" columnName="TGTTP"/>
+      </attribute>
+      <attribute id="TRANID" order="5" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TRANID"/>
+        <keyMapping columnObjectName="Union_1" columnName="TRANID"/>
+      </attribute>
+      <attribute id="ZDTP_SEQ" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ZDTP_SEQ"/>
+        <keyMapping columnObjectName="Union_1" columnName="ZDTP_SEQ"/>
+      </attribute>
+      <attribute id="OBJVERS" order="7" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OBJVERS"/>
+        <keyMapping columnObjectName="Union_1" columnName="OBJVERS"/>
+      </attribute>
+      <attribute id="SOURCETYPE" order="8" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCETYPE"/>
+        <keyMapping columnObjectName="Union_1" columnName="SOURCETYPE"/>
+      </attribute>
+      <attribute id="SOURCESUBTYPE" order="9" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCESUBTYPE"/>
+        <keyMapping columnObjectName="Union_1" columnName="SOURCESUBTYPE"/>
+      </attribute>
+      <attribute id="SOURCENAME" order="10" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCENAME"/>
+        <keyMapping columnObjectName="Union_1" columnName="SOURCENAME"/>
+      </attribute>
+      <attribute id="TARGETTYPE" order="11" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TARGETTYPE"/>
+        <keyMapping columnObjectName="Union_1" columnName="TARGETTYPE"/>
+      </attribute>
+      <attribute id="TARGETSUBTYPE" order="12" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TARGETSUBTYPE"/>
+        <keyMapping columnObjectName="Union_1" columnName="TARGETSUBTYPE"/>
+      </attribute>
+      <attribute id="TARGETNAME" order="13" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TARGETNAME"/>
+        <keyMapping columnObjectName="Union_1" columnName="TARGETNAME"/>
+      </attribute>
+      <attribute id="STARTROUTINE" order="14" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="STARTROUTINE"/>
+        <keyMapping columnObjectName="Union_1" columnName="STARTROUTINE"/>
+      </attribute>
+      <attribute id="ENDROUTINE" order="15" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ENDROUTINE"/>
+        <keyMapping columnObjectName="Union_1" columnName="ENDROUTINE"/>
+      </attribute>
+      <attribute id="EXPERT" order="16" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="EXPERT"/>
+        <keyMapping columnObjectName="Union_1" columnName="EXPERT"/>
+      </attribute>
+      <attribute id="GLBCODE" order="17" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="GLBCODE"/>
+        <keyMapping columnObjectName="Union_1" columnName="GLBCODE"/>
+      </attribute>
+      <attribute id="GLBCODE2" order="18" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="GLBCODE2"/>
+        <keyMapping columnObjectName="Union_1" columnName="GLBCODE2"/>
+      </attribute>
+      <attribute id="LINE_NO" order="19" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LINE_NO"/>
+        <keyMapping columnObjectName="Union_1" columnName="LINE_NO"/>
+      </attribute>
+      <attribute id="LINE" order="20" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LINE"/>
+        <keyMapping columnObjectName="Union_1" columnName="LINE"/>
+      </attribute>
+      <attribute id="CODE_TYPE" order="21" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CODE_TYPE"/>
+        <keyMapping columnObjectName="Union_1" columnName="CODE_TYPE"/>
+      </attribute>
+      <attribute id="CHAIN_ID" order="22" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CHAIN_ID"/>
+        <keyMapping columnObjectName="Union_1" columnName="CHAIN_ID"/>
+      </attribute>
+      <attribute id="Comments" hidden="false" order="23" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions/>
+        <keyMapping columnObjectName="Union_1" columnName="Comments"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes>
+      <calculatedAttribute id="Counter" hidden="false" order="24" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Counter"/>
+        <keyCalculation datatype="INTEGER" expressionLanguage="COLUMN_ENGINE">
+          <formula>1</formula>
+        </keyCalculation>
+      </calculatedAttribute>
+    </calculatedAttributes>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="330" y="87"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="98" y="701"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="252" y="701"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="175" y="605"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="175" y="527"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="329" y="527"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="431"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="407" y="431"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="GLBCODE" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="335"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="GLBCODE2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="330" y="335"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="STARTROUTINE" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="484" y="335"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="ENDROUTINE" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="638" y="335"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="EXPERT" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="335"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="330" y="165"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

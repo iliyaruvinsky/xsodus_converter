@@ -112,6 +112,7 @@ def _build_cv_root(ctx: RenderContext) -> etree._Element:
         "Calculation:scenario",
         nsmap={
             "Calculation": "http://www.sap.com/ndb/BiModelCalculation.ecore",
+            "AccessControl": "http://www.sap.com/ndb/BiModelAccessControl.ecore",
             "xsi": "http://www.w3.org/2001/XMLSchema-instance",
         },
         attrib={
@@ -119,7 +120,7 @@ def _build_cv_root(ctx: RenderContext) -> etree._Element:
             "applyPrivilegeType": "NONE",
             "dataCategory": "CUBE",
             "dimensionType": "STANDARD",
-            "schemaVersion": "3.0",
+            "schemaVersion": "2.3",
             "outputViewType": "Aggregation",
             "enforceSqlExecution": "false",
         },
@@ -202,8 +203,9 @@ def _add_data_sources(root: etree._Element, ctx: RenderContext) -> None:
     ds.set("id", "fact_table")
     ds.set("type", "DATA_BASE_TABLE")
 
-    resource_uri = etree.SubElement(ds, "resourceUri")
-    resource_uri.text = f"{schema}.{fact_table}"
+    column_object = etree.SubElement(ds, "columnObject")
+    column_object.set("schemaName", schema)
+    column_object.set("columnObjectName", fact_table)
 
     logger.debug(f"Added data source: {schema}.{fact_table}")
 
@@ -296,6 +298,7 @@ def _add_filters_to_projection(
     # Add filter expression to projection
     if filter_conditions:
         filter_elem = etree.SubElement(projection, "filter")
+        filter_elem.set(XSI_TYPE, "AccessControl:SingleValueFilter")
         filter_expr = etree.SubElement(filter_elem, "expression")
         filter_expr.set("language", "SQL")
         # Combine all conditions with AND
@@ -348,7 +351,7 @@ def _add_output_node(root: etree._Element, ctx: RenderContext) -> None:
 def _add_layout(root: etree._Element, ctx: RenderContext) -> None:
     """Add layout information for HANA Studio visualization."""
     layout = etree.SubElement(root, "layout")
-    layout.set("schemaVersion", "3.0")
+    layout.set("schemaVersion", "2.3")
 
     shapes = etree.SubElement(layout, "shapes")
 

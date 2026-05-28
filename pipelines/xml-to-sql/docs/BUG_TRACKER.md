@@ -8,6 +8,271 @@
 
 ## Active Bugs
 
+### 🔴 BUG-047: Single-Input Union Node Generates Broken Placeholder SQL
+
+**Priority**: High
+**Status**: ✅ FIXED - Awaiting HANA Validation (2026-03-03)
+**Discovered**: 2026-03-03, ADSO.xml
+**XML**: ADSO.xml (and expected: INFOCUBES, MULTIPROVIDERS, COMPOSITE_PROVIDER, INFOSET)
+
+**Error**:
+```
+SAP DBTech JDBC: [257]: sql syntax error: incorrect syntax near ")": line 75 col 3 (at pos 2590)
+```
+
+**Symptom**:
+Union node with exactly 1 input generates `SELECT 1 AS placeholder` instead of rendering the single input with its column mappings. The real data CTE (`adso`) is defined but never referenced. The final SELECT queries the placeholder CTE for columns that don't exist in it.
+
+**Generated SQL (broken)**:
+```sql
+adso AS (
+    SELECT ... FROM join_7 LEFT OUTER JOIN projection_9 ...
+),
+union_1 AS (
+    SELECT 1 AS placeholder   ← wrong
+)
+SELECT INFOCUBE, LASTUSED, TXTLG, SOURCE_TYPE, OBJVERS FROM union_1  ← columns don't exist
+```
+
+**Root Cause**:
+`_render_union()` in `renderer.py` line 835 had `if len(node.inputs) < 2:` which blocked ALL unions with fewer than 2 inputs, including single-input unions which are a valid SAP BW design pattern. A single-input Union is used to rename columns (ADSONM → INFOCUBE) and inject constant values (SOURCE_TYPE = 'ADSO').
+
+**Fix**:
+Changed `if len(node.inputs) < 2:` → `if len(node.inputs) == 0:` at renderer.py line 835.
+With `len == 1`, the normal rendering loop runs: produces `SELECT ... FROM adso AS adso` (no UNION keyword since `"\nUNION ALL\n".join([single_query])` = single_query).
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py` line 835: `< 2` → `== 0`
+
+**Note on [321] DROP VIEW error**:
+Also observed: `[321]: invalid view name: ADSO` on DROP VIEW. Likely first-run behavior (view doesn't exist yet; `_SYS_BIC` returns [321] vs [397] for non-existent objects). Not blocking CREATE VIEW. Will confirm after CREATE VIEW succeeds.
+
+---
+
+### 🔴 BUG-048: DECFLOAT Column Engine Function Not Recognized in HANA SQL
+
+**Priority**: High
+**Status**: ✅ FIXED - Awaiting HANA Validation (2026-03-03)
+**Discovered**: 2026-03-03, ADSO.xml
+**XML**: ADSO.xml (and expected in any XML with the Executed_After pattern)
+
+**Error**:
+```
+SAP DBTech JDBC: [328]: invalid name of function or procedure: DECFLOAT: line 37 col 9 (at pos 1289)
+```
+
+**Symptom**:
+Column Engine formula `decfloat(format(adddays(now(),-365),'YYYYMMDD') + '000000')` generates SQL with `decfloat(...)` which HANA SQL does not recognize as a function.
+
+**Root Cause**:
+`decfloat()` is a SAP Column Engine type-cast function (cast to decimal floating point). It has no direct equivalent function in HANA SQL. `TO_DECIMAL()` is the correct HANA SQL equivalent.
+
+**Fix**:
+Added catalog entry to `src/xml_to_sql/catalog/data/functions.yaml`:
+```yaml
+- name: DECFLOAT
+  handler: rename
+  target: "TO_DECIMAL"
+```
+Also mirrored to `catalog/hana/data/functions.yaml` (documentation copy).
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/catalog/data/functions.yaml`: Added DECFLOAT → TO_DECIMAL
+- `pipelines/xml-to-sql/catalog/hana/data/functions.yaml`: Mirror copy updated
+
+**Action Required**: Reinstall package: `pip install -e .` then reconvert.
+
+---
+
+### 🔴 BUG-049: $$param$$ Placeholders in SingleValueFilter Flattened to Empty String
+
+**Priority**: High
+**Status**: ✅ FIXED - Awaiting HANA Validation (2026-03-03)
+**Discovered**: 2026-03-03, downstream SQL review (CONVERSION_ISSUES_PROMPT.md ISSUE 1 & 6)
+**XML**: ADSO, BEX_QUERIES, COMPOSITE_PROVIDER, DS_3X, DSO, INFOCUBES, INFOOBJECTS, INFOSET, MULTIPROVIDERS, OH_DEST (17 occurrences across 10 files)
+
+**Symptom in output SQL**:
+```sql
+WHERE SAPABAP1.RSOADSOT.LANGU = ''   -- ← should be 'E' (or '$$Language$$')
+```
+
+**Root Cause**:
+`_parse_filters()` in `scenario_parser.py` reads `value="$$Language$$"` from a `SingleValueFilter` XML element and stores it as a `LITERAL` expression. When `_render_expression()` renders a LITERAL, it calls `_render_literal()` which simply wraps the value in quotes → `'$$Language$$'`. The parameter cleanup regex (renderer.py lines 1472-1540) then strips the `$$Language$$` content from *inside* the quotes, leaving `''`. The `_substitute_placeholders()` function that correctly resolves parameters from `localVariables` is only called for `RAW` expressions, never for `LITERAL` expressions.
+
+The defaultValue from `<localVariables>` (`defaultValue="E"`) IS correctly parsed and stored in `ctx.scenario.variables` — it's just never applied to the filter literal.
+
+**Fix** (renderer.py `_render_expression()`, LITERAL branch):
+Add a helper `_resolve_parameter_literal(value, ctx)` that checks if the value contains `$$...$$` and substitutes from `ctx.scenario.variables`. Call it before `_render_literal()`.
+
+**Files to Modify**:
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: Add `_resolve_parameter_literal()`, call in LITERAL branch (~line 1071)
+
+**Resolution**: Use `defaultValue` from XML `localVariables` (option A — clean SQL, no noise).
+
+**Affects**: 17 occurrences, 10 files. ISSUE 6 (`$$colname$$` → `''`) has the same root cause but result stays `''` (defaultValue IS empty string) — correct by coincidence but now derived properly.
+
+---
+
+### 🔴 BUG-050: Node-Level `<filter>` Elements on ProjectionView/JoinView Silently Dropped
+
+**Priority**: Medium
+**Status**: ✅ FIXED - Awaiting HANA Validation (2026-03-03)
+**Discovered**: 2026-03-03, downstream SQL review (CONVERSION_ISSUES_PROMPT.md ISSUE 3)
+**XML**: ADSO, BEX_QUERIES, COMPOSITE_PROVIDER, INFOCUBES, INFOSET, MULTIPROVIDERS, TRANFORMATIONS, TRANSFORMATIONS_DETAILS, TRANSFORMATIONS_FIELDS_MAPPING
+
+**Symptom**:
+RSZCOMPDIR projection CTEs (and ZDTP_TRFN projections) missing their `WHERE OBJVERS = 'A'` filter. The source XML has the filter, but the SQL output omits it.
+
+**Root Cause**:
+`_parse_projection()` in `scenario_parser.py` calls `_parse_filters()` which ONLY loops through `<viewAttribute>` child elements looking for nested `<filter>` sub-elements. The bare `<filter>` element that is a direct child of the `calculationView` node is never read:
+```xml
+<calculationView xsi:type="Calculation:ProjectionView" id="Projection_2" filterExpressionLanguage="COLUMN_ENGINE">
+  ...
+  <filter>(&quot;OBJVERS&quot; ='A')</filter>   ← COMPLETELY IGNORED
+</calculationView>
+```
+
+**Fix** (`_parse_projection()` in `scenario_parser.py`):
+After calling `_parse_filters()`, also check for a bare `<filter>` child of the node element. If found, parse its text content as a `Predicate(kind=PredicateKind.RAW, ...)` and append to `filters`.
+
+**Files to Modify**:
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/scenario_parser.py`: Add bare `<filter>` parsing in `_parse_projection()` (~line 307)
+
+---
+
+### 🔴 BUG-053: Integer-Declared Calc Columns Returning String Literals Break Downstream SUM/AVG
+
+**Priority**: High
+**Status**: ✅ VALIDATED in HANA (2026-05-10, CREATE VIEW: 75ms)
+**Discovered**: 2026-05-10, CV_E2E_VST.xml (Maccabi BW_ON_HANA)
+**XML**: CV_E2E_VST.xml (and any XML with integer calc columns whose formula returns string literals)
+
+**Error**:
+```
+SAP DBTech JDBC: [266]: inconsistent datatype: only numeric type is available for SUM/AVG/STDDEV/VAR function: line 677 col 9
+```
+
+**Symptom**:
+Calculated column declared as `<inlineType primitiveType="SMALLINT"/>` has formula returning string literals:
+```xml
+<element name="CC_PATTEST" aggregationBehavior="NONE">
+  <inlineType primitiveType="SMALLINT"/>
+  <calculationDefinition language="COLUMN_ENGINE">
+    <formula>if("_BIC_EYHERAZ01"='0000001115','1','0')</formula>
+  </calculationDefinition>
+</element>
+```
+HANA Column Engine auto-coerces the strings `'1'`/`'0'` to SMALLINT, but standard SQL doesn't. Downstream `SUM(CC_PATTEST)` fails because the actual SQL data type is VARCHAR, not integer.
+
+**Generated SQL (before fix)**:
+```sql
+CASE WHEN ... THEN '1' ELSE '0' END AS CC_PATTEST     -- VARCHAR result
+SUM(CC_PATTEST)                                        -- ERROR [266]
+```
+
+**Generated SQL (after fix)**:
+```sql
+TO_INTEGER(CASE WHEN ... THEN '1' ELSE '0' END) AS CC_PATTEST   -- INTEGER result
+SUM(CC_PATTEST)                                                  -- works
+```
+
+**Root Cause**:
+Renderer outputs the CASE WHEN formula as-is. The XML's declared SMALLINT type is ignored at the calc column level — only used for output schema documentation. The actual SQL output type is determined by the formula's literals.
+
+**Fix**:
+When `calc_attr.data_type.type.value == "NUMBER" AND scale == 0` (i.e., integer-class declared type), wrap the rendered expression with `TO_INTEGER()` in HANA mode. This:
+- Aligns actual SQL type with declared type
+- Coerces string literals `'1'`, `'0'` to integers `1`, `0`
+- Is a safe no-op cast for already-numeric values
+- Same pattern as BUG-040 but applied at calc column level instead of SUM/AVG level
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: 3 locations (projection ~449, JOIN ~671, aggregation ~845) — added `elif` branch wrapping integer-typed calc columns with `TO_INTEGER()`
+
+**Scope**: UNIVERSAL — any XML with calc columns declared as SMALLINT/INTEGER/BIGINT/TINYINT.
+
+---
+
+### 🔴 BUG-051: BOOLEAN Calculated Columns Rendered as Bare Expressions in SELECT
+
+**Priority**: High
+**Status**: ✅ FIXED - Awaiting HANA Validation (2026-03-26)
+**Discovered**: 2026-03-26, TRANFORMATIONS.xml
+**XML**: TRANFORMATIONS.xml (and any XML with `datatype="BOOLEAN"` calculated columns)
+
+**Error**:
+```
+SAP DBTech JDBC: [257]: sql syntax error: incorrect syntax near "=": line 35 col 39 (at pos 1301)
+```
+
+**Symptom**:
+Calculated column with `datatype="BOOLEAN"` renders a bare boolean expression in SELECT:
+```sql
+LEFT(TABLE.LINE, 1)='*' or LEFT(TABLE.LINE, 5) = '... "' AS COMMENTS
+```
+HANA SQL doesn't support bare boolean expressions in SELECT — they must be wrapped.
+
+**Root Cause**:
+XML `<calculatedViewAttribute datatype="BOOLEAN">` has a formula that evaluates to true/false.
+The renderer outputs the formula as-is, but HANA SQL requires `CASE WHEN (...) THEN 1 ELSE 0 END`.
+
+**Fix**:
+Added BOOLEAN datatype detection in all 3 calculated column rendering paths in `renderer.py`:
+- Line 443-448 (projection path)
+- Line 657-661 (JOIN path)
+- Line 825-829 (aggregation path)
+When `calc_attr.data_type.type.value == "BOOLEAN"` and HANA mode, wraps in `CASE WHEN (...) THEN 1 ELSE 0 END`.
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: Lines 443-448, 657-661, 825-829
+
+---
+
+### 🔴 BUG-052: SqlScriptView Nodes Generate Placeholder Instead of Embedded SQL
+
+**Priority**: High
+**Status**: ✅ FIXED - Awaiting HANA Validation (2026-03-26)
+**Discovered**: 2026-03-26, USED_HIERARCHIES.xml
+**XML**: USED_HIERARCHIES.xml (and any `calculationScenarioType="SCRIPT_BASED"` views)
+
+**Error**:
+```
+SAP DBTech JDBC: [257]: sql syntax error: incorrect syntax near ")": line 5 col 3 (at pos 104)
+```
+(Plus [362]: invalid schema name: SAPK5D on MBD system)
+
+**Symptom**:
+Script-based calculation views with `xsi:type="Calculation:SqlScriptView"` generate:
+```sql
+script_view AS (
+    SELECT 1 AS placeholder
+)
+```
+Instead of using the embedded SQL from the `<definition>` element.
+
+**Root Cause**:
+1. `SqlScriptView` falls into the `else` branch in parser (treated as generic CALCULATION node)
+2. The `<definition>` element containing the SQL procedure body is never parsed
+3. `_render_calculation()` returns placeholder for nodes with no inputs
+
+**Fix** (three parts):
+1. **Model** (`models.py`): Added `default_schema` field to `ScenarioMetadata`
+2. **Parser** (`scenario_parser.py`): Extract `<definition>` text into `node.properties["script_definition"]`; parse `<defaultSchema schemaName="..."/>` into metadata
+3. **Renderer** (`renderer.py`): New `_extract_select_from_script()` helper extracts SELECT from procedure body, resolves `defaultSchema` through `schema_overrides`, and replaces hardcoded schemas automatically
+
+**Auto Schema Resolution**:
+- XML has `<defaultSchema schemaName="ABAP"/>`
+- `schema_overrides` maps `ABAP → SAPABAP1`
+- Detects `"SAPK5D"` in script FROM clauses → auto-replaces with `"SAPABAP1"`
+- No manual config entry needed for hardcoded schemas
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/domain/models.py`: Added `default_schema` to ScenarioMetadata
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/scenario_parser.py`: Lines 99-104, 255-260
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: Lines 953-957, 1309-1349
+
+---
+
 ### 🔴 BUG-026: Parameter Substitution Cleanup - Malformed WHERE Clauses
 
 **⚠️ IMPORTANT - BUG ID PRESERVATION**:
@@ -1143,27 +1408,237 @@ The `IF EXISTS` syntax was removed. Original behavior restored.
 
 ---
 
+### 🟡 BUG-042: String Concatenation + Operator Causes Invalid Number Error in HANA SQL
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-042) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: Critical
+**Status**: ✅ VALIDATED IN HANA (2025-02-24) — moved to SOLVED_BUGS.md
+**Discovered**: 2025-02-24, TRANSFORMATIONS_DETAILS.xml
+**XML**: TRANSFORMATIONS_DETAILS.xml
+**Instance Type**: BW (SAPABAP1)
+
+**Error**:
+```
+SAP DBTech JDBC: [339]: invalid number: not a valid number string ''
+```
+
+**Problem**:
+```sql
+-- Line 239 of generated SQL:
+ELSE '/BIC/'+(projection_2.PARAMNM) END AS FIELDNM
+--          ^ WRONG: + is arithmetic only in HANA SQL
+```
+
+**Root Cause**:
+The `_translate_string_concat_to_hana()` function in `function_translator.py` was **backwards** — it converted `||` to `+`, assuming HANA uses `+` for string concatenation. This is WRONG:
+- **Column Engine** (XML formulas): Uses `+` for string concatenation
+- **HANA SQL** (CREATE VIEW): Uses `||` for string concatenation, `+` is arithmetic only
+
+The XML formula `'/BIC/'+"PARAMNM"` stayed as `+` in the output SQL, causing HANA to attempt arithmetic conversion of strings to numbers.
+
+**Solution Implemented**:
+Reversed the function to convert `+` to `||` when adjacent to string literals:
+
+```python
+# BUG-042 FIX in function_translator.py lines 594-611:
+def _translate_string_concat_to_hana(formula: str) -> str:
+    result = formula
+    # Pattern: 'string' + something → 'string' || something
+    result = re.sub(r"'\s*\+\s*", "' || ", result)
+    # Pattern: something + 'string' → something || 'string'
+    result = re.sub(r"\s*\+\s*'", " || '", result)
+    return result
+```
+
+**Result - CORRECT**:
+```sql
+ELSE '/BIC/' || (projection_2.PARAMNM) END AS FIELDNM
+```
+
+**Regression Risk**: ZERO — no validated SQL files contain `||` or string `+` concatenation.
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/function_translator.py`: Lines 594-611 (_translate_string_concat_to_hana function)
+
+**Next Steps**:
+1. Restart server / reinstall package
+2. Re-convert TRANSFORMATIONS_DETAILS.xml
+3. Test in HANA (skip DROP, run CREATE only)
+
+---
+
+### 🟡 BUG-043: UNION ALL Empty String '' Causes Type Conversion Error with INTEGER Columns
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-043) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: Critical
+**Status**: ✅ VALIDATED IN HANA (2025-02-24) — moved to SOLVED_BUGS.md
+**Discovered**: 2025-02-24, TRANSFORMATIONS_DETAILS.xml
+**XML**: TRANSFORMATIONS_DETAILS.xml
+**Instance Type**: BW (SAPABAP1)
+
+**Error**:
+```
+SAP DBTech JDBC: [339]: invalid number: not a valid number string ''
+```
+
+**Problem**:
+```sql
+-- UNION ALL branches pad missing columns with empty strings:
+SELECT ... '' AS LINE_NO, '' AS MD_MPER, ... FROM others_type
+UNION ALL
+SELECT ... routine_type.LINE_NO AS LINE_NO, ... FROM routine_type
+-- If LINE_NO is INTEGER in the source table, HANA type resolution
+-- tries to convert '' to INTEGER → fails with [339]
+```
+
+**Root Cause**:
+The XML uses `ConstantAttributeMapping` with `null="true"` attribute to pad UNION branches:
+```xml
+<mapping xsi:type="Calculation:ConstantAttributeMapping" target="LINE_NO" null="true" value=""/>
+```
+
+The `null="true"` means "this column should be NULL in this UNION branch". But the parser (BUG-036 fix) ignored the `null` attribute and always created `Expression(LITERAL, "")`, rendering as `''`.
+
+In HANA UNION ALL, type resolution uses TYPE PRECEDENCE — if any branch has an INTEGER column, the result type becomes INTEGER. Then `''` in other branches must be converted to INTEGER, failing on empty string.
+
+**Solution Implemented**:
+Two surgical changes:
+
+**Change 1** — Parser: Check `null="true"` attribute (scenario_parser.py lines 421-425):
+```python
+# BUG-043: Check null="true" attribute — render as SQL NULL, not empty string ''
+null_flag = mapping_el.get("null", "false").lower() == "true"
+if null_flag and not constant_value:
+    expr = Expression(ExpressionType.RAW, "NULL")
+else:
+    data_type = guess_attribute_type(target)
+    expr = Expression(ExpressionType.LITERAL, constant_value, data_type)
+```
+
+**Change 2** — Renderer: Prevent BUG-027 from qualifying NULL keyword (renderer.py line 1080-1082):
+```python
+# BUG-043: Don't qualify SQL keywords (NULL, TRUE, FALSE) — they are literals, not columns
+if table_alias and result.strip('"').isidentifier() and not '(' in result:
+    if result.upper() not in ('NULL', 'TRUE', 'FALSE'):
+        return f"{table_alias}.{result}"
+```
+
+**Result - CORRECT**:
+```sql
+-- Before (broken):
+SELECT ... '' AS LINE_NO, '' AS MD_MPER, ... FROM others_type
+
+-- After (fixed):
+SELECT ... NULL AS LINE_NO, NULL AS MD_MPER, ... FROM others_type
+```
+
+`NULL` is type-compatible with any column type in UNION ALL.
+
+**Regression Risk**: VERY LOW — only affects ConstantAttributeMapping entries with `null="true"` + empty value. None of the 15 validated XMLs in GOLDEN_COMMIT use this pattern.
+
+**Files Modified**:
+- `src/xml_to_sql/parser/scenario_parser.py`: Lines 421-425 (_parse_mappings function)
+- `src/xml_to_sql/sql/renderer.py`: Lines 1080-1082 (_render_expression function)
+
+**Next Steps**:
+1. Restart server / reinstall package
+2. Re-convert TRANSFORMATIONS_DETAILS.xml
+3. Test in HANA (skip DROP, run CREATE only)
+
+---
+
+### ✅ BUG-044: RIGHTSTRU / LEFTSTRU Unicode Functions Not Recognized in HANA SQL
+
+**⚠️ IMPORTANT - BUG ID PRESERVATION**:
+This bug ID (BUG-044) is **PERMANENT** and will follow this bug throughout its lifecycle.
+
+**Priority**: Medium
+**Status**: ✅ VALIDATED in HANA (2025-02-26)
+**Discovered**: 2025-02-26, INFOOBJECTS.xml
+**XML**: INFOOBJECTS.xml
+**Instance Type**: BW (SAPABAP1)
+
+**Error**:
+```
+SAP DBTech JDBC: [328]: invalid name of function or procedure: RIGHTSTRU: line 12 col 110 (at pos 545)
+```
+
+**Problem**:
+```sql
+-- Line 13 of generated SQL:
+'/BI0/OI' || rightstru(SAPABAP1.RSDKYF.KYFNM, (LENGTH(...))-1)
+--           ^^^^^^^^^ HANA doesn't recognize this function
+```
+
+**Root Cause**:
+`rightstru()` and `leftstru()` are Unicode-aware variants of `rightstr()` and `leftstr()` from SAP Column Engine. The function catalog had mappings for `RIGHTSTR` → `RIGHT` and `LEFTSTR` → `LEFT`, but was missing the Unicode variants.
+
+HANA SQL's `RIGHT()` and `LEFT()` functions already handle Unicode (NVARCHAR) natively.
+
+**⚠️ LESSON LEARNED — DUPLICATE CATALOG FILES**:
+Initial fix was applied to the WRONG file (`catalog/hana/data/functions.yaml`) instead of the CORRECT file (`src/xml_to_sql/catalog/data/functions.yaml`). The Python package loads from `xml_to_sql.catalog.data` (the `src/` path), NOT from `catalog/hana/data/`.
+
+**Solution Implemented**:
+Added two entries to `src/xml_to_sql/catalog/data/functions.yaml`:
+```yaml
+- name: LEFTSTRU
+  handler: rename
+  target: "LEFT"
+
+- name: RIGHTSTRU
+  handler: rename
+  target: "RIGHT"
+```
+
+**Files Modified**:
+- `src/xml_to_sql/catalog/data/functions.yaml`: Added LEFTSTRU and RIGHTSTRU mappings
+- `catalog/hana/data/functions.yaml`: Also added (mirror copy for documentation)
+
+**Next Steps**:
+1. Reinstall: `pip install -e .`
+2. Re-convert INFOOBJECTS.xml
+3. Test in HANA (skip DROP, run CREATE only)
+
+---
+
 ## Bug Statistics
 
-**Total Bugs Tracked**: 41
+**Total Bugs Tracked**: 53
 **Open**: 1 (BUG-019)
-**Fixed - Awaiting Validation**: 4 (BUG-036, BUG-037, BUG-038, BUG-039)
+**Fixed - Awaiting Validation**: 6 (BUG-036, BUG-037, BUG-038, BUG-039, BUG-049, BUG-050)
 **Workaround Only**: 1 (BUG-041 - HANA version limitation)
-**Solved**: 30 (see SOLVED_BUGS.md) - BUG-040 VALIDATED 2025-12-22
+**Solved**: 40 (see SOLVED_BUGS.md) - BUG-053 VALIDATED 2026-05-10 (CV_E2E_VST.xml, 75ms)
 **Deferred**: 2 (BUG-002, BUG-003)
+**SESSION 16 Additions**: BUG-053 ✅ VALIDATED (Integer calc columns → TO_INTEGER wrap, CV_E2E_VST.xml 75ms)
+**SESSION 15 Additions**: BUG-051 ✅ VALIDATED (BOOLEAN calc columns → CASE WHEN), BUG-052 ✅ VALIDATED (SqlScriptView + auto schema resolution)
+**SESSION 14 Additions**: BUG-047 ✅ VALIDATED, BUG-048 ✅ VALIDATED, BUG-049 ✅ FIXED (awaiting validation), BUG-050 ✅ FIXED (awaiting validation)
+**SESSION 13 Additions**: BUG-046 ✅ VALIDATED (case() function → CASE WHEN, INFOOBJECTS.xml 51ms)
+**SESSION 12 Additions**: BUG-042 ✅, BUG-043 ✅, BUG-044 ✅, BUG-045 ✅ (BUG-043 regression fix)
 **SESSION 11 Additions**: BUG-040 ✅ VALIDATED (SUM on NVARCHAR, 127ms), BUG-041 🟠 (IF EXISTS reverted)
 **SESSION 9 Additions**: BUG-034 ✅, BUG-035 ✅
 **SESSION 10 Additions**: BUG-036 ✅, BUG-037 ✅, BUG-038 ✅, BUG-039 ✅ (awaiting validation)
 
 **By Category**:
 - Core IR/Rendering: 2 (BUG-001 ✅, BUG-028 ✅)
-- UNION Constant Mapping: 1 (BUG-036 ✅ awaiting validation)
+- UNION Constant Mapping: 3 (BUG-036 ✅ awaiting validation, BUG-043 ✅ VALIDATED, BUG-045 ✅ SOLVED - BUG-043 regression)
+- Union Node Rendering: 1 (BUG-047 ✅ VALIDATED - single-input Union pass-through)
+- Parameter Resolution: 1 (BUG-049 ✅ FIXED awaiting validation - $$param$$ flattened to '' in filters)
+- Node-Level Filter Parsing: 1 (BUG-050 ✅ FIXED awaiting validation - bare <filter> on ProjectionView dropped)
 - Parameter Handling: 3 (BUG-002, BUG-003, BUG-026 ✅ VALIDATED)
 - Column Mapping: 2 (BUG-004 ✅, BUG-027 ✅ VALIDATED)
 - CV References: 4 (BUG-023 ✅ VALIDATED, BUG-025 ✅ VALIDATED, BUG-030 ✅ VALIDATED, BUG-037 ✅ awaiting validation)
 - Filter Rendering: 3 (BUG-019, BUG-034 ✅ VALIDATED, BUG-035 ✅ VALIDATED)
 - Identifier Quoting: 1 (BUG-029 ✅ VALIDATED)
 - Calculated Column Expansion: 2 (BUG-032 ✅ VALIDATED, BUG-033 ✅ VALIDATED)
+- String Concatenation: 1 (BUG-042 ✅ VALIDATED)
+- Function Catalog: 2 (BUG-044 ✅ VALIDATED, BUG-048 ✅ VALIDATED - DECFLOAT→TO_DECIMAL)
+- Boolean Expression Rendering: 1 (BUG-051 ✅ VALIDATED - BOOLEAN calc columns need CASE WHEN)
+- Script View Support: 1 (BUG-052 ✅ VALIDATED - SqlScriptView definition extraction + auto schema resolution)
+- Integer Type Coercion: 1 (BUG-053 ✅ VALIDATED - integer calc columns need TO_INTEGER wrap)
 
 **By XML**:
 - CV_CNCLD_EVNTS: 0 bugs ✅ (clean)
@@ -1177,6 +1652,13 @@ The `IF EXISTS` syntax was removed. Original behavior restored.
 - CV_PURCHASING_YASMIN: 1 bug (BUG-033 ✅ VALIDATED 70ms) - SESSION 8B
 - DATA_SOURCES: 2 bugs (BUG-034 ✅ VALIDATED, BUG-035 ✅ VALIDATED) - SESSION 9
 - TRANSFORMATIONS: 2 bugs (BUG-036 ✅, BUG-037 ✅ awaiting validation) - SESSION 10
+- TRANSFORMATIONS_DETAILS: 2 bugs (BUG-042 ✅ VALIDATED, BUG-043 ✅ VALIDATED) - SESSION 12
+- INFOOBJECTS: 2 bugs (BUG-044 ✅ VALIDATED, BUG-046 ✅ VALIDATED) - SESSION 12/13
+- DSO: 1 bug (BUG-045 ✅ SOLVED - awaiting HANA validation) - SESSION 12
+- ADSO: 2 bugs (BUG-047 ✅ VALIDATED, BUG-048 ✅ VALIDATED) - SESSION 14
+- TRANFORMATIONS: 1 bug (BUG-051 ✅ VALIDATED - BOOLEAN calc column) - SESSION 15
+- USED_HIERARCHIES: 1 bug (BUG-052 ✅ VALIDATED - SqlScriptView + auto schema resolution) - SESSION 15
+- CV_E2E_VST: 1 bug (BUG-053 ✅ VALIDATED 75ms - integer calc columns w/ string-literal formulas) - SESSION 16
 
 ---
 

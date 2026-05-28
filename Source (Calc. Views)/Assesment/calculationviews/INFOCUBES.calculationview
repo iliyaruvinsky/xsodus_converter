@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" xmlns:Variable="http://www.sap.com/ndb/BiModelVariable.ecore" schemaVersion="2.3" id="INFOCUBES" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="BEX_QUERIES"/>
+  <metadata activatedAt="2026-03-25 18:30:02.0" changedAt="2026-03-25 18:29:58.16"/>
+  <localVariables>
+    <variable id="Language" parameter="true">
+      <descriptions defaultDescription="Language"/>
+      <variableProperties datatype="NVARCHAR" defaultValue="E" length="1" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+    <variable id="Backdays" parameter="true">
+      <descriptions defaultDescription="Backdays"/>
+      <variableProperties datatype="INTEGER" defaultValue="365" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings>
+    <mapping xsi:type="Variable:VariableMapping" dataSource="#ASSESSMENT_REPORT">
+      <targetVariable name="Backdays" resourceUri="/Assesment/calculationviews/ASSESSMENT_REPORT"/>
+      <localVariable>#Backdays</localVariable>
+    </mapping>
+  </variableMappings>
+  <informationModelLayout relativeWidthScenario="54"/>
+  <dataSources>
+    <DataSource id="RSRREPDIR" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSRREPDIR"/>
+    </DataSource>
+    <DataSource id="RSZCOMPDIR" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSZCOMPDIR"/>
+    </DataSource>
+    <DataSource id="RSDCUBE" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDCUBE"/>
+    </DataSource>
+    <DataSource id="RSDCUBET" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSDCUBET"/>
+    </DataSource>
+    <DataSource id="ASSESSMENT_REPORT" type="CALCULATION_VIEW">
+      <viewAttributes allViewAttributes="true"/>
+      <resourceUri>/Assesment/calculationviews/ASSESSMENT_REPORT</resourceUri>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="COMPUID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="GENUNIID"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSRREPDIR">
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPUID" source="COMPUID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GENUNIID" source="GENUNIID"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2" filterExpressionLanguage="COLUMN_ENGINE">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="COMPUID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="COMPID"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="DECIMAL" id="Executed_After" length="15" scale="0" expressionLanguage="COLUMN_ENGINE">
+          <formula>decfloat(format(adddays(now(),-$$Backdays$$),'YYYYMMDD') + '000000')</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#RSZCOMPDIR">
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPUID" source="COMPUID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPID" source="COMPID"/>
+      </input>
+      <filter>(&quot;OBJVERS&quot; ='A')</filter>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_4">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="CUBETYPE"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDCUBE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CUBETYPE" source="CUBETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_5">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="$$Language$$"/>
+        </viewAttribute>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSDCUBET">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="COMPUID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="GENUNIID"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="COMPID"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPUID" source="COMPUID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GENUNIID" source="GENUNIID"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPID" source="COMPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPUID" source="COMPUID"/>
+      </input>
+      <joinAttribute name="COMPUID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute aggregationType="max" id="LASTUSED"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_3" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CUBETYPE"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CUBETYPE" source="CUBETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+      <input node="#Aggregation_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+      </input>
+      <joinAttribute name="INFOCUBE"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_4" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="CUBETYPE"/>
+        <viewAttribute id="TXTLG"/>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CUBETYPE" source="CUBETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+      <input node="#Projection_5">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+      </input>
+      <joinAttribute name="INFOCUBE"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Infocube">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="CUBETYPE">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="B"/>
+        </viewAttribute>
+        <viewAttribute id="TXTLG"/>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CUBETYPE" source="CUBETYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="TXTLG"/>
+        <viewAttribute datatype="NVARCHAR" id="SOURCE_TYPE" length="4"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input emptyUnionBehavior="NO_ROW" node="#Infocube">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="SOURCE_TYPE" null="false" value="CUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="CUBE"/>
+        </viewAttribute>
+        <viewAttribute aggregationType="max" id="Last_Updated_on"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#ASSESSMENT_REPORT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Last_Updated_on" source="DATUM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="SOURCE_DESC"/>
+        <viewAttribute id="SOURCE_TYPE"/>
+        <viewAttribute id="Last_Updated_on"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Union_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCE_DESC" source="TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCE_TYPE" source="SOURCE_TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+      <input node="#Aggregation_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="Last_Updated_on" source="Last_Updated_on"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="TGT"/>
+      </input>
+      <joinAttribute name="INFOCUBE"/>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Join_2">
+    <descriptions/>
+    <attributes>
+      <attribute id="OBJVERS" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OBJVERS"/>
+        <keyMapping columnObjectName="Join_2" columnName="OBJVERS"/>
+      </attribute>
+      <attribute id="INFOCUBE" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="INFOCUBE"/>
+        <keyMapping columnObjectName="Join_2" columnName="INFOCUBE"/>
+      </attribute>
+      <attribute id="LASTUSED" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LASTUSED"/>
+        <keyMapping columnObjectName="Join_2" columnName="LASTUSED"/>
+      </attribute>
+      <attribute id="SOURCE_DESC" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCE_DESC"/>
+        <keyMapping columnObjectName="Join_2" columnName="SOURCE_DESC"/>
+      </attribute>
+      <attribute id="SOURCE_TYPE" order="5" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCE_TYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="SOURCE_TYPE"/>
+      </attribute>
+      <attribute id="Last_Updated_on" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Last_Updated_on"/>
+        <keyMapping columnObjectName="Join_2" columnName="Last_Updated_on"/>
+      </attribute>
+      <attribute id="INFOAREA" order="7" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions/>
+        <keyMapping columnObjectName="Join_2" columnName="INFOAREA"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="251" y="87"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="99" y="803"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="803"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="629"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_5" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="252" y="533"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="707"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="629"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="98" y="533"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="174" y="437"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Infocube" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="174" y="359"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="174" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="328" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="251" y="165"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

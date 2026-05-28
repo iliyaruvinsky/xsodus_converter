@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="INFOPACKAGE_3X" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="400" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="ASSESSMENT_REPORT"/>
+  <metadata activatedAt="2026-03-13 13:17:04.0" changedAt="2026-03-13 13:17:01.003"/>
+  <localVariables>
+    <variable id="Backdays" parameter="true">
+      <descriptions defaultDescription="Backdays"/>
+      <variableProperties datatype="INTEGER" defaultValue="9999" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings/>
+  <informationModelLayout relativeWidthScenario="55"/>
+  <dataSources>
+    <DataSource id="RSPCLOGCHAIN" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSPCLOGCHAIN"/>
+    </DataSource>
+    <DataSource id="RSPCPROCESSLOG" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSPCPROCESSLOG"/>
+    </DataSource>
+    <DataSource id="RSOLTPSOURCE" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSOLTPSOURCE"/>
+    </DataSource>
+    <DataSource id="RSLDPIO" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSLDPIO"/>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1" filterExpressionLanguage="COLUMN_ENGINE">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="LOG_ID"/>
+        <viewAttribute id="DRAW_TYPE"/>
+        <viewAttribute id="DRAW_VARIANT"/>
+        <viewAttribute id="DATUM"/>
+        <viewAttribute id="ZEIT"/>
+        <viewAttribute id="ANALYZED"/>
+        <viewAttribute id="ANALYZED_STATUS"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="NVARCHAR" id="FromDate" length="8" expressionLanguage="COLUMN_ENGINE">
+          <formula>format(adddays(date(format(now(),'YYYYMMDD')),-$$Backdays$$),'YYYYMMDD')</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="NVARCHAR" id="Executed_on" length="14" expressionLanguage="COLUMN_ENGINE">
+          <formula>&quot;DATUM&quot;+&quot;ZEIT&quot;</formula>
+        </calculatedViewAttribute>
+        <calculatedViewAttribute datatype="INTEGER" id="Num_executions" expressionLanguage="COLUMN_ENGINE">
+          <formula>1</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#RSPCLOGCHAIN">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOG_ID" source="LOG_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DRAW_TYPE" source="DRAW_TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DRAW_VARIANT" source="DRAW_VARIANT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATUM" source="DATUM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZEIT" source="ZEIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ANALYZED" source="ANALYZED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ANALYZED_STATUS" source="ANALYZED_STATUS"/>
+      </input>
+      <filter>(&quot;DATUM&quot; >=&quot;FromDate&quot;) AND (&quot;ANALYZED_STATUS&quot; ='G')</filter>
+    </calculationView>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute aggregationType="max" id="Last_Executed_on"/>
+        <viewAttribute aggregationType="sum" id="Num_executions"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Last_Executed_on" source="Executed_on"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Num_executions" source="Num_executions"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="LOG_ID"/>
+        <viewAttribute id="DRAW_TYPE"/>
+        <viewAttribute id="DRAW_VARIANT"/>
+        <viewAttribute id="DATUM"/>
+        <viewAttribute id="ZEIT"/>
+        <viewAttribute id="ANALYZED"/>
+        <viewAttribute id="ANALYZED_STATUS"/>
+        <viewAttribute id="FromDate"/>
+        <viewAttribute id="Executed_on"/>
+        <viewAttribute id="Num_executions"/>
+        <viewAttribute id="Num_executions_1"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOG_ID" source="LOG_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DRAW_TYPE" source="DRAW_TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DRAW_VARIANT" source="DRAW_VARIANT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATUM" source="DATUM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZEIT" source="ZEIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ANALYZED" source="ANALYZED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ANALYZED_STATUS" source="ANALYZED_STATUS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FromDate" source="FromDate"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Executed_on" source="Executed_on"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Num_executions" source="Num_executions"/>
+      </input>
+      <input node="#Aggregation_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="Num_executions_1" source="Num_executions"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Executed_on" source="Last_Executed_on"/>
+      </input>
+      <joinAttribute name="CHAIN_ID"/>
+      <joinAttribute name="Executed_on"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LOG_ID"/>
+        <viewAttribute id="TYPE">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="LOADING"/>
+        </viewAttribute>
+        <viewAttribute id="VARIANTE"/>
+        <viewAttribute id="INSTANCE"/>
+        <viewAttribute id="STATE"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSPCPROCESSLOG">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOG_ID" source="LOG_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARIANTE" source="VARIANTE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INSTANCE" source="INSTANCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STATE" source="STATE"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="LOG_ID"/>
+        <viewAttribute id="DATUM"/>
+        <viewAttribute id="ZEIT"/>
+        <viewAttribute id="FromDate"/>
+        <viewAttribute id="TYPE"/>
+        <viewAttribute id="VARIANTE"/>
+        <viewAttribute id="INSTANCE"/>
+        <viewAttribute id="STATE"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOG_ID" source="LOG_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATUM" source="DATUM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZEIT" source="ZEIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FromDate" source="FromDate"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARIANTE" source="VARIANTE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INSTANCE" source="INSTANCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STATE" source="STATE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOG_ID" source="LOG_ID"/>
+      </input>
+      <joinAttribute name="LOG_ID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSOLTPSOURCE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_4">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OLTPSOURCE"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSLDPIO">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_3" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="LOG_ID"/>
+        <viewAttribute id="DATUM"/>
+        <viewAttribute id="ZEIT"/>
+        <viewAttribute id="FromDate"/>
+        <viewAttribute id="TYPE"/>
+        <viewAttribute id="VARIANTE"/>
+        <viewAttribute id="INSTANCE"/>
+        <viewAttribute id="STATE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OLTPSOURCE"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOG_ID" source="LOG_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATUM" source="DATUM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZEIT" source="ZEIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FromDate" source="FromDate"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARIANTE" source="VARIANTE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INSTANCE" source="INSTANCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STATE" source="STATE"/>
+      </input>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARIANTE" source="LOGDPID"/>
+      </input>
+      <joinAttribute name="VARIANTE"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_4" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="CHAIN_ID"/>
+        <viewAttribute id="LOG_ID"/>
+        <viewAttribute id="DATUM"/>
+        <viewAttribute id="ZEIT"/>
+        <viewAttribute id="FromDate"/>
+        <viewAttribute id="TYPE"/>
+        <viewAttribute id="VARIANTE"/>
+        <viewAttribute id="INSTANCE"/>
+        <viewAttribute id="STATE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OLTPSOURCE"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAIN_ID" source="CHAIN_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOG_ID" source="LOG_ID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DATUM" source="DATUM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZEIT" source="ZEIT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FromDate" source="FromDate"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYPE" source="TYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARIANTE" source="VARIANTE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INSTANCE" source="INSTANCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="STATE" source="STATE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+      </input>
+      <joinAttribute name="LOGSYS"/>
+      <joinAttribute name="OLTPSOURCE"/>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Join_4">
+    <descriptions/>
+    <attributes>
+      <attribute id="CHAIN_ID" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CHAIN_ID"/>
+        <keyMapping columnObjectName="Join_4" columnName="CHAIN_ID"/>
+      </attribute>
+      <attribute id="LOG_ID" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LOG_ID"/>
+        <keyMapping columnObjectName="Join_4" columnName="LOG_ID"/>
+      </attribute>
+      <attribute id="DATUM" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DATUM"/>
+        <keyMapping columnObjectName="Join_4" columnName="DATUM"/>
+      </attribute>
+      <attribute id="ZEIT" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ZEIT"/>
+        <keyMapping columnObjectName="Join_4" columnName="ZEIT"/>
+      </attribute>
+      <attribute id="FromDate" order="5" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="FromDate"/>
+        <keyMapping columnObjectName="Join_4" columnName="FromDate"/>
+      </attribute>
+      <attribute id="TYPE" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TYPE"/>
+        <keyMapping columnObjectName="Join_4" columnName="TYPE"/>
+      </attribute>
+      <attribute id="VARIANTE" order="7" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="VARIANTE"/>
+        <keyMapping columnObjectName="Join_4" columnName="VARIANTE"/>
+      </attribute>
+      <attribute id="INSTANCE" order="8" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="INSTANCE"/>
+        <keyMapping columnObjectName="Join_4" columnName="INSTANCE"/>
+      </attribute>
+      <attribute id="STATE" order="9" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="STATE"/>
+        <keyMapping columnObjectName="Join_4" columnName="STATE"/>
+      </attribute>
+      <attribute id="LOGSYS" order="10" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LOGSYS"/>
+        <keyMapping columnObjectName="Join_4" columnName="LOGSYS"/>
+      </attribute>
+      <attribute id="OLTPSOURCE" order="11" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OLTPSOURCE"/>
+        <keyMapping columnObjectName="Join_4" columnName="OLTPSOURCE"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="185" y="87"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="109" y="627"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="549"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="109" y="453"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="263" y="453"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="186" y="357"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="108" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="340" y="357"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="262" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="185" y="165"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

@@ -24,16 +24,18 @@ This document contains **ONLY** the transformation rules for converting HANA Cal
 
 Rules applied in priority order (lower number = earlier execution):
 
-1. **Priority 10**: Legacy function rewrites (LEFTSTR, RIGHTSTR)
+1. **Priority 10**: Legacy function rewrites (LEFTSTR, RIGHTSTR, LEFTSTRU, RIGHTSTRU) *(BUG-044: Unicode variants)*
 2. **Priority 15**: Calculated column expansion
 3. **Priority 20**: Uppercase functions
 4. **Priority 30**: IN operator → OR conditions
-5. **Priority 40**: IF → CASE WHEN
-6. **Priority 45**: Empty string → NULL
-7. **Priority 50**: String concatenation (|| → +)
-8. **Priority 60**: Subquery wrapping
-9. **Priority 70**: Column qualification
-10. **Priority 80**: Parameter removal
+5. **Priority 38**: case() function → CASE WHEN *(BUG-046: SAP Column Engine case() to SQL CASE expression)*
+6. **Priority 40**: IF → CASE WHEN
+7. **Priority 45**: Empty string → NULL
+8. **Priority 50**: String concatenation (+ → ||) *(BUG-042: Column Engine + becomes HANA SQL ||)*
+9. **Priority 55**: UNION NULL padding *(BUG-043: ConstantAttributeMapping null="true" → SQL NULL)*
+10. **Priority 60**: Subquery wrapping
+11. **Priority 70**: Column qualification
+12. **Priority 80**: Parameter removal
 
 ---
 
@@ -827,6 +829,36 @@ class RenderContext:
 
 ## HANA-Specific Transformation Rules
 
+### Rule 0B: case() Function to CASE WHEN (Priority 38) — BUG-046
+
+**Rule ID**: `HANA_CASE_FUNC_TO_CASE_WHEN`
+**Applies To**: All HANA versions, all Snowflake
+**Category**: Conditional expressions
+**Bug Reference**: BUG-046
+
+**Why**: SAP Column Engine formulas use `case(value, match1, result1, ..., default)` — a function-call syntax for simple CASE expressions. This is NOT valid SQL in any database.
+
+**Transformation**:
+```
+Source:  case(value, match1, result1, match2, result2, ..., default)
+Target:  CASE value WHEN match1 THEN result1 WHEN match2 THEN result2 ... ELSE default END
+```
+
+**Example**:
+```sql
+-- Before (SAP Column Engine formula, invalid SQL)
+case("DATATP",'CURR','000015','DATS','000008','DEC','000017','000000')
+
+-- After (valid HANA SQL)
+CASE SAPABAP1.RSDKYF.DATATP WHEN 'CURR' THEN '000015' WHEN 'DATS' THEN '000008' WHEN 'DEC' THEN '000017' ELSE '000000' END
+```
+
+**Implementation**: `function_translator.py::_convert_case_function_to_sql()`
+
+**Validated**: INFOOBJECTS.xml (3 case() formulas converted, 51ms)
+
+---
+
 ### Rule 1: IF() to CASE WHEN (Priority 40)
 
 **Rule ID**: `HANA_1_0_IF_TO_CASE`  
@@ -1336,6 +1368,215 @@ schema_overrides:
 - `_SYS_BIC` → preserved (calculation view catalog)
 
 **Validated**: CV_TOP_PTHLGY.xml
+
+---
+
+### Rule 18: Single-Input Union Node Pass-Through (BUG-047)
+
+**Rule ID**: `HANA_SINGLE_INPUT_UNION`
+**Applies To**: All HANA versions
+**Category**: Union node rendering
+**Discovered**: 2026-03-03, ADSO.xml (SESSION 14)
+**Bug Fixed**: BUG-047
+
+**Why**: SAP BW uses Union nodes with a single input as a projection+rename node — not for combining multiple data sources. Prior code returned a placeholder CTE for any Union with fewer than 2 inputs, breaking this valid pattern.
+
+**Pattern**:
+```xml
+<calculationView xsi:type="Calculation:UnionView" id="Union_1">
+  <input emptyUnionBehavior="NO_ROW" node="#ADSO">
+    <mapping ... target="INFOCUBE" source="ADSONM"/>       <!-- column rename -->
+    <mapping ... target="SOURCE_TYPE" null="false" value="ADSO"/>  <!-- constant injection -->
+  </input>
+</calculationView>
+```
+
+**Broken SQL (before fix)**:
+```sql
+union_1 AS (SELECT 1 AS placeholder)
+SELECT INFOCUBE, LASTUSED, SOURCE_TYPE FROM union_1  -- ❌ columns don't exist in placeholder
+```
+
+**Fixed SQL (after fix)**:
+```sql
+union_1 AS (
+  SELECT adso.ADSONM AS INFOCUBE, adso.LASTUSED, 'ADSO' AS SOURCE_TYPE ...
+  FROM adso
+)
+SELECT INFOCUBE, LASTUSED, SOURCE_TYPE FROM union_1  -- ✅
+```
+
+**Implementation**: `renderer.py::_render_union()` — guard changed from `len(node.inputs) < 2` to `len(node.inputs) == 0`
+
+**Validated**: ADSO.xml (SESSION 14)
+
+---
+
+### Rule 19: Column Engine DECFLOAT → TO_DECIMAL (BUG-048)
+
+**Rule ID**: `HANA_DECFLOAT_MAPPING`
+**Applies To**: All HANA versions
+**Category**: Function mapping
+**Discovered**: 2026-03-03, ADSO.xml (SESSION 14)
+**Bug Fixed**: BUG-048
+
+**Why**: `decfloat()` is a Column Engine type-cast function and is **not valid in HANA SQL**. Passing it through unchanged produces error `[328]: invalid name of function or procedure: DECFLOAT`.
+
+**Transformation**:
+```
+Source:  decfloat(expression)   →  Target: TO_DECIMAL(expression)
+```
+
+**Implementation**: `functions.yaml` catalog entry:
+```yaml
+- name: DECFLOAT
+  handler: rename
+  target: "TO_DECIMAL"
+```
+
+**Example** (from ADSO.xml):
+```
+decfloat(format(adddays(now(),-$$Backdays$$),'YYYYMMDD') + '000000')
+  → TO_DECIMAL(TO_VARCHAR(ADD_DAYS(CURRENT_TIMESTAMP, -365), 'YYYYMMDD') || '000000')
+```
+
+**Validated**: ADSO.xml (SESSION 14)
+
+---
+
+### Rule 20: Input Parameter Placeholder Resolution in Filter Literals (BUG-049)
+
+**Rule ID**: `HANA_PARAM_LITERAL_RESOLUTION`
+**Applies To**: All HANA versions
+**Category**: Parameter handling
+**Discovered**: 2026-03-03, downstream SQL review SESSION 14
+**Bug Fixed**: BUG-049
+
+**Why**: Calculation Views can use `$$paramName$$` as filter values in `<viewAttribute><filter value="$$Language$$"/>` elements. These are stored as LITERAL expressions in the IR and never passed through `_substitute_placeholders()`. The parameter cleanup regex then strips the placeholder from inside the quoted string, leaving `''` (empty string).
+
+**Transformation**:
+```
+value="$$Language$$" (defaultValue="E")  →  WHERE LANGU = 'E'
+value="$$colname$$"  (defaultValue="")   →  WHERE COLNAME = ''   (correct by design)
+```
+
+**Implementation**: `renderer.py::_render_expression()` LITERAL branch — calls `_resolve_parameter_literal()` helper before `_render_literal()` when value contains `$$`. Helper looks up `ctx.scenario.variables` (populated from `<localVariables>` by `_parse_variables()`) to substitute defaultValue.
+
+**Affected**: 17 filter occurrences across 10 files (ADSO, BEX_QUERIES, COMPOSITE_PROVIDER, DS_3X, DSO, INFOCUBES, INFOOBJECTS, INFOSET, MULTIPROVIDERS, OH_DEST)
+
+**Validated**: Awaiting HANA execution
+
+---
+
+### Rule 21: Node-Level `<filter>` Elements on ProjectionView (BUG-050)
+
+**Rule ID**: `HANA_NODE_LEVEL_FILTER`
+**Applies To**: All HANA versions
+**Category**: XML parsing / filter propagation
+**Discovered**: 2026-03-03, downstream SQL review SESSION 14
+**Bug Fixed**: BUG-050
+
+**Why**: Some `ProjectionView` nodes carry a bare `<filter>` child element containing a COLUMN_ENGINE expression that filters the entire projection — distinct from per-column `<viewAttribute><filter>` elements. These were completely ignored by `_parse_filters()` which only scans inside `<viewAttribute>` children.
+
+**Pattern in source XML**:
+```xml
+<calculationView xsi:type="Calculation:ProjectionView" id="Projection_2"
+                 filterExpressionLanguage="COLUMN_ENGINE">
+  ...
+  <filter>(&quot;OBJVERS&quot; ='A')</filter>  <!-- ← COLUMN_ENGINE expression -->
+</calculationView>
+```
+
+**Generated SQL (after fix)**:
+```sql
+projection_2 AS (
+  SELECT ... FROM SAPK5D.RSZCOMPDIR
+  WHERE (("OBJVERS" ='A'))   -- ← now included
+)
+```
+
+**Implementation**: `scenario_parser.py::_parse_projection()` — after calling `_parse_filters()`, also reads bare `<filter>` child with `_find_child(node_el, "filter")`. If found, appends as `Predicate(kind=PredicateKind.RAW, ...)`. lxml auto-decodes HTML entities (`&quot;` → `"`).
+
+**Affected**: RSZCOMPDIR projections in ADSO, INFOCUBES, MULTIPROVIDERS, COMPOSITE_PROVIDER, INFOSET, BEX_QUERIES; ZDTP_TRFN projections in TRANFORMATIONS, TRANSFORMATIONS_DETAILS, TRANSFORMATIONS_FIELDS_MAPPING
+
+**Validated**: Awaiting HANA execution
+
+---
+
+### Rule 22: BOOLEAN Calculated Columns → CASE WHEN (BUG-051)
+
+**Priority**: Applied during calculated column rendering
+**Source Pattern**: `<calculatedViewAttribute datatype="BOOLEAN" expressionLanguage="COLUMN_ENGINE">`
+**Transformation**: Wrap boolean expression in `CASE WHEN (...) THEN 1 ELSE 0 END`
+**Reason**: HANA SQL does not support bare boolean expressions in SELECT lists
+**Applied In**: `renderer.py` — all 3 calculated column rendering paths (projection, JOIN, aggregation)
+
+**Example**:
+```sql
+-- Before (invalid HANA SQL):
+LEFT(TABLE.LINE, 1)='*' or LEFT(TABLE.LINE, 5) = '...' AS COMMENTS
+
+-- After (valid):
+CASE WHEN (LEFT(TABLE.LINE, 1)='*' or LEFT(TABLE.LINE, 5) = '...') THEN 1 ELSE 0 END AS COMMENTS
+```
+
+**Affected**: Any XML with `datatype="BOOLEAN"` calculated view attributes (e.g., TRANFORMATIONS.xml)
+**Validated**: Awaiting HANA execution
+
+---
+
+### Rule 23: SqlScriptView Definition Extraction + Auto Schema Resolution (BUG-052)
+
+**Priority**: Applied during node rendering
+**Source Pattern**: `<calculationView xsi:type="Calculation:SqlScriptView">` with `<definition>` element
+**Transformation**: Extract SELECT from procedure body; auto-resolve hardcoded schemas via `<defaultSchema>` + schema_overrides
+**Reason**: Script-based calculation views contain embedded SQL in `<definition>` — previously generated placeholder SQL. Hardcoded schemas from authoring system need remapping.
+**Applied In**: `models.py` (metadata), `scenario_parser.py` (extraction), `renderer.py` (`_extract_select_from_script()`)
+
+**Schema Resolution Logic**:
+1. XML `<defaultSchema schemaName="ABAP"/>` → `default_schema = "ABAP"`
+2. `schema_overrides["ABAP"]` → `target_schema = "SAPABAP1"`
+3. Detect `"SAPK5D"` in script FROM clauses → not target → replaced with `"SAPABAP1"`
+
+**Example**:
+```
+-- Script body (authored on BID system with SAPK5D schema):
+BEGIN
+  var_out = SELECT col1, col2 FROM "SAPK5D"."TABLE1" ...;
+END
+
+-- Extracted CTE (auto-resolved to SAPABAP1 via ABAP override):
+SELECT col1, col2 FROM "SAPABAP1"."TABLE1" ...
+```
+
+**Affected**: Any XML with `calculationScenarioType="SCRIPT_BASED"` (e.g., USED_HIERARCHIES.xml)
+**Validated**: Awaiting HANA execution
+
+---
+
+### Rule 24: Integer-Declared Calc Columns Wrapped with TO_INTEGER (BUG-053)
+
+**Priority**: Applied during calculated column rendering
+**Source Pattern**: `<element><inlineType primitiveType="SMALLINT|INTEGER|BIGINT|TINYINT"/><calculationDefinition>...</calculationDefinition></element>`
+**Transformation**: Wrap rendered expression with `TO_INTEGER()` when declared type is integer-class
+**Reason**: HANA Column Engine auto-coerces string literals (e.g., `'1'`, `'0'` from CASE WHEN) to declared type, but standard SQL doesn't. Without coercion, downstream `SUM`/`AVG` fails with HANA error [266].
+**Applied In**: `renderer.py` — all 3 calculated column rendering paths (projection, JOIN, aggregation)
+
+**Detection**: `calc_attr.data_type.type.value == "NUMBER" AND calc_attr.data_type.scale == 0`
+
+**Example**:
+```sql
+-- Before (string-literal CASE WHEN — VARCHAR result):
+CASE WHEN ... THEN '1' ELSE '0' END AS CC_PATTEST
+SUM(CC_PATTEST)  -- ERROR [266]
+
+-- After (TO_INTEGER coerces to integer):
+TO_INTEGER(CASE WHEN ... THEN '1' ELSE '0' END) AS CC_PATTEST
+SUM(CC_PATTEST)  -- works
+```
+
+**Affected**: Any XML with integer-typed calc columns whose formula returns string literals (e.g., CV_E2E_VST.xml). Safe no-op cast for already-numeric values.
+**Validated**: ✅ CV_E2E_VST.xml (2026-05-10, CREATE VIEW 75ms)
 
 ---
 

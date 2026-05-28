@@ -1,0 +1,1300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="INFOPACKAGE" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="INFOPACKAGE"/>
+  <metadata activatedAt="2026-03-15 09:16:52.0" changedAt="2026-03-15 09:16:48.879"/>
+  <localVariables>
+    <variable id="Language" parameter="true">
+      <descriptions defaultDescription="Language"/>
+      <variableProperties datatype="NVARCHAR" defaultValue="E" length="1" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings/>
+  <informationModelLayout relativeWidthScenario="39"/>
+  <dataSources>
+    <DataSource id="RSLDPIO" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSLDPIO"/>
+    </DataSource>
+    <DataSource id="RSLDPIOT" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSLDPIOT"/>
+    </DataSource>
+    <DataSource id="RSLDPSEL" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSLDPSEL"/>
+    </DataSource>
+    <DataSource id="RSLDPRULE" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSLDPRULE"/>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="SOURCE"/>
+        <viewAttribute id="TYP"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="OLTPTYP"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSLDPIO">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCE" source="SOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYP" source="TYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPTYP" source="OLTPTYP"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="$$Language$$"/>
+        </viewAttribute>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="TEXT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSLDPIOT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TEXT" source="TEXT"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_3">
+      <descriptions defaultDescription="Logical InfoPackage variant (ID)"/>
+      <viewAttributes>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="LNR"/>
+        <viewAttribute id="FIELDNAME"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="SIGN"/>
+        <viewAttribute id="OPT"/>
+        <viewAttribute id="LOW"/>
+        <viewAttribute id="HIGH"/>
+        <viewAttribute id="KIND"/>
+        <viewAttribute id="SELUPDIC"/>
+        <viewAttribute id="AGGRIC"/>
+        <viewAttribute id="EXPRESS"/>
+        <viewAttribute id="BIWEXPRESS"/>
+        <viewAttribute id="QUELLE"/>
+        <viewAttribute id="ZIEL"/>
+        <viewAttribute id="FILLIDOC"/>
+        <viewAttribute id="HIENM"/>
+        <viewAttribute id="HIEVERS"/>
+        <viewAttribute id="HIEDATETO"/>
+        <viewAttribute id="HIEDATEFROM"/>
+        <viewAttribute id="HIECLASS"/>
+        <viewAttribute id="VARTYP"/>
+        <viewAttribute id="NEXT_PER"/>
+        <viewAttribute id="ANZ_PER"/>
+        <viewAttribute id="VON_BIS"/>
+        <viewAttribute id="KENNZ_PER"/>
+        <viewAttribute id="BEX_VARIABLE"/>
+        <viewAttribute id="PERIV"/>
+        <viewAttribute id="DESCRIPTION"/>
+        <viewAttribute id="FREMDSYS"/>
+        <viewAttribute id="LOCATION"/>
+        <viewAttribute id="FILENAME"/>
+        <viewAttribute id="FILETYP"/>
+        <viewAttribute id="FILESEP"/>
+        <viewAttribute id="ESC"/>
+        <viewAttribute id="CHAR1000"/>
+        <viewAttribute id="DEZICHAR"/>
+        <viewAttribute id="CURRCONV"/>
+        <viewAttribute id="LASTDATE"/>
+        <viewAttribute id="LASTTIME"/>
+        <viewAttribute id="RFCFIELDNM"/>
+        <viewAttribute id="RFCVALUE"/>
+        <viewAttribute id="RFCUSER"/>
+        <viewAttribute id="PASSWORD"/>
+        <viewAttribute id="TCPIP"/>
+        <viewAttribute id="INFOPAKID"/>
+        <viewAttribute id="PARALLEL"/>
+        <viewAttribute id="HIERACT"/>
+        <viewAttribute id="FUNCTION_NAME"/>
+        <viewAttribute id="CHECK_ODS"/>
+        <viewAttribute id="CHAVL_CHECK"/>
+        <viewAttribute id="UPDATE_CUBE"/>
+        <viewAttribute id="WRITE_FLAT_OLTP"/>
+        <viewAttribute id="CHANNEL"/>
+        <viewAttribute id="INIT_SIMU"/>
+        <viewAttribute id="NEW_HIENAME_ON"/>
+        <viewAttribute id="NEW_HIENM"/>
+        <viewAttribute id="CONTINUE_AT_ERR"/>
+        <viewAttribute id="REPORT_AT_ERR"/>
+        <viewAttribute id="NUMBER_AT_ERR"/>
+        <viewAttribute id="IGNORELINES"/>
+        <viewAttribute id="NOSISICO"/>
+        <viewAttribute id="HIESUBTREE"/>
+        <viewAttribute id="NOAGGR"/>
+        <viewAttribute id="CONVEXIT_OFF"/>
+        <viewAttribute id="DUPREC"/>
+        <viewAttribute id="DUPRECDEL"/>
+        <viewAttribute id="ARCHIVE_SEL"/>
+        <viewAttribute id="DBCONNECT"/>
+        <viewAttribute id="REPAIR_FULL"/>
+        <viewAttribute id="TIMEOUT"/>
+        <viewAttribute id="WARNING"/>
+        <viewAttribute id="EARLY_DELTA"/>
+        <viewAttribute id="UNICODE_CODEPAGE"/>
+        <viewAttribute id="UNICODE_METHOD"/>
+        <viewAttribute id="UNICODE_REPLACE"/>
+        <viewAttribute id="UNICODE_ENDIAN"/>
+        <viewAttribute id="SEL_1000"/>
+        <viewAttribute id="HIER_DESC"/>
+        <viewAttribute id="HIER_ROUT"/>
+        <viewAttribute id="HIER_AUTO"/>
+        <viewAttribute id="METADATA_SYNC"/>
+        <viewAttribute id="DTP"/>
+        <viewAttribute id="PSA_SERIAL"/>
+        <viewAttribute id="INITTODELTA"/>
+        <viewAttribute id="NODATACOLOR"/>
+        <viewAttribute id="ONLY_TO_INDX"/>
+        <viewAttribute id="BO_LOADER"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSLDPSEL">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LNR" source="LNR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNAME" source="FIELDNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SIGN" source="SIGN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OPT" source="OPT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOW" source="LOW"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIGH" source="HIGH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KIND" source="KIND"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELUPDIC" source="SELUPDIC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRIC" source="AGGRIC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPRESS" source="EXPRESS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BIWEXPRESS" source="BIWEXPRESS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="QUELLE" source="QUELLE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZIEL" source="ZIEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILLIDOC" source="FILLIDOC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENM" source="HIENM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERS" source="HIEVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEDATETO" source="HIEDATETO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEDATEFROM" source="HIEDATEFROM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIECLASS" source="HIECLASS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARTYP" source="VARTYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEXT_PER" source="NEXT_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ANZ_PER" source="ANZ_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VON_BIS" source="VON_BIS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KENNZ_PER" source="KENNZ_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BEX_VARIABLE" source="BEX_VARIABLE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PERIV" source="PERIV"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FREMDSYS" source="FREMDSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION" source="LOCATION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILENAME" source="FILENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILETYP" source="FILETYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILESEP" source="FILESEP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ESC" source="ESC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAR1000" source="CHAR1000"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DEZICHAR" source="DEZICHAR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CURRCONV" source="CURRCONV"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTDATE" source="LASTDATE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTTIME" source="LASTTIME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCFIELDNM" source="RFCFIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCVALUE" source="RFCVALUE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCUSER" source="RFCUSER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PASSWORD" source="PASSWORD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TCPIP" source="TCPIP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOPAKID" source="INFOPAKID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PARALLEL" source="PARALLEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIERACT" source="HIERACT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FUNCTION_NAME" source="FUNCTION_NAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHECK_ODS" source="CHECK_ODS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAVL_CHECK" source="CHAVL_CHECK"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UPDATE_CUBE" source="UPDATE_CUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="WRITE_FLAT_OLTP" source="WRITE_FLAT_OLTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHANNEL" source="CHANNEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INIT_SIMU" source="INIT_SIMU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEW_HIENAME_ON" source="NEW_HIENAME_ON"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEW_HIENM" source="NEW_HIENM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONTINUE_AT_ERR" source="CONTINUE_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="REPORT_AT_ERR" source="REPORT_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NUMBER_AT_ERR" source="NUMBER_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IGNORELINES" source="IGNORELINES"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOSISICO" source="NOSISICO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIESUBTREE" source="HIESUBTREE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOAGGR" source="NOAGGR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT_OFF" source="CONVEXIT_OFF"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DUPREC" source="DUPREC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DUPRECDEL" source="DUPRECDEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ARCHIVE_SEL" source="ARCHIVE_SEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DBCONNECT" source="DBCONNECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="REPAIR_FULL" source="REPAIR_FULL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMEOUT" source="TIMEOUT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="WARNING" source="WARNING"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EARLY_DELTA" source="EARLY_DELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_CODEPAGE" source="UNICODE_CODEPAGE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_METHOD" source="UNICODE_METHOD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_REPLACE" source="UNICODE_REPLACE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_ENDIAN" source="UNICODE_ENDIAN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SEL_1000" source="SEL_1000"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_DESC" source="HIER_DESC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_ROUT" source="HIER_ROUT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_AUTO" source="HIER_AUTO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="METADATA_SYNC" source="METADATA_SYNC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTP" source="DTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PSA_SERIAL" source="PSA_SERIAL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INITTODELTA" source="INITTODELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NODATACOLOR" source="NODATACOLOR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ONLY_TO_INDX" source="ONLY_TO_INDX"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BO_LOADER" source="BO_LOADER"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_4">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="FIELDNAME"/>
+        <viewAttribute id="LNR"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="LINE"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSLDPRULE">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNAME" source="FIELDNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LNR" source="LNR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCE"/>
+        <viewAttribute id="TYP"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="OLTPTYP"/>
+        <viewAttribute id="TEXT"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCE" source="SOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYP" source="TYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPTYP" source="OLTPTYP"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TEXT" source="TEXT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+      </input>
+      <joinAttribute name="LOGDPID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCE"/>
+        <viewAttribute id="TYP"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="OLTPTYP"/>
+        <viewAttribute id="TEXT"/>
+        <viewAttribute id="LNR"/>
+        <viewAttribute id="FIELDNAME"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="SIGN"/>
+        <viewAttribute id="OPT"/>
+        <viewAttribute id="LOW"/>
+        <viewAttribute id="HIGH"/>
+        <viewAttribute id="KIND"/>
+        <viewAttribute id="SELUPDIC"/>
+        <viewAttribute id="AGGRIC"/>
+        <viewAttribute id="EXPRESS"/>
+        <viewAttribute id="BIWEXPRESS"/>
+        <viewAttribute id="QUELLE"/>
+        <viewAttribute id="ZIEL"/>
+        <viewAttribute id="FILLIDOC"/>
+        <viewAttribute id="HIENM"/>
+        <viewAttribute id="HIEVERS"/>
+        <viewAttribute id="HIEDATETO"/>
+        <viewAttribute id="HIEDATEFROM"/>
+        <viewAttribute id="HIECLASS"/>
+        <viewAttribute id="VARTYP"/>
+        <viewAttribute id="NEXT_PER"/>
+        <viewAttribute id="ANZ_PER"/>
+        <viewAttribute id="VON_BIS"/>
+        <viewAttribute id="KENNZ_PER"/>
+        <viewAttribute id="BEX_VARIABLE"/>
+        <viewAttribute id="PERIV"/>
+        <viewAttribute id="DESCRIPTION"/>
+        <viewAttribute id="FREMDSYS"/>
+        <viewAttribute id="LOCATION"/>
+        <viewAttribute id="FILENAME"/>
+        <viewAttribute id="FILETYP"/>
+        <viewAttribute id="FILESEP"/>
+        <viewAttribute id="ESC"/>
+        <viewAttribute id="CHAR1000"/>
+        <viewAttribute id="DEZICHAR"/>
+        <viewAttribute id="CURRCONV"/>
+        <viewAttribute id="LASTDATE"/>
+        <viewAttribute id="LASTTIME"/>
+        <viewAttribute id="RFCFIELDNM"/>
+        <viewAttribute id="RFCVALUE"/>
+        <viewAttribute id="RFCUSER"/>
+        <viewAttribute id="PASSWORD"/>
+        <viewAttribute id="TCPIP"/>
+        <viewAttribute id="INFOPAKID"/>
+        <viewAttribute id="PARALLEL"/>
+        <viewAttribute id="HIERACT"/>
+        <viewAttribute id="FUNCTION_NAME"/>
+        <viewAttribute id="CHECK_ODS"/>
+        <viewAttribute id="CHAVL_CHECK"/>
+        <viewAttribute id="UPDATE_CUBE"/>
+        <viewAttribute id="WRITE_FLAT_OLTP"/>
+        <viewAttribute id="CHANNEL"/>
+        <viewAttribute id="INIT_SIMU"/>
+        <viewAttribute id="NEW_HIENAME_ON"/>
+        <viewAttribute id="NEW_HIENM"/>
+        <viewAttribute id="CONTINUE_AT_ERR"/>
+        <viewAttribute id="REPORT_AT_ERR"/>
+        <viewAttribute id="NUMBER_AT_ERR"/>
+        <viewAttribute id="IGNORELINES"/>
+        <viewAttribute id="NOSISICO"/>
+        <viewAttribute id="HIESUBTREE"/>
+        <viewAttribute id="NOAGGR"/>
+        <viewAttribute id="CONVEXIT_OFF"/>
+        <viewAttribute id="DUPREC"/>
+        <viewAttribute id="DUPRECDEL"/>
+        <viewAttribute id="ARCHIVE_SEL"/>
+        <viewAttribute id="DBCONNECT"/>
+        <viewAttribute id="REPAIR_FULL"/>
+        <viewAttribute id="TIMEOUT"/>
+        <viewAttribute id="WARNING"/>
+        <viewAttribute id="EARLY_DELTA"/>
+        <viewAttribute id="UNICODE_CODEPAGE"/>
+        <viewAttribute id="UNICODE_METHOD"/>
+        <viewAttribute id="UNICODE_REPLACE"/>
+        <viewAttribute id="UNICODE_ENDIAN"/>
+        <viewAttribute id="SEL_1000"/>
+        <viewAttribute id="HIER_DESC"/>
+        <viewAttribute id="HIER_ROUT"/>
+        <viewAttribute id="HIER_AUTO"/>
+        <viewAttribute id="METADATA_SYNC"/>
+        <viewAttribute id="DTP"/>
+        <viewAttribute id="PSA_SERIAL"/>
+        <viewAttribute id="INITTODELTA"/>
+        <viewAttribute id="NODATACOLOR"/>
+        <viewAttribute id="ONLY_TO_INDX"/>
+        <viewAttribute id="BO_LOADER"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="INTEGER" id="LNR_calc" expressionLanguage="COLUMN_ENGINE">
+          <formula>int(&quot;LNR&quot;)</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCE" source="SOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYP" source="TYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPTYP" source="OLTPTYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TEXT" source="TEXT"/>
+      </input>
+      <input node="#Projection_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LNR" source="LNR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNAME" source="FIELDNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SIGN" source="SIGN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OPT" source="OPT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOW" source="LOW"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIGH" source="HIGH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KIND" source="KIND"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELUPDIC" source="SELUPDIC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRIC" source="AGGRIC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPRESS" source="EXPRESS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BIWEXPRESS" source="BIWEXPRESS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="QUELLE" source="QUELLE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZIEL" source="ZIEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILLIDOC" source="FILLIDOC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENM" source="HIENM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERS" source="HIEVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEDATETO" source="HIEDATETO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEDATEFROM" source="HIEDATEFROM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIECLASS" source="HIECLASS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARTYP" source="VARTYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEXT_PER" source="NEXT_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ANZ_PER" source="ANZ_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VON_BIS" source="VON_BIS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KENNZ_PER" source="KENNZ_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BEX_VARIABLE" source="BEX_VARIABLE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PERIV" source="PERIV"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FREMDSYS" source="FREMDSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION" source="LOCATION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILENAME" source="FILENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILETYP" source="FILETYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILESEP" source="FILESEP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ESC" source="ESC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAR1000" source="CHAR1000"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DEZICHAR" source="DEZICHAR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CURRCONV" source="CURRCONV"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTDATE" source="LASTDATE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTTIME" source="LASTTIME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCFIELDNM" source="RFCFIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCVALUE" source="RFCVALUE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCUSER" source="RFCUSER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PASSWORD" source="PASSWORD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TCPIP" source="TCPIP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOPAKID" source="INFOPAKID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PARALLEL" source="PARALLEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIERACT" source="HIERACT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FUNCTION_NAME" source="FUNCTION_NAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHECK_ODS" source="CHECK_ODS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAVL_CHECK" source="CHAVL_CHECK"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UPDATE_CUBE" source="UPDATE_CUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="WRITE_FLAT_OLTP" source="WRITE_FLAT_OLTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHANNEL" source="CHANNEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INIT_SIMU" source="INIT_SIMU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEW_HIENAME_ON" source="NEW_HIENAME_ON"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEW_HIENM" source="NEW_HIENM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONTINUE_AT_ERR" source="CONTINUE_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="REPORT_AT_ERR" source="REPORT_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NUMBER_AT_ERR" source="NUMBER_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IGNORELINES" source="IGNORELINES"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOSISICO" source="NOSISICO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIESUBTREE" source="HIESUBTREE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOAGGR" source="NOAGGR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT_OFF" source="CONVEXIT_OFF"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DUPREC" source="DUPREC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DUPRECDEL" source="DUPRECDEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ARCHIVE_SEL" source="ARCHIVE_SEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DBCONNECT" source="DBCONNECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="REPAIR_FULL" source="REPAIR_FULL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMEOUT" source="TIMEOUT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="WARNING" source="WARNING"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EARLY_DELTA" source="EARLY_DELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_CODEPAGE" source="UNICODE_CODEPAGE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_METHOD" source="UNICODE_METHOD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_REPLACE" source="UNICODE_REPLACE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_ENDIAN" source="UNICODE_ENDIAN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SEL_1000" source="SEL_1000"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_DESC" source="HIER_DESC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_ROUT" source="HIER_ROUT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_AUTO" source="HIER_AUTO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="METADATA_SYNC" source="METADATA_SYNC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTP" source="DTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PSA_SERIAL" source="PSA_SERIAL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INITTODELTA" source="INITTODELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NODATACOLOR" source="NODATACOLOR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ONLY_TO_INDX" source="ONLY_TO_INDX"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BO_LOADER" source="BO_LOADER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+      </input>
+      <joinAttribute name="LOGDPID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_3" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="SOURCE"/>
+        <viewAttribute id="TYP"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="OLTPTYP"/>
+        <viewAttribute id="TEXT"/>
+        <viewAttribute id="LNR"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="FIELDNAME"/>
+        <viewAttribute id="LINE"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCE" source="SOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYP" source="TYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPTYP" source="OLTPTYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TEXT" source="TEXT"/>
+      </input>
+      <input node="#Projection_4">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LNR" source="LNR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNAME" source="FIELDNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+      </input>
+      <joinAttribute name="LOGDPID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OLTPTYP"/>
+        <viewAttribute id="OLTPSOURCE"/>
+        <viewAttribute id="LOGSYS"/>
+        <viewAttribute id="TYP"/>
+        <viewAttribute id="SOURCE"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="TEXT"/>
+        <viewAttribute id="LOGDPID"/>
+        <viewAttribute id="FIELDNAME"/>
+        <viewAttribute id="IOBJNM"/>
+        <viewAttribute id="SIGN"/>
+        <viewAttribute id="OPT"/>
+        <viewAttribute id="LOW"/>
+        <viewAttribute id="HIGH"/>
+        <viewAttribute id="KIND"/>
+        <viewAttribute id="SELUPDIC"/>
+        <viewAttribute id="AGGRIC"/>
+        <viewAttribute id="EXPRESS"/>
+        <viewAttribute id="BIWEXPRESS"/>
+        <viewAttribute id="QUELLE"/>
+        <viewAttribute id="ZIEL"/>
+        <viewAttribute id="FILLIDOC"/>
+        <viewAttribute id="HIENM"/>
+        <viewAttribute id="HIEVERS"/>
+        <viewAttribute id="HIEDATETO"/>
+        <viewAttribute id="HIEDATEFROM"/>
+        <viewAttribute id="HIECLASS"/>
+        <viewAttribute id="VARTYP"/>
+        <viewAttribute id="NEXT_PER"/>
+        <viewAttribute id="ANZ_PER"/>
+        <viewAttribute id="VON_BIS"/>
+        <viewAttribute id="KENNZ_PER"/>
+        <viewAttribute id="BEX_VARIABLE"/>
+        <viewAttribute id="PERIV"/>
+        <viewAttribute id="DESCRIPTION"/>
+        <viewAttribute id="FREMDSYS"/>
+        <viewAttribute id="LOCATION"/>
+        <viewAttribute id="FILENAME"/>
+        <viewAttribute id="FILETYP"/>
+        <viewAttribute id="FILESEP"/>
+        <viewAttribute id="ESC"/>
+        <viewAttribute id="CHAR1000"/>
+        <viewAttribute id="DEZICHAR"/>
+        <viewAttribute id="CURRCONV"/>
+        <viewAttribute id="LASTDATE"/>
+        <viewAttribute id="LASTTIME"/>
+        <viewAttribute id="RFCFIELDNM"/>
+        <viewAttribute id="RFCVALUE"/>
+        <viewAttribute id="RFCUSER"/>
+        <viewAttribute id="PASSWORD"/>
+        <viewAttribute id="TCPIP"/>
+        <viewAttribute id="INFOPAKID"/>
+        <viewAttribute id="PARALLEL"/>
+        <viewAttribute id="HIERACT"/>
+        <viewAttribute id="FUNCTION_NAME"/>
+        <viewAttribute id="CHECK_ODS"/>
+        <viewAttribute id="CHAVL_CHECK"/>
+        <viewAttribute id="UPDATE_CUBE"/>
+        <viewAttribute id="WRITE_FLAT_OLTP"/>
+        <viewAttribute id="CHANNEL"/>
+        <viewAttribute id="INIT_SIMU"/>
+        <viewAttribute id="NEW_HIENAME_ON"/>
+        <viewAttribute id="NEW_HIENM"/>
+        <viewAttribute id="CONTINUE_AT_ERR"/>
+        <viewAttribute id="REPORT_AT_ERR"/>
+        <viewAttribute id="NUMBER_AT_ERR"/>
+        <viewAttribute id="IGNORELINES"/>
+        <viewAttribute id="NOSISICO"/>
+        <viewAttribute id="HIESUBTREE"/>
+        <viewAttribute id="NOAGGR"/>
+        <viewAttribute id="CONVEXIT_OFF"/>
+        <viewAttribute id="DUPREC"/>
+        <viewAttribute id="DUPRECDEL"/>
+        <viewAttribute id="ARCHIVE_SEL"/>
+        <viewAttribute id="DBCONNECT"/>
+        <viewAttribute id="REPAIR_FULL"/>
+        <viewAttribute id="TIMEOUT"/>
+        <viewAttribute id="WARNING"/>
+        <viewAttribute id="EARLY_DELTA"/>
+        <viewAttribute id="UNICODE_CODEPAGE"/>
+        <viewAttribute id="UNICODE_METHOD"/>
+        <viewAttribute id="UNICODE_REPLACE"/>
+        <viewAttribute id="UNICODE_ENDIAN"/>
+        <viewAttribute id="SEL_1000"/>
+        <viewAttribute id="HIER_DESC"/>
+        <viewAttribute id="HIER_ROUT"/>
+        <viewAttribute id="HIER_AUTO"/>
+        <viewAttribute id="METADATA_SYNC"/>
+        <viewAttribute id="DTP"/>
+        <viewAttribute id="PSA_SERIAL"/>
+        <viewAttribute id="INITTODELTA"/>
+        <viewAttribute id="NODATACOLOR"/>
+        <viewAttribute id="ONLY_TO_INDX"/>
+        <viewAttribute id="BO_LOADER"/>
+        <viewAttribute id="LINE"/>
+        <viewAttribute id="LNR" transparentFilter="false"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPTYP" source="OLTPTYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYP" source="TYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCE" source="SOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TEXT" source="TEXT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNAME" source="FIELDNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SIGN" source="SIGN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OPT" source="OPT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOW" source="LOW"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIGH" source="HIGH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KIND" source="KIND"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SELUPDIC" source="SELUPDIC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="AGGRIC" source="AGGRIC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EXPRESS" source="EXPRESS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BIWEXPRESS" source="BIWEXPRESS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="QUELLE" source="QUELLE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ZIEL" source="ZIEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILLIDOC" source="FILLIDOC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIENM" source="HIENM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEVERS" source="HIEVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEDATETO" source="HIEDATETO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIEDATEFROM" source="HIEDATEFROM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIECLASS" source="HIECLASS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VARTYP" source="VARTYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEXT_PER" source="NEXT_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ANZ_PER" source="ANZ_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="VON_BIS" source="VON_BIS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="KENNZ_PER" source="KENNZ_PER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BEX_VARIABLE" source="BEX_VARIABLE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PERIV" source="PERIV"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FREMDSYS" source="FREMDSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOCATION" source="LOCATION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILENAME" source="FILENAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILETYP" source="FILETYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FILESEP" source="FILESEP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ESC" source="ESC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAR1000" source="CHAR1000"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DEZICHAR" source="DEZICHAR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CURRCONV" source="CURRCONV"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTDATE" source="LASTDATE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTTIME" source="LASTTIME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCFIELDNM" source="RFCFIELDNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCVALUE" source="RFCVALUE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="RFCUSER" source="RFCUSER"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PASSWORD" source="PASSWORD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TCPIP" source="TCPIP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOPAKID" source="INFOPAKID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PARALLEL" source="PARALLEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIERACT" source="HIERACT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FUNCTION_NAME" source="FUNCTION_NAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHECK_ODS" source="CHECK_ODS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHAVL_CHECK" source="CHAVL_CHECK"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UPDATE_CUBE" source="UPDATE_CUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="WRITE_FLAT_OLTP" source="WRITE_FLAT_OLTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CHANNEL" source="CHANNEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INIT_SIMU" source="INIT_SIMU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEW_HIENAME_ON" source="NEW_HIENAME_ON"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NEW_HIENM" source="NEW_HIENM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONTINUE_AT_ERR" source="CONTINUE_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="REPORT_AT_ERR" source="REPORT_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NUMBER_AT_ERR" source="NUMBER_AT_ERR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IGNORELINES" source="IGNORELINES"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOSISICO" source="NOSISICO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIESUBTREE" source="HIESUBTREE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NOAGGR" source="NOAGGR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="CONVEXIT_OFF" source="CONVEXIT_OFF"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DUPREC" source="DUPREC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DUPRECDEL" source="DUPRECDEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ARCHIVE_SEL" source="ARCHIVE_SEL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DBCONNECT" source="DBCONNECT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="REPAIR_FULL" source="REPAIR_FULL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TIMEOUT" source="TIMEOUT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="WARNING" source="WARNING"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="EARLY_DELTA" source="EARLY_DELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_CODEPAGE" source="UNICODE_CODEPAGE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_METHOD" source="UNICODE_METHOD"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_REPLACE" source="UNICODE_REPLACE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="UNICODE_ENDIAN" source="UNICODE_ENDIAN"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SEL_1000" source="SEL_1000"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_DESC" source="HIER_DESC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_ROUT" source="HIER_ROUT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HIER_AUTO" source="HIER_AUTO"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="METADATA_SYNC" source="METADATA_SYNC"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DTP" source="DTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="PSA_SERIAL" source="PSA_SERIAL"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INITTODELTA" source="INITTODELTA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="NODATACOLOR" source="NODATACOLOR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="ONLY_TO_INDX" source="ONLY_TO_INDX"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="BO_LOADER" source="BO_LOADER"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LINE" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LNR" source="LNR_calc"/>
+      </input>
+      <input emptyUnionBehavior="NO_ROW" node="#Join_3">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPTYP" source="OLTPTYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OLTPSOURCE" source="OLTPSOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGSYS" source="LOGSYS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TYP" source="TYP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="SOURCE" source="SOURCE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TEXT" source="TEXT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LOGDPID" source="LOGDPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="FIELDNAME" source="FIELDNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="IOBJNM" source="IOBJNM"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="SIGN" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="OPT" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LOW" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIGH" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="KIND" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="SELUPDIC" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="AGGRIC" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="EXPRESS" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="BIWEXPRESS" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="QUELLE" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="ZIEL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="FILLIDOC" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIENM" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIEVERS" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIEDATETO" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIEDATEFROM" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIECLASS" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="VARTYP" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="NEXT_PER" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="ANZ_PER" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="VON_BIS" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="KENNZ_PER" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="BEX_VARIABLE" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PERIV" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DESCRIPTION" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="FREMDSYS" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LOCATION" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="FILENAME" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="FILETYP" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="FILESEP" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="ESC" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CHAR1000" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DEZICHAR" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CURRCONV" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LASTDATE" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="LASTTIME" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="RFCFIELDNM" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="RFCVALUE" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="RFCUSER" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PASSWORD" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TCPIP" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="INFOPAKID" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PARALLEL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIERACT" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="FUNCTION_NAME" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CHECK_ODS" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CHAVL_CHECK" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UPDATE_CUBE" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="WRITE_FLAT_OLTP" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CHANNEL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="INIT_SIMU" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="NEW_HIENAME_ON" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="NEW_HIENM" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CONTINUE_AT_ERR" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="REPORT_AT_ERR" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="NUMBER_AT_ERR" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="IGNORELINES" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="NOSISICO" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIESUBTREE" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="NOAGGR" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="CONVEXIT_OFF" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DUPREC" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DUPRECDEL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="ARCHIVE_SEL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DBCONNECT" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="REPAIR_FULL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="TIMEOUT" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="WARNING" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="EARLY_DELTA" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNICODE_CODEPAGE" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNICODE_METHOD" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNICODE_REPLACE" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="UNICODE_ENDIAN" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="SEL_1000" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIER_DESC" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIER_ROUT" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="HIER_AUTO" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="METADATA_SYNC" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="DTP" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="PSA_SERIAL" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="INITTODELTA" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="NODATACOLOR" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="ONLY_TO_INDX" null="true" value=""/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="BO_LOADER" null="true" value=""/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LINE" source="LINE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LNR" source="LNR"/>
+      </input>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Union_1">
+    <descriptions/>
+    <attributes>
+      <attribute id="OLTPTYP" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Type of Requested Data - Also New DS Types"/>
+        <keyMapping columnObjectName="Union_1" columnName="OLTPTYP"/>
+      </attribute>
+      <attribute id="OLTPSOURCE" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="InfoSource"/>
+        <keyMapping columnObjectName="Union_1" columnName="OLTPSOURCE"/>
+      </attribute>
+      <attribute id="LNR" order="3" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false" transparentFilter="false">
+        <descriptions defaultDescription="Sequence number"/>
+        <keyMapping columnObjectName="Union_1" columnName="LNR"/>
+      </attribute>
+      <attribute id="LOGSYS" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Source system"/>
+        <keyMapping columnObjectName="Union_1" columnName="LOGSYS"/>
+      </attribute>
+      <attribute id="TYP" order="5" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="InfoSource type"/>
+        <keyMapping columnObjectName="Union_1" columnName="TYP"/>
+      </attribute>
+      <attribute id="SOURCE" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="InfoSource"/>
+        <keyMapping columnObjectName="Union_1" columnName="SOURCE"/>
+      </attribute>
+      <attribute id="OBJVERS" order="7" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OBJVERS"/>
+        <keyMapping columnObjectName="Union_1" columnName="OBJVERS"/>
+      </attribute>
+      <attribute id="TEXT" order="8" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TEXT"/>
+        <keyMapping columnObjectName="Union_1" columnName="TEXT"/>
+      </attribute>
+      <attribute id="LOGDPID" order="9" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Logical InfoPackage variant (ID)"/>
+        <keyMapping columnObjectName="Union_1" columnName="LOGDPID"/>
+      </attribute>
+      <attribute id="FIELDNAME" order="10" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Field name"/>
+        <keyMapping columnObjectName="Union_1" columnName="FIELDNAME"/>
+      </attribute>
+      <attribute id="IOBJNM" order="11" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="InfoObject"/>
+        <keyMapping columnObjectName="Union_1" columnName="IOBJNM"/>
+      </attribute>
+      <attribute id="SIGN" order="12" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Selection criteria: SIGN"/>
+        <keyMapping columnObjectName="Union_1" columnName="SIGN"/>
+      </attribute>
+      <attribute id="OPT" order="13" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Selection criteria: OPTIONOPT"/>
+        <keyMapping columnObjectName="Union_1" columnName="OPT"/>
+      </attribute>
+      <attribute id="LOW" order="14" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Selection criteria: From value"/>
+        <keyMapping columnObjectName="Union_1" columnName="LOW"/>
+      </attribute>
+      <attribute id="HIGH" order="15" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Selection criteria: To value"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIGH"/>
+      </attribute>
+      <attribute id="KIND" order="16" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Type of Requested Data - Also New DS Types"/>
+        <keyMapping columnObjectName="Union_1" columnName="KIND"/>
+      </attribute>
+      <attribute id="SELUPDIC" order="17" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="InfoCube"/>
+        <keyMapping columnObjectName="Union_1" columnName="SELUPDIC"/>
+      </attribute>
+      <attribute id="AGGRIC" order="18" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="AGGRIC"/>
+        <keyMapping columnObjectName="Union_1" columnName="AGGRIC"/>
+      </attribute>
+      <attribute id="EXPRESS" order="19" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="EXPRESS"/>
+        <keyMapping columnObjectName="Union_1" columnName="EXPRESS"/>
+      </attribute>
+      <attribute id="BIWEXPRESS" order="20" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="BIWEXPRESS"/>
+        <keyMapping columnObjectName="Union_1" columnName="BIWEXPRESS"/>
+      </attribute>
+      <attribute id="QUELLE" order="21" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Source of the data for the scheduler job"/>
+        <keyMapping columnObjectName="Union_1" columnName="QUELLE"/>
+      </attribute>
+      <attribute id="ZIEL" order="22" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Target(s) of the data from the scheduler job"/>
+        <keyMapping columnObjectName="Union_1" columnName="ZIEL"/>
+      </attribute>
+      <attribute id="FILLIDOC" order="23" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="FILLIDOC"/>
+        <keyMapping columnObjectName="Union_1" columnName="FILLIDOC"/>
+      </attribute>
+      <attribute id="HIENM" order="24" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Customer-Defined Hierarchy Name"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIENM"/>
+      </attribute>
+      <attribute id="HIEVERS" order="25" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Hierarchy version"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIEVERS"/>
+      </attribute>
+      <attribute id="HIEDATETO" order="26" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Valid-to date"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIEDATETO"/>
+      </attribute>
+      <attribute id="HIEDATEFROM" order="27" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Valid-From Date"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIEDATEFROM"/>
+      </attribute>
+      <attribute id="HIECLASS" order="28" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Not More Closely Defined Area, Possibly Used for Patchlevels"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIECLASS"/>
+      </attribute>
+      <attribute id="VARTYP" order="29" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Variable selection type."/>
+        <keyMapping columnObjectName="Union_1" columnName="VARTYP"/>
+      </attribute>
+      <attribute id="NEXT_PER" order="30" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Selection criteria: From value"/>
+        <keyMapping columnObjectName="Union_1" columnName="NEXT_PER"/>
+      </attribute>
+      <attribute id="ANZ_PER" order="31" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Number of periods per year"/>
+        <keyMapping columnObjectName="Union_1" columnName="ANZ_PER"/>
+      </attribute>
+      <attribute id="VON_BIS" order="32" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="From-to validity indicator"/>
+        <keyMapping columnObjectName="Union_1" columnName="VON_BIS"/>
+      </attribute>
+      <attribute id="KENNZ_PER" order="33" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Indicator of period type with free time selection"/>
+        <keyMapping columnObjectName="Union_1" columnName="KENNZ_PER"/>
+      </attribute>
+      <attribute id="BEX_VARIABLE" order="34" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Name (ID) of a Report Variable"/>
+        <keyMapping columnObjectName="Union_1" columnName="BEX_VARIABLE"/>
+      </attribute>
+      <attribute id="PERIV" order="35" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Fiscal Year Variant"/>
+        <keyMapping columnObjectName="Union_1" columnName="PERIV"/>
+      </attribute>
+      <attribute id="DESCRIPTION" order="36" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DESCRIPTION"/>
+        <keyMapping columnObjectName="Union_1" columnName="DESCRIPTION"/>
+      </attribute>
+      <attribute id="FREMDSYS" order="37" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="External System"/>
+        <keyMapping columnObjectName="Union_1" columnName="FREMDSYS"/>
+      </attribute>
+      <attribute id="LOCATION" order="38" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Type of External System"/>
+        <keyMapping columnObjectName="Union_1" columnName="LOCATION"/>
+      </attribute>
+      <attribute id="FILENAME" order="39" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="File Name for External Data"/>
+        <keyMapping columnObjectName="Union_1" columnName="FILENAME"/>
+      </attribute>
+      <attribute id="FILETYP" order="40" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Type of External File"/>
+        <keyMapping columnObjectName="Union_1" columnName="FILETYP"/>
+      </attribute>
+      <attribute id="FILESEP" order="41" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Separator for Excel format"/>
+        <keyMapping columnObjectName="Union_1" columnName="FILESEP"/>
+      </attribute>
+      <attribute id="ESC" order="42" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Escape Character for Excel File"/>
+        <keyMapping columnObjectName="Union_1" columnName="ESC"/>
+      </attribute>
+      <attribute id="CHAR1000" order="43" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Thousand separator"/>
+        <keyMapping columnObjectName="Union_1" columnName="CHAR1000"/>
+      </attribute>
+      <attribute id="DEZICHAR" order="44" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Character for decimal point"/>
+        <keyMapping columnObjectName="Union_1" columnName="DEZICHAR"/>
+      </attribute>
+      <attribute id="CURRCONV" order="45" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Currency Conversion for External Systems"/>
+        <keyMapping columnObjectName="Union_1" columnName="CURRCONV"/>
+      </attribute>
+      <attribute id="LASTDATE" order="46" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LASTDATE"/>
+        <keyMapping columnObjectName="Union_1" columnName="LASTDATE"/>
+      </attribute>
+      <attribute id="LASTTIME" order="47" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LASTTIME"/>
+        <keyMapping columnObjectName="Union_1" columnName="LASTTIME"/>
+      </attribute>
+      <attribute id="RFCFIELDNM" order="48" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Field name"/>
+        <keyMapping columnObjectName="Union_1" columnName="RFCFIELDNM"/>
+      </attribute>
+      <attribute id="RFCVALUE" order="49" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Value of Data Input for RFC of Third-Party Tool"/>
+        <keyMapping columnObjectName="Union_1" columnName="RFCVALUE"/>
+      </attribute>
+      <attribute id="RFCUSER" order="50" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="User name for logging on to 3rd party tool"/>
+        <keyMapping columnObjectName="Union_1" columnName="RFCUSER"/>
+      </attribute>
+      <attribute id="PASSWORD" order="51" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Password for logging on to 3rd party tool"/>
+        <keyMapping columnObjectName="Union_1" columnName="PASSWORD"/>
+      </attribute>
+      <attribute id="TCPIP" order="52" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TCPIP"/>
+        <keyMapping columnObjectName="Union_1" columnName="TCPIP"/>
+      </attribute>
+      <attribute id="INFOPAKID" order="53" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Request number for the data transfer"/>
+        <keyMapping columnObjectName="Union_1" columnName="INFOPAKID"/>
+      </attribute>
+      <attribute id="PARALLEL" order="54" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Parallel Processing in DataStore Objects and InfoCubes"/>
+        <keyMapping columnObjectName="Union_1" columnName="PARALLEL"/>
+      </attribute>
+      <attribute id="HIERACT" order="55" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Activate Hierarchies After Loading"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIERACT"/>
+      </attribute>
+      <attribute id="FUNCTION_NAME" order="56" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Function module name for checking ODS data"/>
+        <keyMapping columnObjectName="Union_1" columnName="FUNCTION_NAME"/>
+      </attribute>
+      <attribute id="CHECK_ODS" order="57" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CHECK_ODS"/>
+        <keyMapping columnObjectName="Union_1" columnName="CHECK_ODS"/>
+      </attribute>
+      <attribute id="CHAVL_CHECK" order="58" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Consistency check for characteristic values"/>
+        <keyMapping columnObjectName="Union_1" columnName="CHAVL_CHECK"/>
+      </attribute>
+      <attribute id="UPDATE_CUBE" order="59" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="UPDATE_CUBE"/>
+        <keyMapping columnObjectName="Union_1" columnName="UPDATE_CUBE"/>
+      </attribute>
+      <attribute id="WRITE_FLAT_OLTP" order="60" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="WRITE_FLAT_OLTP"/>
+        <keyMapping columnObjectName="Union_1" columnName="WRITE_FLAT_OLTP"/>
+      </attribute>
+      <attribute id="CHANNEL" order="61" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CHANNEL"/>
+        <keyMapping columnObjectName="Union_1" columnName="CHANNEL"/>
+      </attribute>
+      <attribute id="INIT_SIMU" order="62" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="INIT_SIMU"/>
+        <keyMapping columnObjectName="Union_1" columnName="INIT_SIMU"/>
+      </attribute>
+      <attribute id="NEW_HIENAME_ON" order="63" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="NEW_HIENAME_ON"/>
+        <keyMapping columnObjectName="Union_1" columnName="NEW_HIENAME_ON"/>
+      </attribute>
+      <attribute id="NEW_HIENM" order="64" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Hierarchy Name"/>
+        <keyMapping columnObjectName="Union_1" columnName="NEW_HIENM"/>
+      </attribute>
+      <attribute id="CONTINUE_AT_ERR" order="65" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CONTINUE_AT_ERR"/>
+        <keyMapping columnObjectName="Union_1" columnName="CONTINUE_AT_ERR"/>
+      </attribute>
+      <attribute id="REPORT_AT_ERR" order="66" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="REPORT_AT_ERR"/>
+        <keyMapping columnObjectName="Union_1" columnName="REPORT_AT_ERR"/>
+      </attribute>
+      <attribute id="NUMBER_AT_ERR" order="67" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="No. of records to be checked when handling incorrect data"/>
+        <keyMapping columnObjectName="Union_1" columnName="NUMBER_AT_ERR"/>
+      </attribute>
+      <attribute id="IGNORELINES" order="68" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="No. of lines to be ignored"/>
+        <keyMapping columnObjectName="Union_1" columnName="IGNORELINES"/>
+      </attribute>
+      <attribute id="NOSISICO" order="69" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="No single SID commit with master data update"/>
+        <keyMapping columnObjectName="Union_1" columnName="NOSISICO"/>
+      </attribute>
+      <attribute id="HIESUBTREE" order="70" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Store Hierarchy as Subtree"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIESUBTREE"/>
+      </attribute>
+      <attribute id="NOAGGR" order="71" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="NOAGGR"/>
+        <keyMapping columnObjectName="Union_1" columnName="NOAGGR"/>
+      </attribute>
+      <attribute id="CONVEXIT_OFF" order="72" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="CONVEXIT_OFF"/>
+        <keyMapping columnObjectName="Union_1" columnName="CONVEXIT_OFF"/>
+      </attribute>
+      <attribute id="DUPREC" order="73" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Flag: DataSources poss. return duplicate data records"/>
+        <keyMapping columnObjectName="Union_1" columnName="DUPREC"/>
+      </attribute>
+      <attribute id="DUPRECDEL" order="74" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Flag: Handling of duplicate data records"/>
+        <keyMapping columnObjectName="Union_1" columnName="DUPRECDEL"/>
+      </attribute>
+      <attribute id="ARCHIVE_SEL" order="75" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ARCHIVE_SEL"/>
+        <keyMapping columnObjectName="Union_1" columnName="ARCHIVE_SEL"/>
+      </attribute>
+      <attribute id="DBCONNECT" order="76" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DB Connect Source System"/>
+        <keyMapping columnObjectName="Union_1" columnName="DBCONNECT"/>
+      </attribute>
+      <attribute id="REPAIR_FULL" order="77" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Indicate Full Request as Repair Request"/>
+        <keyMapping columnObjectName="Union_1" columnName="REPAIR_FULL"/>
+      </attribute>
+      <attribute id="TIMEOUT" order="78" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Timeout Time"/>
+        <keyMapping columnObjectName="Union_1" columnName="TIMEOUT"/>
+      </attribute>
+      <attribute id="WARNING" order="79" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="WARNING"/>
+        <keyMapping columnObjectName="Union_1" columnName="WARNING"/>
+      </attribute>
+      <attribute id="EARLY_DELTA" order="80" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="EARLY_DELTA"/>
+        <keyMapping columnObjectName="Union_1" columnName="EARLY_DELTA"/>
+      </attribute>
+      <attribute id="UNICODE_CODEPAGE" order="81" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="UNICODE_CODEPAGE"/>
+        <keyMapping columnObjectName="Union_1" columnName="UNICODE_CODEPAGE"/>
+      </attribute>
+      <attribute id="UNICODE_METHOD" order="82" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="UNICODE_METHOD"/>
+        <keyMapping columnObjectName="Union_1" columnName="UNICODE_METHOD"/>
+      </attribute>
+      <attribute id="UNICODE_REPLACE" order="83" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="UNICODE_REPLACE"/>
+        <keyMapping columnObjectName="Union_1" columnName="UNICODE_REPLACE"/>
+      </attribute>
+      <attribute id="UNICODE_ENDIAN" order="84" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="UNICODE_ENDIAN"/>
+        <keyMapping columnObjectName="Union_1" columnName="UNICODE_ENDIAN"/>
+      </attribute>
+      <attribute id="SEL_1000" order="85" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SEL_1000"/>
+        <keyMapping columnObjectName="Union_1" columnName="SEL_1000"/>
+      </attribute>
+      <attribute id="HIER_DESC" order="86" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="HIER_DESC"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIER_DESC"/>
+      </attribute>
+      <attribute id="HIER_ROUT" order="87" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="HIER_ROUT"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIER_ROUT"/>
+      </attribute>
+      <attribute id="HIER_AUTO" order="88" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="HIER_AUTO"/>
+        <keyMapping columnObjectName="Union_1" columnName="HIER_AUTO"/>
+      </attribute>
+      <attribute id="METADATA_SYNC" order="89" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="METADATA_SYNC"/>
+        <keyMapping columnObjectName="Union_1" columnName="METADATA_SYNC"/>
+      </attribute>
+      <attribute id="DTP" order="90" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DTP"/>
+        <keyMapping columnObjectName="Union_1" columnName="DTP"/>
+      </attribute>
+      <attribute id="PSA_SERIAL" order="91" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="PSA_SERIAL"/>
+        <keyMapping columnObjectName="Union_1" columnName="PSA_SERIAL"/>
+      </attribute>
+      <attribute id="INITTODELTA" order="92" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="INITTODELTA"/>
+        <keyMapping columnObjectName="Union_1" columnName="INITTODELTA"/>
+      </attribute>
+      <attribute id="NODATACOLOR" order="93" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="NODATACOLOR"/>
+        <keyMapping columnObjectName="Union_1" columnName="NODATACOLOR"/>
+      </attribute>
+      <attribute id="ONLY_TO_INDX" order="94" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="ONLY_TO_INDX"/>
+        <keyMapping columnObjectName="Union_1" columnName="ONLY_TO_INDX"/>
+      </attribute>
+      <attribute id="BO_LOADER" order="95" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="BO_LOADER"/>
+        <keyMapping columnObjectName="Union_1" columnName="BO_LOADER"/>
+      </attribute>
+      <attribute id="LINE" order="96" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LINE"/>
+        <keyMapping columnObjectName="Union_1" columnName="LINE"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="175" y="87"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="99" y="473"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="473"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="377"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_4" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="330" y="377"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="377"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="98" y="281"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_3" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="252" y="281"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="175" y="165"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

@@ -440,8 +440,23 @@ def _render_projection(ctx: RenderContext, node: Node) -> str:
             )
         
         calc_expr = _render_expression(ctx, expanded_expr, from_clause)
+        # BUG-051: HANA SQL doesn't support bare boolean expressions in SELECT.
+        # Wrap BOOLEAN calculated columns in CASE WHEN ... THEN 1 ELSE 0 END.
+        if (ctx.database_mode == DatabaseMode.HANA
+                and calc_attr.data_type is not None
+                and calc_attr.data_type.type.value == "BOOLEAN"):
+            calc_expr = f"CASE WHEN ({calc_expr}) THEN 1 ELSE 0 END"
+        # BUG-053: Calc columns declared as integer (SMALLINT/INTEGER/BIGINT)
+        # may have formulas returning string literals (e.g., if(...,'1','0')).
+        # Wrap with TO_INTEGER to align actual SQL type with declared type so
+        # downstream SUM/AVG aggregations work.
+        elif (ctx.database_mode == DatabaseMode.HANA
+                and calc_attr.data_type is not None
+                and calc_attr.data_type.type.value == "NUMBER"
+                and calc_attr.data_type.scale == 0):
+            calc_expr = f"TO_INTEGER({calc_expr})"
         columns.append(f"{calc_expr} AS {_quote_identifier(calc_name)}")
-        
+
         # Store the rendered expression for future expansions
         calc_column_map[calc_name.upper()] = calc_expr
 
@@ -648,6 +663,17 @@ def _render_join(ctx: RenderContext, node: JoinNode) -> str:
         else:
             calc_expr = _render_expression(ctx, calc_attr.expression, left_alias)
 
+        # BUG-051: HANA SQL doesn't support bare boolean expressions in SELECT.
+        if (ctx.database_mode == DatabaseMode.HANA
+                and calc_attr.data_type is not None
+                and calc_attr.data_type.type.value == "BOOLEAN"):
+            calc_expr = f"CASE WHEN ({calc_expr}) THEN 1 ELSE 0 END"
+        # BUG-053: Wrap integer-declared calc columns with TO_INTEGER so downstream SUM/AVG works.
+        elif (ctx.database_mode == DatabaseMode.HANA
+                and calc_attr.data_type is not None
+                and calc_attr.data_type.type.value == "NUMBER"
+                and calc_attr.data_type.scale == 0):
+            calc_expr = f"TO_INTEGER({calc_expr})"
         columns.append(f"{calc_expr} AS {_quote_identifier(calc_name)}")
 
     if not columns:
@@ -811,6 +837,17 @@ def _render_aggregation(ctx: RenderContext, node: AggregationNode) -> str:
             else:
                 calc_expr = _render_expression(ctx, calc_attr.expression, "agg_inner")
 
+            # BUG-051: HANA SQL doesn't support bare boolean expressions in SELECT.
+            if (ctx.database_mode == DatabaseMode.HANA
+                    and calc_attr.data_type is not None
+                    and calc_attr.data_type.type.value == "BOOLEAN"):
+                calc_expr = f"CASE WHEN ({calc_expr}) THEN 1 ELSE 0 END"
+            # BUG-053: Wrap integer-declared calc columns with TO_INTEGER so downstream SUM/AVG works.
+            elif (ctx.database_mode == DatabaseMode.HANA
+                    and calc_attr.data_type is not None
+                    and calc_attr.data_type.type.value == "NUMBER"
+                    and calc_attr.data_type.scale == 0):
+                calc_expr = f"TO_INTEGER({calc_expr})"
             outer_select.append(f"{calc_expr} AS {_quote_identifier(calc_name)}")
 
             # BUG-032: Store rendered expression for future expansions
@@ -832,8 +869,8 @@ def _render_aggregation(ctx: RenderContext, node: AggregationNode) -> str:
 def _render_union(ctx: RenderContext, node: UnionNode) -> str:
     """Render a union node."""
 
-    if len(node.inputs) < 2:
-        ctx.warnings.append(f"Union {node.node_id} has fewer than 2 inputs")
+    if len(node.inputs) == 0:  # BUG-047: allow single-input union (valid SAP BW pattern for column rename + constant injection)
+        ctx.warnings.append(f"Union {node.node_id} has no inputs")
         return "SELECT 1 AS placeholder"
 
     union_queries: List[str] = []
@@ -930,6 +967,13 @@ def _render_rank(ctx: RenderContext, node: RankNode) -> str:
 
 def _render_calculation(ctx: RenderContext, node: Node) -> str:
     """Render a calculation node (fallback for unsupported node types)."""
+
+    # BUG-052: SqlScriptView nodes contain embedded SQL in <definition>.
+    # Extract the SELECT statement from the procedure body and use it directly.
+    if "script_definition" in node.properties:
+        script_sql = _extract_select_from_script(node.properties["script_definition"], ctx)
+        if script_sql:
+            return script_sql
 
     if not node.inputs:
         ctx.warnings.append(f"Calculation {node.node_id} has no inputs")
@@ -1068,7 +1112,15 @@ def _render_expression(ctx: RenderContext, expr: Expression, table_alias: Option
     if expr.expression_type == ExpressionType.COLUMN:
         return _render_column_ref(ctx, expr.value, table_alias)
     if expr.expression_type == ExpressionType.LITERAL:
-        return _render_literal(expr.value, expr.data_type)
+        value = expr.value
+        # BUG-049: Resolve $$param$$ placeholders in literal filter values before quoting.
+        # SingleValueFilter values like value="$$Language$$" are stored as LITERAL expressions
+        # and never pass through _substitute_placeholders(). The cleanup regex then strips
+        # the placeholder from inside the quotes, leaving ''. Fix: resolve here using
+        # ctx.scenario.variables (defaultValue from XML localVariables).
+        if "$$" in value:
+            value = _resolve_parameter_literal(value, ctx)
+        return _render_literal(value, expr.data_type)
     if expr.expression_type == ExpressionType.RAW:
         translated = translate_raw_formula(expr.value, ctx)
         if translated != expr.value:
@@ -1077,9 +1129,11 @@ def _render_expression(ctx: RenderContext, expr: Expression, table_alias: Option
         # BUG-027: Qualify bare column names in RAW expressions when table_alias provided
         # Example: In JOIN calculated column, "CALDAY" becomes ambiguous
         # Should be qualified as "left_alias"."CALDAY" to avoid ambiguity
+        # BUG-043: Don't qualify SQL keywords (NULL, TRUE, FALSE) — they are literals, not columns
         if table_alias and result.strip('"').isidentifier() and not '(' in result:
-            # Simple column name (no function calls) - qualify it
-            return f"{table_alias}.{result}"
+            if result.upper() not in ('NULL', 'TRUE', 'FALSE'):
+                # Simple column name (no function calls) - qualify it
+                return f"{table_alias}.{result}"
         return result
     if expr.expression_type == ExpressionType.FUNCTION:
         return _render_function(ctx, expr, table_alias)
@@ -1117,6 +1171,21 @@ def _render_literal(value: str, data_type: Optional[object] = None) -> str:
             return f"'{value}'::TIMESTAMP_NTZ"
 
     return f"'{value.replace(chr(39), chr(39) + chr(39))}'"
+
+
+def _resolve_parameter_literal(value: str, ctx: RenderContext) -> str:
+    """BUG-049: Substitute $$VarId$$ placeholders in literal filter values using defaultValue
+    from the XML localVariables section. Called before _render_literal() to prevent
+    the parameter cleanup regex from stripping $$...$$  inside quoted strings to ''."""
+    scenario = getattr(ctx, "scenario", None)
+    if not scenario or not hasattr(scenario, "variables"):
+        return value
+    for var in scenario.variables:
+        if var.variable_id and var.default_value is not None:
+            placeholder = f"$${var.variable_id}$$"
+            if placeholder in value:
+                value = value.replace(placeholder, str(var.default_value))
+    return value
 
 
 def _render_function(ctx: RenderContext, expr: Expression, table_alias: Optional[str] = None) -> str:
@@ -1256,6 +1325,49 @@ def _substitute_placeholders(text: str, ctx: RenderContext) -> str:
     result = text.replace("$$client$$", ctx.client)
     result = result.replace("$$language$$", ctx.language)
     return result
+
+
+def _extract_select_from_script(script_body: str, ctx: RenderContext) -> Optional[str]:
+    """BUG-052: Extract SELECT statement from SqlScriptView procedure body.
+
+    Script bodies follow the pattern:
+        BEGIN
+          var_out = SELECT ... FROM "SCHEMA"."TABLE" ... ;
+        END
+
+    This extracts the SELECT, strips the var_out assignment and trailing semicolon,
+    and resolves hardcoded schema names using defaultSchema + schema_overrides.
+    """
+    import re
+    # Find the SELECT statement (after "var_out = " or similar assignment)
+    match = re.search(r'(?:var_out\s*=\s*)(SELECT\b.+)', script_body, re.DOTALL | re.IGNORECASE)
+    if not match:
+        # Try bare SELECT without assignment
+        match = re.search(r'(SELECT\b.+)', script_body, re.DOTALL | re.IGNORECASE)
+    if not match:
+        return None
+    sql = match.group(1).strip()
+    # Remove trailing semicolon and END block
+    sql = re.sub(r';\s*(END\b.*)?$', '', sql, flags=re.DOTALL | re.IGNORECASE).strip()
+    # BUG-052: Resolve hardcoded schema names for cross-system portability.
+    # Script SQL has hardcoded schemas from the authoring system (e.g., "SAPK5D").
+    # The XML's <defaultSchema schemaName="ABAP"/> tells us the logical schema.
+    # schema_overrides maps logical → physical (e.g., ABAP → SAPABAP1).
+    # Strategy: resolve defaultSchema to target physical schema, then replace
+    # any "SCHEMA"."TABLE" pattern whose schema doesn't match the target.
+    default_schema = ctx.scenario.metadata.default_schema
+    if default_schema and ctx.schema_overrides:
+        target_schema = ctx.schema_overrides.get(default_schema, default_schema)
+        # Find all schema names used in "SCHEMA"."TABLE" patterns
+        schema_refs = set(re.findall(r'"([^"]+)"\s*\.\s*"[^"]+"', sql))
+        for old_schema in schema_refs:
+            if old_schema != target_schema:
+                sql = sql.replace(f'"{old_schema}"', f'"{target_schema}"')
+    # Also apply direct schema_overrides (for schemas explicitly listed in config)
+    if ctx.schema_overrides:
+        for original, replacement in ctx.schema_overrides.items():
+            sql = sql.replace(f'"{original}"', f'"{replacement}"')
+    return sql
 
 
 def _cleanup_hana_parameter_conditions(where_clause: str) -> str:

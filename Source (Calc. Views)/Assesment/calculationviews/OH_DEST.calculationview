@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="OH_DEST" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="OH_DEST"/>
+  <metadata activatedAt="2026-03-25 18:33:06.0" changedAt="2026-03-25 18:33:02.134"/>
+  <localVariables>
+    <variable id="Language" parameter="true">
+      <descriptions defaultDescription="Language"/>
+      <variableProperties datatype="NVARCHAR" defaultValue="E" length="1" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings/>
+  <informationModelLayout relativeWidthScenario="51"/>
+  <dataSources>
+    <DataSource id="RSBOHDEST" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSBOHDEST"/>
+    </DataSource>
+    <DataSource id="RSBOHDESTT" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSBOHDESTT"/>
+    </DataSource>
+    <DataSource id="ASSESSMENT_REPORT" type="CALCULATION_VIEW">
+      <viewAttributes allViewAttributes="true"/>
+      <resourceUri>/Assesment/calculationviews/ASSESSMENT_REPORT</resourceUri>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="OHDEST"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="DESTTYPE"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSBOHDEST">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OHDEST" source="OHDEST"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DESTTYPE" source="DESTTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="$$Language$$"/>
+        </viewAttribute>
+        <viewAttribute id="OHDEST"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="TXTSH"/>
+        <viewAttribute id="TXTLG"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSBOHDESTT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OHDEST" source="OHDEST"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTSH" source="TXTSH"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU"/>
+        <viewAttribute id="OHDEST"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="TXTLG"/>
+        <viewAttribute id="DESTTYPE"/>
+        <viewAttribute id="INFOAREA"/>
+        <viewAttribute hidden="true" id="JOIN$OHDEST$OHDEST"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DESTTYPE" source="DESTTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$OHDEST$OHDEST" source="OHDEST"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OHDEST" source="OHDEST"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="JOIN$OHDEST$OHDEST" source="OHDEST"/>
+      </input>
+      <joinAttribute name="JOIN$OHDEST$OHDEST"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="TGT"/>
+        <viewAttribute id="TGTTP">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="DEST"/>
+        </viewAttribute>
+        <viewAttribute aggregationType="max" id="Last_Updated_on"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#ASSESSMENT_REPORT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGT" source="TGT"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TGTTP" source="TGTTP"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="Last_Updated_on" source="DATUM"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_2" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU"/>
+        <viewAttribute id="OHDEST"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="TXTLG"/>
+        <viewAttribute id="DESTTYPE"/>
+        <viewAttribute id="Last_Updated_on"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OHDEST" source="OHDEST"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DESTTYPE" source="DESTTYPE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+      <input node="#Aggregation_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="Last_Updated_on" source="Last_Updated_on"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OHDEST" source="TGT"/>
+      </input>
+      <joinAttribute name="OHDEST"/>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Join_2">
+    <descriptions/>
+    <attributes>
+      <attribute id="LANGU" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LANGU"/>
+        <keyMapping columnObjectName="Join_2" columnName="LANGU"/>
+      </attribute>
+      <attribute id="OHDEST" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OHDEST"/>
+        <keyMapping columnObjectName="Join_2" columnName="OHDEST"/>
+      </attribute>
+      <attribute id="OBJVERS" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OBJVERS"/>
+        <keyMapping columnObjectName="Join_2" columnName="OBJVERS"/>
+      </attribute>
+      <attribute id="TXTLG" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="TXTLG"/>
+        <keyMapping columnObjectName="Join_2" columnName="TXTLG"/>
+      </attribute>
+      <attribute id="DESTTYPE" order="5" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="DESTTYPE"/>
+        <keyMapping columnObjectName="Join_2" columnName="DESTTYPE"/>
+      </attribute>
+      <attribute id="Last_Updated_on" order="6" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="Last_Updated_on"/>
+        <keyMapping columnObjectName="Join_2" columnName="Last_Updated_on"/>
+      </attribute>
+      <attribute id="INFOAREA" order="7" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions/>
+        <keyMapping columnObjectName="Join_2" columnName="INFOAREA"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="176" y="87"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="357"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="357"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="99" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="261"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="165"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

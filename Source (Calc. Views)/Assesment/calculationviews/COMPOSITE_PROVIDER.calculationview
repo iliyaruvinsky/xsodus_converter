@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:AccessControl="http://www.sap.com/ndb/SQLCoreModelAccessControl.ecore" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="COMPOSITE_PROVIDER" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="internal" calculationScenarioType="TREE_BASED" dataCategory="DIMENSION" enforceSqlExecution="false" executionSemantic="UNDEFINED" outputViewType="Projection">
+  <origin/>
+  <descriptions defaultDescription="BEX_QUERIES"/>
+  <metadata activatedAt="2026-03-25 18:28:20.0" changedAt="2026-03-25 18:28:16.2"/>
+  <localVariables>
+    <variable id="Language" parameter="true">
+      <descriptions defaultDescription="Language"/>
+      <variableProperties datatype="NVARCHAR" defaultValue="E" length="1" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+    <variable id="Backdays" parameter="true">
+      <descriptions defaultDescription="Backdays"/>
+      <variableProperties datatype="INTEGER" defaultValue="365" mandatory="false">
+        <valueDomain type="empty"/>
+        <selection multiLine="false" type="SingleValue"/>
+      </variableProperties>
+    </variable>
+  </localVariables>
+  <variableMappings/>
+  <informationModelLayout relativeWidthScenario="50"/>
+  <dataSources>
+    <DataSource id="RSRREPDIR" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSRREPDIR"/>
+    </DataSource>
+    <DataSource id="RSZCOMPDIR" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSZCOMPDIR"/>
+    </DataSource>
+    <DataSource id="RSOHCPR" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSOHCPR"/>
+    </DataSource>
+    <DataSource id="RSOHCPRT" type="DATA_BASE_TABLE">
+      <viewAttributes allViewAttributes="true"/>
+      <columnObject schemaName="SAPK5D" columnObjectName="RSOHCPRT"/>
+    </DataSource>
+  </dataSources>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="COMPUID"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="GENUNIID"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSRREPDIR">
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPUID" source="COMPUID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GENUNIID" source="GENUNIID"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_2" filterExpressionLanguage="COLUMN_ENGINE">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="COMPUID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="COMPID"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="DECIMAL" id="Executed_After" length="15" scale="0" expressionLanguage="COLUMN_ENGINE">
+          <formula>decfloat(format(adddays(now(),-$$Backdays$$),'YYYYMMDD') + '000000')</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#RSZCOMPDIR">
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPUID" source="COMPUID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPID" source="COMPID"/>
+      </input>
+      <filter>(&quot;OBJVERS&quot; ='A')</filter>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_10">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="HCPRNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSOHCPR">
+        <mapping xsi:type="Calculation:AttributeMapping" target="HCPRNM" source="HCPRNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:ProjectionView" id="Projection_11">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LANGU">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="$$Language$$"/>
+        </viewAttribute>
+        <viewAttribute id="HCPRNM"/>
+        <viewAttribute id="OBJVERS">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value="A"/>
+        </viewAttribute>
+        <viewAttribute id="COLNAME">
+          <filter xsi:type="AccessControl:SingleValueFilter" including="true" value=""/>
+        </viewAttribute>
+        <viewAttribute id="DESCRIPTION"/>
+        <viewAttribute id="QUICK_INFO"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#RSOHCPRT">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LANGU" source="LANGU"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HCPRNM" source="HCPRNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="COLNAME" source="COLNAME"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="QUICK_INFO" source="QUICK_INFO"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_1" joinOrder="OUTSIDE_IN" joinType="inner">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="COMPUID"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="GENUNIID"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="COMPID"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPUID" source="COMPUID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="GENUNIID" source="GENUNIID"/>
+      </input>
+      <input node="#Projection_2">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPID" source="COMPID"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="COMPUID" source="COMPUID"/>
+      </input>
+      <joinAttribute name="COMPUID"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:AggregationView" id="Aggregation_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute aggregationType="max" id="LASTUSED"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Join_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="INFOCUBE"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+      </input>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Join_5" dynamic="false" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="HCPRNM"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input node="#Projection_10">
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HCPRNM" source="HCPRNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+      <input node="#Aggregation_1">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HCPRNM" source="INFOCUBE"/>
+      </input>
+      <joinAttribute name="HCPRNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:JoinView" id="Composite" joinOrder="OUTSIDE_IN" joinType="leftOuter">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="DESCRIPTION"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="HCPRNM"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes>
+        <calculatedViewAttribute datatype="NVARCHAR" id="TXTLG" length="60" expressionLanguage="COLUMN_ENGINE">
+          <formula>leftstr(&quot;DESCRIPTION&quot;,60)</formula>
+        </calculatedViewAttribute>
+      </calculatedViewAttributes>
+      <input node="#Join_5">
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HCPRNM" source="HCPRNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+      <input node="#Projection_11">
+        <mapping xsi:type="Calculation:AttributeMapping" target="DESCRIPTION" source="DESCRIPTION"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="HCPRNM" source="HCPRNM"/>
+      </input>
+      <joinAttribute name="HCPRNM"/>
+    </calculationView>
+    <calculationView xsi:type="Calculation:UnionView" id="Union_1">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute id="INFOCUBE"/>
+        <viewAttribute id="LASTUSED"/>
+        <viewAttribute id="TXTLG"/>
+        <viewAttribute datatype="NVARCHAR" id="SOURCE_TYPE" length="4"/>
+        <viewAttribute id="OBJVERS"/>
+        <viewAttribute id="INFOAREA"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <input emptyUnionBehavior="NO_ROW" node="#Composite">
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOCUBE" source="HCPRNM"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="LASTUSED" source="LASTUSED"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="TXTLG" source="TXTLG"/>
+        <mapping xsi:type="Calculation:ConstantAttributeMapping" target="SOURCE_TYPE" null="false" value="HCPR"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="OBJVERS" source="OBJVERS"/>
+        <mapping xsi:type="Calculation:AttributeMapping" target="INFOAREA" source="INFOAREA"/>
+      </input>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Union_1">
+    <descriptions/>
+    <attributes>
+      <attribute id="INFOCUBE" order="1" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="INFOCUBE"/>
+        <keyMapping columnObjectName="Union_1" columnName="INFOCUBE"/>
+      </attribute>
+      <attribute id="LASTUSED" order="2" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="LASTUSED"/>
+        <keyMapping columnObjectName="Union_1" columnName="LASTUSED"/>
+      </attribute>
+      <attribute id="SOURCE_DESC" order="3" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCE_DESC"/>
+        <keyMapping columnObjectName="Union_1" columnName="TXTLG"/>
+      </attribute>
+      <attribute id="SOURCE_TYPE" order="4" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="SOURCE_TYPE"/>
+        <keyMapping columnObjectName="Union_1" columnName="SOURCE_TYPE"/>
+      </attribute>
+      <attribute id="OBJVERS" order="5" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions defaultDescription="OBJVERS"/>
+        <keyMapping columnObjectName="Union_1" columnName="OBJVERS"/>
+      </attribute>
+      <attribute id="INFOAREA" order="6" semanticType="empty" attributeHierarchyActive="false" displayAttribute="false">
+        <descriptions/>
+        <keyMapping columnObjectName="Union_1" columnName="INFOAREA"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures/>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape expanded="true" modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="176" y="87"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="99" y="629"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_2" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="629"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_10" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="22" y="455"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Projection_11" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="253" y="359"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="533"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Aggregation_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="455"/>
+        <rectangleSize height="0" width="0"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Join_5" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="99" y="359"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Composite" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="263"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+      <shape expanded="true" modelObjectName="Union_1" modelObjectNameSpace="CalculationView">
+        <upperLeftCorner x="176" y="165"/>
+        <rectangleSize height="-1" width="-1"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

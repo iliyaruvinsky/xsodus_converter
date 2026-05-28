@@ -237,6 +237,8 @@ def translate_raw_formula(formula: str, ctx) -> str:
         if version_str and str(version_str).startswith("1."):
             result = _convert_in_to_or_for_hana(result)
 
+        # BUG-046: Convert SAP case() function to SQL CASE WHEN expression
+        result = _convert_case_function_to_sql(result)
         result = _convert_if_to_case_for_hana(result)
         result = _translate_string_concat_to_hana(result)
         result = _translate_column_references(result, ctx)
@@ -244,6 +246,8 @@ def translate_raw_formula(formula: str, ctx) -> str:
         # Snowflake mode: IF -> IFF, + -> ||
         # Apply pattern rewrites before catalog rewrites
         result = _apply_pattern_rewrites(result, ctx, mode)
+        # BUG-046: Convert SAP case() function to SQL CASE WHEN expression
+        result = _convert_case_function_to_sql(result)
         result = _translate_if_statements(result, ctx)
         result = _apply_catalog_rewrites(result, ctx)
         result = _translate_string_concatenation(result)
@@ -592,62 +596,22 @@ def _translate_string_concatenation(formula: str) -> str:
 
 
 def _translate_string_concat_to_hana(formula: str) -> str:
-    """Convert || to + for HANA string concatenation.
-    
-    Exception: Don't convert inside REGEXP_LIKE() - those need || for pattern building.
+    """Convert + to || for HANA SQL string concatenation (BUG-042).
+
+    HANA SQL uses || for string concatenation, NOT +.
+    The + operator in XML formulas comes from Column Engine syntax.
+    When generating SQL views (CREATE VIEW AS SELECT...), we need ||.
+
+    Only converts + to || when adjacent to string literals (single-quoted)
+    to avoid converting arithmetic + between numeric operands.
     """
-    
+
     result = formula
-    
-    # Find all REGEXP_LIKE(...) calls and protect them from || → + conversion
-    regexp_calls = []
-    pattern = re.compile(r'REGEXP_LIKE\s*\(', re.IGNORECASE)
-    
-    for match in pattern.finditer(result):
-        start = match.end() - 1  # Position of opening (
-        # Find matching closing paren
-        depth = 1
-        i = match.end()
-        in_quote = False
-        
-        while i < len(result) and depth > 0:
-            c = result[i]
-            if c in ('"', "'") and (i == 0 or result[i-1] != '\\'):
-                in_quote = not in_quote
-            if not in_quote:
-                if c == '(':
-                    depth += 1
-                elif c == ')':
-                    depth -= 1
-            i += 1
-        
-        if depth == 0:
-            # Store the REGEXP_LIKE call content
-            regexp_calls.append((match.start(), i, result[match.start():i]))
-    
-    # Replace || with + EXCEPT inside REGEXP_LIKE calls
-    if not regexp_calls:
-        # No REGEXP_LIKE - simple replacement
-        result = re.sub(r'\|\|', '+', result)
-    else:
-        # Replace in segments, skipping REGEXP_LIKE sections
-        parts = []
-        last_end = 0
-        
-        for start, end, regexp_content in regexp_calls:
-            # Convert || to + in the part before REGEXP_LIKE
-            before = result[last_end:start]
-            parts.append(before.replace('||', '+'))
-            # Keep REGEXP_LIKE content as-is (with ||)
-            parts.append(regexp_content)
-            last_end = end
-        
-        # Convert || to + in the part after last REGEXP_LIKE
-        after = result[last_end:]
-        parts.append(after.replace('||', '+'))
-        
-        result = ''.join(parts)
-    
+    # BUG-042: Convert + to || when used with string literals (safe conversion)
+    # Pattern: 'string' + something → 'string' || something
+    result = re.sub(r"'\s*\+\s*", "' || ", result)
+    # Pattern: something + 'string' → something || 'string'
+    result = re.sub(r"\s*\+\s*'", " || '", result)
     return result
 
 
@@ -661,9 +625,90 @@ def _uppercase_if_statements(formula: str) -> str:
     return result
 
 
+def _convert_case_function_to_sql(formula: str) -> str:
+    """Convert SAP case() function to SQL CASE WHEN expression.
+
+    BUG-046: COLUMN_ENGINE formulas use case(value, match1, result1, ..., default)
+    which is NOT valid SQL. Must convert to CASE value WHEN match1 THEN result1 ... END.
+
+    SAP formula: case(expr, match1, result1, match2, result2, ..., default)
+    SQL output:  CASE expr WHEN match1 THEN result1 WHEN match2 THEN result2 ... ELSE default END
+    """
+
+    result = formula
+    max_iterations = 20
+
+    for _ in range(max_iterations):
+        # Match case( but NOT CASE WHEN (which is already SQL)
+        case_match = re.search(r'\bcase\s*\(', result, re.IGNORECASE)
+        if not case_match:
+            break
+
+        case_start = case_match.start()
+        args_start = case_match.end()
+
+        # Extract arguments using parenthesis counting
+        args = []
+        current = []
+        depth = 1  # Already inside case(
+        in_quote = False
+        i = args_start
+
+        while i < len(result) and depth > 0:
+            c = result[i]
+
+            if c == '"' or c == "'":
+                in_quote = not in_quote
+
+            if not in_quote:
+                if c == '(':
+                    depth += 1
+                elif c == ')':
+                    depth -= 1
+                    if depth == 0:
+                        val = ''.join(current).strip()
+                        if val:
+                            args.append(val)
+                        break
+                elif c == ',' and depth == 1:
+                    val = ''.join(current).strip()
+                    if val:
+                        args.append(val)
+                    current = []
+                    i += 1
+                    continue
+
+            current.append(c)
+            i += 1
+
+        if len(args) < 3:
+            # Need at least: value, match1, result1
+            break
+
+        # First arg is value expression, then WHEN/THEN pairs, optional ELSE default
+        value_expr = args[0]
+        parts = [f"CASE {value_expr}"]
+
+        j = 1
+        while j < len(args) - 1:
+            parts.append(f"WHEN {args[j]} THEN {args[j + 1]}")
+            j += 2
+
+        if j < len(args):
+            parts.append(f"ELSE {args[j]}")
+
+        parts.append("END")
+        case_expr = " ".join(parts)
+
+        case_end = i  # Position of closing )
+        result = result[:case_start] + case_expr + result[case_end + 1:]
+
+    return result
+
+
 def _convert_if_to_case_for_hana(formula: str) -> str:
     """Convert IF() function to CASE WHEN for HANA.
-    
+
     HANA may not support IF() in SELECT clause calculated columns.
     Convert: IF(condition, then_value, else_value)
     To: CASE WHEN condition THEN then_value ELSE else_value END

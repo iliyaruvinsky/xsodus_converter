@@ -19,3 +19,8 @@ scenarios:
     source: "HANA 1.XX XML Views/BW_ON_HANA/CV_EQUIPMENT_STATUSES.xml"
     output: "CV_EQUIPMENT_STATUSES"
     enabled: true
+
+  - id: "TRANSFORMATIONS"
+    source: "BW_ECC_OBJECTS/TRANSFORMATIONS/TRANSFORMATIONS.xml"
+    output: "TRANSFORMATIONS"
+    enabled: true

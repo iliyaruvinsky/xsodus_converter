@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Calculation:scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Calculation="http://www.sap.com/ndb/BiModelCalculation.ecore" schemaVersion="2.3" id="USED_HIERARCHIES" applyPrivilegeType="NONE" checkAnalyticPrivileges="false" defaultClient="$$client$$" defaultLanguage="$$language$$" hierarchiesSQLEnabled="false" translationRelevant="true" visibility="reportingEnabled" calculationScenarioType="SCRIPT_BASED" dataCategory="CUBE" enforceSqlExecution="false" executionSemantic="UNDEFINED" scriptParametersCaseSensitive="true">
+  <origin/>
+  <descriptions defaultDescription="USED_HIERARCHIES"/>
+  <metadata activatedAt="2026-03-13 14:59:44.0" changedAt="2026-03-13 14:59:41.292"/>
+  <defaultSchema schemaName="ABAP"/>
+  <localVariables/>
+  <variableMappings/>
+  <informationModelLayout relativeWidthScenario="27"/>
+  <dataSources/>
+  <calculationViews>
+    <calculationView xsi:type="Calculation:SqlScriptView" id="Script_View">
+      <descriptions/>
+      <viewAttributes>
+        <viewAttribute datatype="NVARCHAR" id="ELTUID" length="25"/>
+        <viewAttribute datatype="NVARCHAR" id="IOBJNM" length="30"/>
+        <viewAttribute datatype="NVARCHAR" id="ENUM" length="4"/>
+        <viewAttribute datatype="NVARCHAR" id="SELTP" length="1"/>
+        <viewAttribute datatype="NVARCHAR" id="SIGN" length="1"/>
+        <viewAttribute datatype="NVARCHAR" id="OPT" length="2"/>
+        <viewAttribute datatype="NVARCHAR" id="LOW" length="1333"/>
+        <viewAttribute datatype="NVARCHAR" id="HIGH" length="1333"/>
+        <viewAttribute datatype="NVARCHAR" id="HIENM" length="30"/>
+        <viewAttribute datatype="NVARCHAR" id="VERSION" length="25"/>
+        <viewAttribute datatype="NVARCHAR" id="DATETO" length="25"/>
+        <viewAttribute datatype="NVARCHAR" id="THJT" length="10"/>
+        <viewAttribute datatype="NVARCHAR" id="DEFTP" length="3"/>
+        <viewAttribute datatype="NVARCHAR" id="SUBDEFTP" length="3"/>
+        <viewAttribute datatype="NVARCHAR" id="MAPNAME" length="30"/>
+        <viewAttribute datatype="NVARCHAR" id="COMP_NAME" length="30"/>
+        <viewAttribute datatype="NVARCHAR" id="VARIABLE_NAME" length="30"/>
+        <viewAttribute datatype="NVARCHAR" id="VARTYP" length="1"/>
+        <viewAttribute datatype="NVARCHAR" id="INFOPROVIDER" length="30"/>
+        <viewAttribute datatype="NVARCHAR" id="QUERY_NAME" length="30"/>
+        <viewAttribute datatype="DECIMAL" id="QUERY_LAST_USED" length="15" scale="0"/>
+        <viewAttribute datatype="NVARCHAR" id="HIEID" length="25"/>
+        <viewAttribute datatype="NVARCHAR" id="HIER_OBJECT" length="30"/>
+        <viewAttribute datatype="NVARCHAR" id="HIER_FROM" length="8"/>
+        <viewAttribute datatype="NVARCHAR" id="HIER_TO" length="8"/>
+        <viewAttribute datatype="NVARCHAR" id="HIENDTFL" length="1"/>
+        <viewAttribute datatype="NVARCHAR" id="INTERVALLEXIST" length="1"/>
+      </viewAttributes>
+      <calculatedViewAttributes/>
+      <definition> 
+ /********* Begin Procedure Script ************/ 
+ BEGIN 
+ 	 var_out = SELECT r.eltuid,
+       r.iobjnm,
+       r.enum,
+       r.seltp,
+       r.sign,
+       r.opt,
+       r.low,
+       r.high,
+       r.hienm,
+       r.version,
+       r.dateto,
+       r.thjt,
+       e.deftp,
+       e.subdeftp,
+       e.mapname,
+       comp.compid     AS COMP_NAME,
+       g.vnam          AS VARIABLE_NAME,
+       g.vartyp,
+       rep.infocube    AS INFOPROVIDER,
+       rep.compid      AS QUERY_NAME,
+       cd.lastused     AS QUERY_LAST_USED,
+       h.hieid,
+       h.iobjnm        AS HIER_OBJECT,
+       h.datefrom      AS HIER_FROM,
+       h.dateto        AS HIER_TO,
+       h.hiendtfl,
+       h.intervallexist
+  FROM &quot;SAPK5D&quot;.&quot;RSZRANGE&quot; AS r
+  INNER JOIN &quot;SAPK5D&quot;.&quot;RSZELTDIR&quot; AS e
+    ON  e.eltuid  = r.eltuid
+    AND e.objvers = r.objvers
+  -- trace element to its parent component (the variable)
+  LEFT JOIN &quot;SAPK5D&quot;.&quot;RSZELTXREF&quot; AS x1
+    ON  x1.seltuid = r.eltuid
+    AND x1.objvers = r.objvers
+  LEFT JOIN &quot;SAPK5D&quot;.&quot;RSZCOMPDIR&quot; AS comp
+    ON  comp.compuid = x1.teltuid
+    AND comp.objvers = 'A'
+  -- variable metadata from RSZGLOBV
+  LEFT JOIN &quot;SAPK5D&quot;.&quot;RSZGLOBV&quot; AS g
+    ON  g.varuniid = x1.teltuid
+    AND g.objvers  = 'A'
+  -- find queries using this variable (LAYTP = 'VAR')
+  LEFT JOIN &quot;SAPK5D&quot;.&quot;RSZELTXREF&quot; AS xv
+    ON  xv.teltuid = x1.teltuid
+    AND xv.objvers = 'A'
+    AND xv.laytp   = 'VAR'
+  LEFT JOIN &quot;SAPK5D&quot;.&quot;RSRREPDIR&quot; AS rep
+    ON  rep.compuid  = xv.seltuid
+    AND rep.objvers  = 'A'
+    AND rep.comptype = 'REP'
+  LEFT JOIN &quot;SAPK5D&quot;.&quot;RSZCOMPDIR&quot; AS cd
+    ON  cd.compuid = rep.compuid
+    AND cd.objvers = rep.objvers
+  -- hierarchy catalog details
+  LEFT JOIN &quot;SAPK5D&quot;.&quot;RSHIEDIR&quot; AS h
+    ON  h.hienm   = r.hienm
+    AND h.iobjnm  = r.iobjnm
+    AND h.objvers  = 'A'
+  WHERE r.objvers = 'A'
+    AND r.hienm &lt;> '';
+
+END /********* End Procedure Script ************/</definition>
+    </calculationView>
+  </calculationViews>
+  <logicalModel id="Script_View">
+    <descriptions/>
+    <attributes>
+      <attribute id="ELTUID" order="1">
+        <descriptions defaultDescription="BW: Unequivocal ID in room and time"/>
+        <keyMapping columnObjectName="Script_View" columnName="ELTUID"/>
+      </attribute>
+      <attribute id="IOBJNM" order="2">
+        <descriptions defaultDescription="InfoObject"/>
+        <keyMapping columnObjectName="Script_View" columnName="IOBJNM"/>
+      </attribute>
+      <attribute id="ENUM" order="3">
+        <descriptions defaultDescription="ENUM"/>
+        <keyMapping columnObjectName="Script_View" columnName="ENUM"/>
+      </attribute>
+      <attribute id="SELTP" order="4">
+        <descriptions defaultDescription="SELTP"/>
+        <keyMapping columnObjectName="Script_View" columnName="SELTP"/>
+      </attribute>
+      <attribute id="SIGN" order="5">
+        <descriptions defaultDescription="SIGN"/>
+        <keyMapping columnObjectName="Script_View" columnName="SIGN"/>
+      </attribute>
+      <attribute id="OPT" order="6">
+        <descriptions defaultDescription="OPT"/>
+        <keyMapping columnObjectName="Script_View" columnName="OPT"/>
+      </attribute>
+      <attribute id="LOW" order="7">
+        <descriptions defaultDescription="LOW"/>
+        <keyMapping columnObjectName="Script_View" columnName="LOW"/>
+      </attribute>
+      <attribute id="HIGH" order="8">
+        <descriptions defaultDescription="HIGH"/>
+        <keyMapping columnObjectName="Script_View" columnName="HIGH"/>
+      </attribute>
+      <attribute id="HIENM" order="9">
+        <descriptions defaultDescription="HIENM"/>
+        <keyMapping columnObjectName="Script_View" columnName="HIENM"/>
+      </attribute>
+      <attribute id="VERSION" order="10">
+        <descriptions defaultDescription="VERSION"/>
+        <keyMapping columnObjectName="Script_View" columnName="VERSION"/>
+      </attribute>
+      <attribute id="DATETO" order="11">
+        <descriptions defaultDescription="DATETO"/>
+        <keyMapping columnObjectName="Script_View" columnName="DATETO"/>
+      </attribute>
+      <attribute id="THJT" order="12">
+        <descriptions defaultDescription="THJT"/>
+        <keyMapping columnObjectName="Script_View" columnName="THJT"/>
+      </attribute>
+      <attribute id="DEFTP" order="13">
+        <descriptions defaultDescription="DEFTP"/>
+        <keyMapping columnObjectName="Script_View" columnName="DEFTP"/>
+      </attribute>
+      <attribute id="SUBDEFTP" order="14">
+        <descriptions defaultDescription="SUBDEFTP"/>
+        <keyMapping columnObjectName="Script_View" columnName="SUBDEFTP"/>
+      </attribute>
+      <attribute id="MAPNAME" order="15">
+        <descriptions defaultDescription="MAPNAME"/>
+        <keyMapping columnObjectName="Script_View" columnName="MAPNAME"/>
+      </attribute>
+      <attribute id="COMP_NAME" order="16">
+        <descriptions defaultDescription="COMP_NAME"/>
+        <keyMapping columnObjectName="Script_View" columnName="COMP_NAME"/>
+      </attribute>
+      <attribute id="VARIABLE_NAME" order="17">
+        <descriptions defaultDescription="VNAM"/>
+        <keyMapping columnObjectName="Script_View" columnName="VARIABLE_NAME"/>
+      </attribute>
+      <attribute id="VARTYP" order="18">
+        <descriptions defaultDescription="VARTYP"/>
+        <keyMapping columnObjectName="Script_View" columnName="VARTYP"/>
+      </attribute>
+      <attribute id="INFOPROVIDER" order="19">
+        <descriptions defaultDescription="INFOCUBE"/>
+        <keyMapping columnObjectName="Script_View" columnName="INFOPROVIDER"/>
+      </attribute>
+      <attribute id="QUERY_NAME" order="20">
+        <descriptions defaultDescription="QUERY_NAME"/>
+        <keyMapping columnObjectName="Script_View" columnName="QUERY_NAME"/>
+      </attribute>
+      <attribute id="HIEID" order="22">
+        <descriptions defaultDescription="HIEID"/>
+        <keyMapping columnObjectName="Script_View" columnName="HIEID"/>
+      </attribute>
+      <attribute id="HIER_OBJECT" order="23">
+        <descriptions defaultDescription="HIER_OBJECT"/>
+        <keyMapping columnObjectName="Script_View" columnName="HIER_OBJECT"/>
+      </attribute>
+      <attribute id="HIER_FROM" order="24">
+        <descriptions defaultDescription="HIER_FROM"/>
+        <keyMapping columnObjectName="Script_View" columnName="HIER_FROM"/>
+      </attribute>
+      <attribute id="HIER_TO" order="25">
+        <descriptions defaultDescription="HIER_TO"/>
+        <keyMapping columnObjectName="Script_View" columnName="HIER_TO"/>
+      </attribute>
+      <attribute id="HIENDTFL" order="26">
+        <descriptions defaultDescription="HIENDTFL"/>
+        <keyMapping columnObjectName="Script_View" columnName="HIENDTFL"/>
+      </attribute>
+      <attribute id="INTERVALLEXIST" order="27">
+        <descriptions defaultDescription="INTERVALLEXIST"/>
+        <keyMapping columnObjectName="Script_View" columnName="INTERVALLEXIST"/>
+      </attribute>
+    </attributes>
+    <calculatedAttributes/>
+    <privateDataFoundation>
+      <tableProxies/>
+      <joins/>
+      <layout>
+        <shapes/>
+      </layout>
+    </privateDataFoundation>
+    <baseMeasures>
+      <measure id="QUERY_LAST_USED" order="21" aggregationType="sum" measureType="simple">
+        <descriptions defaultDescription="QUERY_LAST_USED"/>
+        <measureMapping columnObjectName="Script_View" columnName="QUERY_LAST_USED"/>
+      </measure>
+    </baseMeasures>
+    <calculatedMeasures/>
+    <restrictedMeasures/>
+    <localDimensions/>
+  </logicalModel>
+  <layout>
+    <shapes>
+      <shape modelObjectName="Output" modelObjectNameSpace="MeasureGroup">
+        <upperLeftCorner x="40" y="85"/>
+      </shape>
+    </shapes>
+  </layout>
+</Calculation:scenario>

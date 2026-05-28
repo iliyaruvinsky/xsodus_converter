@@ -1,10 +1,221 @@
 # LLM Handover - X2S Converter Monorepo
 
-**Last Updated**: 2025-12-22 (SESSION 11: BUG-040 VALIDATED, 15 XMLs)
+**Last Updated**: 2026-05-10 (SESSION 16: BUG-053 — CV_E2E_VST.xml)
 **Repo**: https://github.com/iliyaruvinsky/xsodus_converter
 **Structure**: Optimal monorepo with pipeline isolation
-**Status**: ✅ xml-to-sql pipeline FULLY MIGRATED & WORKING (15 XMLs validated)
+**Status**: ✅ xml-to-sql pipeline FULLY MIGRATED & WORKING (22 XMLs validated in HANA)
 **SDLC**: ✅ 7-process framework with procedures in `pipelines/xml-to-sql/docs/procedures/`
+
+---
+
+## 📋 SESSION 16 Summary (2026-05-10) — BUG-053 + Source XML Fix
+
+**XML Tested**: CV_E2E_VST.xml (Maccabi BW_ON_HANA)
+**Validation Status**: ✅ VALIDATED in HANA (CREATE VIEW: 75ms, DROP: 5ms)
+**Total Bugs**: 53 (40 solved, 1 new this session — BUG-053 VALIDATED)
+
+**Issues Resolved**:
+1. **Source XML fix** — CV_E2E_VST.xml line 515 had unescaped `"` in `rightInput` attribute breaking XML parsing in browsers/lxml. HANA Studio is lenient with its own malformed exports. Fixed with `&quot;` escaping.
+
+2. **BUG-053**: Integer-declared calc columns returning string literals break downstream SUM/AVG
+   - Calc column declared `<inlineType primitiveType="SMALLINT"/>` but formula returns `'1'`/`'0'` string literals
+   - HANA Column Engine auto-coerces, standard SQL doesn't
+   - Fix: Wrap calc expression with `TO_INTEGER()` when declared type is integer-class (NUMBER, scale=0)
+   - Same pattern as BUG-040 but at calc column level (BUG-040 wraps SUM/AVG inputs for VARCHAR source columns)
+   - Applied in 3 renderer locations (projection ~449, JOIN ~671, aggregation ~845)
+
+**Files Modified**:
+- `Source (XML Files)/HANA XML Views/Maccabi-BW_ON_HANA/CV_E2E_VST.xml`: Line 515 — escaped inner `"` as `&quot;`
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: BUG-053 in 3 locations (added `elif` branch after BUG-051's BOOLEAN check)
+
+**Documentation Updated**:
+- BUG_TRACKER.md: BUG-053 entry, statistics updated (53 total, 40 solved)
+- SOLVED_BUGS.md: BUG-053 full entry, statistics updated
+- GOLDEN_COMMIT.yaml: CV_E2E_VST.xml entry added (AWAITING VALIDATION)
+- HANA_CONVERSION_RULES.md: Rule 24 (Integer calc column TO_INTEGER wrap)
+
+**Regression**: Tested CV_EQUIPMENT_STATUSES, CV_INVENTORY_ORDERS, CV_TOP_PTHLGY, CV_PURCHASE_ORDERS, INFOOBJECTS, ADSO, USED_HIERARCHIES — all parse and render successfully.
+
+**Next Steps**: User to validate CV_E2E_VST.sql in HANA on both BID and MBD systems.
+
+---
+
+## 📋 SESSION 15 Summary (2026-03-26) — BUG-051, BUG-052
+
+**XMLs Tested**: TRANFORMATIONS.xml, USED_HIERARCHIES.xml
+**Validation Status**: ✅ VALIDATED on both BID and MBD systems
+**Total Bugs**: 52 (39 solved, 2 new this session)
+
+**Bugs Fixed**:
+1. **BUG-051**: BOOLEAN calculated columns rendered as bare boolean expressions in SELECT
+   - HANA SQL doesn't support `expr1='x' or expr2='y' AS COL` — needs `CASE WHEN (...) THEN 1 ELSE 0 END`
+   - Fix: Added BOOLEAN detection in all 3 calc column rendering paths in `renderer.py` (lines 443-448, 657-661, 825-829)
+   - XML: TRANFORMATIONS.xml (`<calculatedViewAttribute datatype="BOOLEAN" id="Comments">`)
+
+2. **BUG-052**: SqlScriptView nodes generate `SELECT 1 AS placeholder` instead of embedded SQL
+   - Script-based CVs (`calculationScenarioType="SCRIPT_BASED"`) have SQL in `<definition>` element
+   - Fix: Parser extracts `<definition>` into `node.properties["script_definition"]`; parses `<defaultSchema>` into metadata
+   - Renderer's `_extract_select_from_script()` extracts SELECT, resolves defaultSchema through schema_overrides, auto-replaces hardcoded schemas (e.g., `SAPK5D → SAPABAP1`)
+   - No manual config needed — uses existing `ABAP: SAPABAP1` override
+   - XML: USED_HIERARCHIES.xml
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py`: BUG-051 (3 locations) + BUG-052 (2 locations + helper)
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/scenario_parser.py`: BUG-052 (defaultSchema parse + definition extraction)
+- `pipelines/xml-to-sql/src/xml_to_sql/domain/models.py`: Added `default_schema` to ScenarioMetadata
+
+**Documentation Updated**:
+- BUG_TRACKER.md: BUG-051 + BUG-052 entries, statistics updated (52 total)
+- SOLVED_BUGS.md: BUG-051 + BUG-052 full entries, statistics updated (39 solved)
+- GOLDEN_COMMIT.yaml: TRANFORMATIONS.xml + USED_HIERARCHIES.xml entries added (AWAITING VALIDATION)
+- HANA_CONVERSION_RULES.md: Rule 22 (BOOLEAN→CASE WHEN) + Rule 23 (SqlScriptView extraction)
+
+**Next Steps**: User to validate both SQLs in HANA. Continue with remaining 10 XMLs from SESSION 14 list.
+
+---
+
+## 📋 SESSION 14 Summary (2026-03-03) - SUCCESS
+
+**XML Tested**: ADSO.xml (SAP BW ADSO catalogue view, SAPK5D schema, dataCategory=DIMENSION)
+**Validation Time**: Validated in HANA (execution time TBD)
+**Total Validated XMLs**: 19
+
+**Context**: User started converting 11 new XML views one by one (ADSO, INFOCUBES, MULTIPROVIDERS, COMPOSITE_PROVIDER, INFOSET, OH_DEST, END_POINT, SELF_LOAD, DSO_STRUCT, BEX_QUERIES, DATA_SOURCES). ADSO.xml was the first.
+
+**Errors Encountered & Fixed**:
+1. `[257]: sql syntax error: incorrect syntax near ")"` (line 75) → **BUG-047 FIXED**
+2. `[328]: invalid name of function or procedure: DECFLOAT` (line 38) → **BUG-048 FIXED**
+
+**Bugs Resolved**:
+- **BUG-047**: ✅ VALIDATED - Single-input Union node generates broken placeholder SQL
+  - SAP BW uses 1-input Union nodes as projection+rename nodes (column renames + constant injection)
+  - `_render_union()` in `renderer.py` line 835: guard was `< 2` (broke 1-input unions), changed to `== 0`
+  - File: `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py` line 835
+  - 1-line change; zero regression risk (all 18 prior validated XMLs have 0 or 2+ input unions)
+- **BUG-048**: ✅ VALIDATED - `decfloat()` Column Engine function not valid in HANA SQL ([328] error)
+  - `decfloat()` is a Column Engine type-cast; not a HANA SQL function
+  - Fix: Added `DECFLOAT → TO_DECIMAL` to `src/xml_to_sql/catalog/data/functions.yaml` + mirror
+  - Files: `src/xml_to_sql/catalog/data/functions.yaml`, `catalog/hana/data/functions.yaml`
+
+**Documentation Updated**:
+- BUG_TRACKER.md: Statistics updated (48 total, 37 solved), SESSION 14 added, By Category/XML updated
+- SOLVED_BUGS.md: BUG-047 + BUG-048 full entries, statistics updated (37 solved, 19 XMLs)
+- GOLDEN_COMMIT.yaml: ADSO.xml entry added (status VALIDATED), count 19, SESSION 14 update
+- HANA_CONVERSION_RULES.md: Rule 18 (single-input Union pass-through) + Rule 19 (DECFLOAT→TO_DECIMAL) added
+
+**Next Steps**: Continue converting remaining 10 XMLs (INFOCUBES, MULTIPROVIDERS, COMPOSITE_PROVIDER, INFOSET, OH_DEST, END_POINT, SELF_LOAD, DSO_STRUCT, BEX_QUERIES, DATA_SOURCES)
+
+## 📋 SESSION 14 Addendum (2026-03-03) — Conversion Issues Review
+
+**Trigger**: Downstream agent (Postgres SQL converter) reviewed all 19 converted SQL files and filed `CONVERSION_ISSUES_PROMPT.md` listing 6 issue categories.
+
+**Investigation results** (by issue):
+
+| Issue | Finding | Action |
+|-------|---------|--------|
+| ISSUE 1: `$$lang$$` → `''` | **Converter bug** (BUG-049) | **FIXED** |
+| ISSUE 2: Dead `EXECUTED_AFTER` column | Cosmetic — converter faithfully translates XML | No fix |
+| ISSUE 3: Missing `OBJVERS='A'` on RSZCOMPDIR | **Converter bug** (BUG-050) | **FIXED** |
+| ISSUE 4: EXPERT CTE wrong join column | Source XML copy-paste error in TRANFORMATIONS.xml | No converter fix |
+| ISSUE 5: INNER vs LEFT OUTER JOIN | Current converter already correct (leftOuter parsed correctly) | No fix |
+| ISSUE 6: `$$colname$$` → `''` | Same root as ISSUE 1 — `''` IS correct (defaultValue='') | Fixed by BUG-049 |
+
+**Bugs Fixed**:
+- **BUG-049** ✅ FIXED: `$$param$$` placeholders in SingleValueFilter rendered as `''` instead of defaultValue
+  - Root cause: LITERAL expressions never pass through `_substitute_placeholders()`; cleanup regex strips placeholder inside quotes
+  - Fix: `renderer.py` — added `_resolve_parameter_literal()` helper, call before `_render_literal()` when value contains `$$`
+  - File: `pipelines/xml-to-sql/src/xml_to_sql/sql/renderer.py` (LITERAL branch ~line 1071 + new helper after `_render_literal`)
+  - Result: `LANGU = 'E'` (was `''`); `COLNAME = ''` preserved (defaultValue IS '')
+- **BUG-050** ✅ FIXED: Node-level `<filter>` elements on ProjectionView silently dropped
+  - Root cause: `_parse_filters()` only scans `<viewAttribute>` children; bare `<filter>` direct child of calculationView was never read
+  - Fix: `scenario_parser.py` `_parse_projection()` — read bare `<filter>` child and append as `Predicate(kind=PredicateKind.RAW, ...)`
+  - File: `pipelines/xml-to-sql/src/xml_to_sql/parser/scenario_parser.py` (~line 308)
+  - Result: `WHERE (("OBJVERS" ='A'))` now appears in RSZCOMPDIR/ZDTP_TRFN projections
+
+**Regression test**: 12 XMLs tested, all pass (0 failures)
+
+**Documentation Updated**:
+- BUG_TRACKER.md: BUG-049 + BUG-050 added (50 total, 6 awaiting validation)
+- HANA_CONVERSION_RULES.md: Rule 20 (parameter literal resolution) + Rule 21 (node-level filter parsing)
+- llm_handover.md: This entry
+
+**Not Converter Bugs** (documented for reference):
+- ISSUE 4: TRANFORMATIONS.xml EXPERT JoinView copies ENDROUTINE join condition — source CV authoring error, not converter responsibility
+- ISSUE 2: EXECUTED_AFTER computed column unused downstream — converter correctly translates what's in XML
+
+---
+
+## 📋 SESSION 13 Summary (2025-02-28) - SUCCESS
+
+**XML Tested**: INFOOBJECTS.xml (re-test after BUG-046 fix)
+**Validation Time**: 51ms
+**Total Validated XMLs**: 18
+
+**Error Encountered & Fixed**:
+1. `[257]: sql syntax error: incorrect syntax near ","` (from `case()` function literal in SQL) → **BUG-046 VALIDATED**
+
+**Bug Resolved**:
+- **BUG-046**: ✅ VALIDATED (51ms) - SAP `case()` function not converted to SQL CASE WHEN
+  - COLUMN_ENGINE formulas use `case(value, match1, result1, ..., default)` — not valid SQL
+  - `translate_raw_formula()` had no handler for `case()` (had IF, IN, concat, but not case)
+  - Fix: Added `_convert_case_function_to_sql()` to `function_translator.py` (lines 628-706)
+  - Called in both HANA mode (line 241) and Snowflake mode (line 250)
+  - UNIVERSAL FIX — applies to any XML with COLUMN_ENGINE case() formulas
+
+**Documentation Updated**:
+- BUG_TRACKER.md: Statistics updated (46 total, 35 solved), SESSION 13 added
+- SOLVED_BUGS.md: BUG-046 full entry, statistics updated (35 solved, 18 XMLs)
+- GOLDEN_COMMIT.yaml: INFOOBJECTS.xml updated (51ms), count 18, SESSION 13 section
+- HANA_CONVERSION_RULES.md: Priority 38 rule added (case() → CASE WHEN)
+
+---
+
+## 📋 SESSION 12 Summary (2025-02-26) - SUCCESS
+
+**XMLs Tested**:
+- TRANSFORMATIONS_DETAILS.xml (BW, SAPABAP1) → ✅ VALIDATED in HANA
+- INFOOBJECTS.xml (BW, SAPABAP1) → ✅ VALIDATED in HANA
+- DSO.xml (SAPK5D schema, DIMENSION) → ✅ Conversion successful, ⏳ awaiting HANA validation
+
+**Errors Encountered & Fixed**:
+1. `[339]: invalid number: not a valid number string ''` (from `+` concatenation) → **BUG-042 VALIDATED**
+2. `[339]: invalid number: not a valid number string ''` (from UNION `''` padding) → **BUG-043 VALIDATED**
+3. `[328]: invalid name of function: RIGHTSTRU` → **BUG-044 VALIDATED**
+4. `cannot access local variable 'data_type'` (BUG-043 regression) → **BUG-045 SOLVED** (awaiting HANA)
+
+**Bugs Resolved**:
+- **BUG-042**: ✅ VALIDATED - Column Engine `+` (string concatenation) → HANA SQL `||`
+  - `_translate_string_concat_to_hana()` was backwards (converted `||` → `+` instead of `+` → `||`)
+  - Fix: Reversed function to convert `+` → `||` when adjacent to string literals
+  - File: `function_translator.py` lines 594-611
+- **BUG-043**: ✅ VALIDATED - `ConstantAttributeMapping null="true"` renders as SQL `NULL` instead of `''`
+  - UNION ALL type precedence promotes INT columns → `''` fails to convert
+  - Fix: Parser checks `null="true"` attribute, creates RAW "NULL" expression
+  - Files: `scenario_parser.py` lines 421-425, `renderer.py` lines 1080-1082
+  - ⚠️ Introduced regression BUG-045 (fixed same session)
+- **BUG-044**: ✅ VALIDATED - `RIGHTSTRU` / `LEFTSTRU` Unicode function variants not in catalog
+  - SAP Column Engine Unicode variants (`*STRU`) map to same HANA SQL targets as non-Unicode
+  - Fix: Added `RIGHTSTRU` → `RIGHT`, `LEFTSTRU` → `LEFT` to functions.yaml catalog
+  - File: `src/xml_to_sql/catalog/data/functions.yaml` (⚠️ NOT `catalog/hana/data/`)
+- **BUG-045**: ✅ SOLVED (awaiting HANA) - BUG-043 regression: `UnboundLocalError` for `data_type`
+  - BUG-043's null branch forgot to assign `data_type` before `AttributeMapping()` constructor
+  - Only triggered when `null="true"` is the FIRST mapping in a UNION input (DSO.xml)
+  - Fix: Added `data_type = guess_attribute_type(target)` on line 425 of scenario_parser.py
+  - One surgical line — all three branches now initialize `data_type`
+
+**Scope**: All four fixes are UNIVERSAL — apply automatically to all future XMLs.
+
+**⚠️ CRITICAL LESSON — DUPLICATE CATALOG FILES**:
+There are TWO `functions.yaml` files. Only ONE is used by running code:
+- `src/xml_to_sql/catalog/data/functions.yaml` → **USED BY CODE** (Python package `xml_to_sql.catalog.data`)
+- `catalog/hana/data/functions.yaml` → **DOCUMENTATION MIRROR ONLY** (NOT loaded by code)
+Always edit the `src/` version for catalog changes.
+
+**Documentation Updated**:
+- SOLVED_BUGS.md: BUG-042, BUG-043, BUG-044, BUG-045 added with full solutions
+- BUG_TRACKER.md: Statistics updated (45 total, 34 solved)
+- HANA_CONVERSION_RULES.md: Updated Priority 10 (Unicode variants), Priority 50 (+ → ||), Priority 55 (UNION NULL)
+- GOLDEN_COMMIT.yaml: DSO.xml added (awaiting HANA validation)
 
 ---
 

@@ -93,11 +93,15 @@ def parse_scenario(path: Path) -> Scenario:
     if root_tag == "ColumnView":
         return parse_column_view(path, root)
 
+    # BUG-052: Parse <defaultSchema schemaName="..."/> for script view schema resolution
+    default_schema_el = _find_child(root, "defaultSchema")
+    default_schema = default_schema_el.get("schemaName") if default_schema_el is not None else None
     metadata = ScenarioMetadata(
         scenario_id=root.get("id"),
         description=_get_default_description(root),
         default_client=root.get("defaultClient"),
         default_language=root.get("defaultLanguage"),
+        default_schema=default_schema,
     )
     scenario = Scenario(metadata=metadata)
     ctx = ParseContext(scenario=scenario, path=path)
@@ -249,6 +253,12 @@ def _parse_nodes(ctx: ParseContext, root: etree._Element) -> None:
             calculated_attrs = _parse_calculated_view_attributes(node_el)
             mappings, _ = _parse_mappings(node_el)
             filters = _parse_filters(node_el)
+            # BUG-052: Extract <definition> from SqlScriptView nodes
+            properties: Dict[str, str] = {}
+            if node_type.endswith("SqlScriptView"):
+                definition_el = _find_child(node_el, "definition")
+                if definition_el is not None and definition_el.text:
+                    properties["script_definition"] = definition_el.text.strip()
             parsed = Node(
                 node_id=node_id,
                 kind=NodeKind.CALCULATION,
@@ -257,6 +267,7 @@ def _parse_nodes(ctx: ParseContext, root: etree._Element) -> None:
                 filters=filters,
                 view_attributes=view_attrs,
                 calculated_attributes=calculated_attrs,
+                properties=properties,
             )
         ctx.scenario.add_node(parsed)
 
@@ -305,6 +316,18 @@ def _parse_variables(ctx: ParseContext, root: etree._Element) -> None:
 def _parse_projection(node_el: etree._Element, node_id: str, inputs: List[str]) -> Node:
     mappings, _ = _parse_mappings(node_el)
     filters = _parse_filters(node_el)
+    # BUG-050: Also parse node-level <filter> element (COLUMN_ENGINE expression on the view itself).
+    # _parse_filters() only handles filters nested inside <viewAttribute> elements.
+    # Some projections also have a bare <filter> child with a COLUMN_ENGINE expression like:
+    #   <filter>(&quot;OBJVERS&quot; ='A')</filter>
+    # lxml auto-decodes HTML entities in .text, so &quot; becomes " automatically.
+    bare_filter_el = _find_child(node_el, "filter")
+    if bare_filter_el is not None and bare_filter_el.text:
+        formula = bare_filter_el.text.strip()
+        filters.append(Predicate(
+            kind=PredicateKind.RAW,
+            left=Expression(ExpressionType.RAW, formula, None),
+        ))
     view_attrs = _parse_view_attribute_ids(node_el)
     calculated_attrs = _parse_calculated_view_attributes(node_el)
     return Node(
@@ -418,8 +441,15 @@ def _parse_mappings(node_el: etree._Element) -> Tuple[List[AttributeMapping], Li
                 constant_value = mapping_el.get("value", "")
                 if not target:
                     continue
-                data_type = guess_attribute_type(target)
-                expr = Expression(ExpressionType.LITERAL, constant_value, data_type)
+                # BUG-043: Check null="true" attribute — render as SQL NULL, not empty string ''
+                # HANA UNION ALL type resolution fails when '' is mixed with INTEGER columns
+                null_flag = mapping_el.get("null", "false").lower() == "true"
+                if null_flag and not constant_value:
+                    data_type = guess_attribute_type(target)
+                    expr = Expression(ExpressionType.RAW, "NULL")
+                else:
+                    data_type = guess_attribute_type(target)
+                    expr = Expression(ExpressionType.LITERAL, constant_value, data_type)
             elif not target or not source:
                 continue
             else:
