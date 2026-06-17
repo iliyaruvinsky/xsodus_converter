@@ -1,10 +1,55 @@
 # LLM Handover - X2S Converter Monorepo
 
-**Last Updated**: 2026-05-10 (SESSION 16: BUG-053 — CV_E2E_VST.xml)
+**Last Updated**: 2026-05-10 (SESSION 17: BUG-054 — HANA Studio XML pre-processor)
 **Repo**: https://github.com/iliyaruvinsky/xsodus_converter
 **Structure**: Optimal monorepo with pipeline isolation
-**Status**: ✅ xml-to-sql pipeline FULLY MIGRATED & WORKING (22 XMLs validated in HANA)
+**Status**: ✅ xml-to-sql pipeline FULLY MIGRATED & WORKING (22 XMLs validated, 23rd auto-fixable via pre-processor)
 **SDLC**: ✅ 7-process framework with procedures in `pipelines/xml-to-sql/docs/procedures/`
+
+---
+
+## 📋 SESSION 17 Summary (2026-05-10) — BUG-054 + Durable Fix for HANA Studio Export Bug
+
+**Issue**: SESSION 16 manually escaped quotes in CV_E2E_VST.xml line 515 (HANA Studio export bug). User re-exported from HANA Studio → fresh file had the **same malformation**. Manual fix is unsustainable for every re-export.
+
+**BUG-054 Solution** — converter-side XML pre-processor:
+- New module `parser/xml_sanitizer.py` exports `sanitize_hana_xml_bytes(bytes) -> bytes`
+- Regex: `((?:left|right)Input="[^"]*?)"([A-Z][A-Z0-9_]*)"([^"]*?")` → `\1&quot;\2&quot;\3`
+- Tightly scoped to `leftInput`/`rightInput` attributes only
+- Idempotent, no false positives (verified across 64 source XMLs)
+
+**Injection points** (all 4 XML entry chokepoints covered):
+1. `parser/scenario_parser.py:85` — `parse_scenario()` covers CLI + web temp file + ColumnView dispatch
+2. `web/api/routes.py:90, 214, 436` — 3 FastAPI handlers covers entire web upload surface
+3. `web/services/converter.py:172` — defensive sanitize before validation parse
+4. `cli/app.py:139` — CLI format-detection parse
+
+**Investigation workflow** (4 parallel agents):
+- Entry points mapping: 6 lxml.parse sites identified, ranked by coverage
+- Source XML scan: 64 files scanned, 1 affected (CV_E2E_VST only)
+- Existing preprocessing audit: none found, new helper required
+- Regex validation: 0 false positives across corpus, safe pattern confirmed
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/xml_sanitizer.py` — NEW MODULE
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/scenario_parser.py` (parse_scenario)
+- `pipelines/xml-to-sql/src/xml_to_sql/web/api/routes.py` (3 handlers)
+- `pipelines/xml-to-sql/src/xml_to_sql/web/services/converter.py` (validation parse)
+- `pipelines/xml-to-sql/src/xml_to_sql/cli/app.py` (format detection)
+
+**Tests**:
+- Sanitizer unit (malformed → escaped) ✓
+- Idempotence (twice == once) ✓
+- No-op on clean XML ✓
+- End-to-end on user's `CV_E2E_VST (1).xml` from Downloads ✓
+- Regression on 7 validated XMLs — 0 malformed segments, all render correctly ✓
+
+**Documentation Updated**:
+- BUG_TRACKER.md: BUG-054 entry, stats updated (54 total)
+- SOLVED_BUGS.md: BUG-054 full entry with regex + injection points
+- HANA_CONVERSION_RULES.md: Rule 25 (HANA Studio Malformed XML Pre-Processor)
+
+**Next Steps**: User re-exports CV_E2E_VST from HANA Studio (or any future malformed export) → converter handles it transparently.
 
 ---
 

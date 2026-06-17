@@ -2318,12 +2318,83 @@ SUM(CC_PATTEST)  -- works
 
 ---
 
+### BUG-054: HANA Studio Exports Malformed XML with Unescaped Quotes in leftInput/rightInput
+
+**Original Bug**: BUG-054
+**Discovered**: 2026-05-10 (recurrence of SESSION 16 manual fix — durable converter-side solution)
+**Resolved**: 2026-05-10 (awaiting validation on fresh HANA Studio re-export)
+
+**Error**:
+```
+XML parsing error: attributes construct error, line 514, column 69
+This file is not valid XML. Please check: ...
+```
+
+**Problem**:
+HANA Studio exports `leftInput`/`rightInput` attribute values with unescaped literal `"` quotes around schema names:
+```xml
+<join leftInput="#//Join_2/Projection_1"
+      rightInput="#//Join_2/"ABAP"./BIC/QEYPOSPER"
+      joinType="leftOuter">
+```
+lxml (and any standards-compliant XML parser) correctly rejects this — the `"ABAP"` characters prematurely terminate the attribute value. HANA Studio's own parser is lenient with its own export bugs, but the converter (and browsers) aren't.
+
+This was first encountered in SESSION 16 and fixed manually by editing the source XML. The second occurrence (fresh HANA Studio re-export, same XML) confirmed it would recur for every user, every re-export. A converter-side fix is required.
+
+**Root Cause**:
+HANA Studio export bug — should emit `&quot;` for inner quotes but emits literal `"`. The converter previously passed XML bytes directly to lxml.parse() with no pre-processing.
+
+**Solution**:
+New module `parser/xml_sanitizer.py` exporting `sanitize_hana_xml_bytes(xml_content: bytes) -> bytes`:
+```python
+HANA_MALFORMED_QUOTE_PATTERN = re.compile(
+    rb'((?:left|right)Input="[^"]*?)"([A-Z][A-Z0-9_]*)"([^"]*?")'
+)
+
+def sanitize_hana_xml_bytes(xml_content: bytes) -> bytes:
+    if not xml_content:
+        return xml_content
+    if b'leftInput' not in xml_content and b'rightInput' not in xml_content:
+        return xml_content  # fast bail-out for clean XMLs
+    return HANA_MALFORMED_QUOTE_PATTERN.sub(rb'\1&quot;\2&quot;\3', xml_content)
+```
+
+**Injection points** (all 4 XML entry points covered):
+1. `parser/scenario_parser.py:85` — `parse_scenario()` reads bytes → sanitize → `etree.parse(BytesIO(...))`. Covers CLI + web temp file path AND ColumnView dispatch (CV_E2E_VST is a ColumnView).
+2. `web/api/routes.py:90, 214, 436` — 3 FastAPI handlers sanitize right after `await file.read()`. Covers entire web upload surface including downstream `prettify_xml` and `converter.py` validation parse.
+3. `web/services/converter.py:172` — defensive sanitize before validation `etree.parse()`. Idempotent if route handlers already sanitized.
+4. `cli/app.py:139` — CLI secondary parse for format detection.
+
+**False-positive analysis** (verified across 64 source XMLs):
+- `<entity>#//"ABAP"./BIC/X</entity>` — text content with literal quotes is valid XML, regex doesn't match (anchored to `leftInput=` / `rightInput=` only).
+- `<comment text="&quot;X&quot; = '00'"/>` — different attribute, regex doesn't match.
+- Already-escaped `&quot;` — no literal `"` to match → mathematically idempotent.
+- Zero legitimate uses of literal `"` inside `leftInput`/`rightInput` found anywhere in source tree.
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/xml_sanitizer.py` — NEW MODULE
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/scenario_parser.py` (parse_scenario)
+- `pipelines/xml-to-sql/src/xml_to_sql/web/api/routes.py` (3 FastAPI handlers)
+- `pipelines/xml-to-sql/src/xml_to_sql/web/services/converter.py` (validation parse)
+- `pipelines/xml-to-sql/src/xml_to_sql/cli/app.py` (format detection parse)
+
+**Tests run**:
+- Sanitizer unit: malformed → escaped output ✓
+- Idempotence: twice == once ✓
+- No-op on clean XML: unchanged ✓
+- End-to-end on user's failing CV_E2E_VST (1).xml from Downloads: parses + renders successfully ✓
+- Regression on 7 validated XMLs (CV_EQUIPMENT_STATUSES, CV_INVENTORY_ORDERS, CV_TOP_PTHLGY, CV_PURCHASE_ORDERS, INFOOBJECTS, ADSO, USED_HIERARCHIES): zero malformed segments detected, all render identically ✓
+
+**Scope**: UNIVERSAL — any future HANA Studio re-export with this pattern is auto-fixed. No source XML editing needed by users.
+
+---
+
 ## Statistics
 
-**Total Solved**: 40 (SOLVED-001 through SOLVED-028, BUG-029, BUG-030, BUG-032, BUG-033, BUG-034, BUG-035, BUG-040, BUG-042, BUG-043, BUG-044, BUG-045, BUG-046, BUG-047, BUG-048, BUG-051, BUG-052, BUG-053)
+**Total Solved**: 40 (SOLVED-001 through SOLVED-028, BUG-029, BUG-030, BUG-032, BUG-033, BUG-034, BUG-035, BUG-040, BUG-042, BUG-043, BUG-044, BUG-045, BUG-046, BUG-047, BUG-048, BUG-051, BUG-052, BUG-053) + BUG-054 awaiting validation
 **Total Pending**: 3 (BUG-019, BUG-002, BUG-003)
 **XMLs Validated**: 22 (CV_E2E_VST validated 2026-05-10, 75ms)
-**Latest Success**: BUG-053 ✅ VALIDATED (SESSION 16, 2026-05-10) — CV_E2E_VST.xml CREATE VIEW 75ms
+**Latest Fix**: BUG-054 ✅ FIXED (SESSION 17, 2026-05-10) — HANA Studio XML pre-processor (xml_sanitizer module)
 
 **Time to Resolution**:
 - BUG-004: < 1 hour (same session)

@@ -1580,6 +1580,52 @@ SUM(CC_PATTEST)  -- works
 
 ---
 
+### Rule 25: HANA Studio Malformed XML Pre-Processor (BUG-054)
+
+**Priority**: Applied at XML ingestion (pre-parse, string-level)
+**Source Pattern**: `leftInput="..."` or `rightInput="..."` attributes containing unescaped literal `"` quotes around an uppercase identifier (HANA schema name), e.g.:
+```xml
+<join leftInput="#//Join_2/Projection_1"
+      rightInput="#//Join_2/"ABAP"./BIC/QEYPOSPER"
+      joinType="leftOuter">
+```
+**Transformation**: Escape inner `"` as `&quot;` BEFORE lxml.parse() sees the bytes
+**Reason**: HANA Studio export bug — should emit `&quot;` but emits literal `"`, breaking standards-compliant XML parsers (lxml, browsers). Same XML compiles in HANA Studio because its own parser is lenient with its own export bugs.
+
+**Detection regex** (scoped tight):
+```python
+HANA_MALFORMED_QUOTE_PATTERN = re.compile(
+    rb'((?:left|right)Input="[^"]*?)"([A-Z][A-Z0-9_]*)"([^"]*?")'
+)
+# Replacement: rb'\1&quot;\2&quot;\3'
+```
+
+**Applied In**: `parser/xml_sanitizer.py` — `sanitize_hana_xml_bytes()`. Called from:
+- `parser/scenario_parser.py` — `parse_scenario()`
+- `web/api/routes.py` — all 3 FastAPI upload handlers (after `file.read()`)
+- `web/services/converter.py` — defensive sanitize before validation parse
+- `cli/app.py` — secondary format-detection parse
+
+**Safety properties**:
+- **Idempotent**: running twice = running once (already-escaped `&quot;` has no literal `"` to re-match).
+- **No false positives**: `<entity>#//"ABAP"./BIC/X</entity>` (text content) and `<comment text="...&quot;..."/>` (other attributes) are not touched — regex is anchored to `leftInput=`/`rightInput=` only.
+- **Fast bail-out**: returns input unchanged if `leftInput`/`rightInput` substrings are absent.
+- **Verified across 64 source XMLs**: 0 false-positives, 1 file fixed.
+
+**Example**:
+```
+-- Before (lxml rejects):
+rightInput="#//Join_2/"ABAP"./BIC/QEYPOSPER"
+
+-- After (lxml accepts):
+rightInput="#//Join_2/&quot;ABAP&quot;./BIC/QEYPOSPER"
+```
+
+**Affected**: Any XML re-exported from HANA Studio with this malformation pattern (e.g., CV_E2E_VST). Users no longer need to manually edit source XMLs.
+**Validated**: ✅ End-to-end on user's `CV_E2E_VST (1).xml` Downloads file (2026-05-10). Awaiting fresh HANA Studio re-export validation.
+
+---
+
 ## Known Limitations (HANA Mode)
 
 ### ❌ **NOT Implemented:**

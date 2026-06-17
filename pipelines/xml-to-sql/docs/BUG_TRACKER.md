@@ -140,6 +140,65 @@ After calling `_parse_filters()`, also check for a bare `<filter>` child of the 
 
 ---
 
+### 🔴 BUG-054: HANA Studio Exports Malformed XML with Unescaped Quotes in leftInput/rightInput Attributes
+
+**Priority**: High (recurring user pain — every fresh HANA Studio export hits this)
+**Status**: ✅ FIXED - Awaiting validation on fresh HANA Studio re-export (2026-05-10)
+**Discovered**: 2026-05-10 (recurrence after SESSION 16 manual fix)
+**XML**: CV_E2E_VST.xml (and any future HANA Studio export with this pattern)
+
+**Error (from converter web UI)**:
+```
+Conversion failed: Invalid XML file format.
+XML parsing error: attributes construct error, line 514, column 69
+```
+
+**Symptom**:
+HANA Studio exports calculation view XMLs with unescaped literal `"` characters inside `leftInput`/`rightInput` attribute values:
+```xml
+<join leftInput="#//Join_2/Projection_1"
+      rightInput="#//Join_2/"ABAP"./BIC/QEYPOSPER"
+      joinType="leftOuter">
+```
+The `"ABAP"` characters prematurely terminate the `rightInput` attribute, breaking lxml (and any standards-compliant XML parser, including browsers). HANA Studio's own parser is lenient with its own export bugs but standard SQL toolchains aren't.
+
+This is the **second occurrence** of this bug (first was fixed manually in SESSION 16 by editing the source XML). Without a converter-side fix, every fresh HANA Studio re-export requires manual XML editing.
+
+**Root Cause**:
+HANA Studio export bug — should emit `&quot;` for inner quotes but emits literal `"` instead. Affects calc views where path references include schema names in quotes.
+
+**Fix** (converter-side pre-processor):
+New module `parser/xml_sanitizer.py` exports `sanitize_hana_xml_bytes(xml_content: bytes) -> bytes` which escapes the malformation before lxml.parse(). Injected at:
+- `parser/scenario_parser.py` `parse_scenario()` — covers CLI + web IR build path (Calculation:scenario AND ColumnView XMLs)
+- `web/api/routes.py` lines 90/214/436 — covers 3 FastAPI upload handlers (HTTP boundary, propagates to prettify_xml)
+- `web/services/converter.py` line 175 — defensive layer (idempotent if already sanitized)
+- `cli/app.py` line 139 — secondary parse for format detection
+
+**Regex** (scoped tight to avoid false positives):
+```python
+HANA_MALFORMED_QUOTE_PATTERN = re.compile(
+    rb'((?:left|right)Input="[^"]*?)"([A-Z][A-Z0-9_]*)"([^"]*?")'
+)
+# Replacement: rb'\1&quot;\2&quot;\3'
+```
+
+**False-positive analysis** (verified across 64 source XMLs):
+- `<entity>#//"ABAP"./BIC/X</entity>` — text content with literal quotes is valid XML, regex doesn't match (anchored to `leftInput=` / `rightInput=`)
+- `<comment text="&quot;X&quot; = '00'"/>` — different attribute, regex doesn't match
+- Already-escaped `&quot;` — no literal `"` to match → idempotent
+- 0 legitimate uses of `"` inside `leftInput`/`rightInput` found anywhere
+
+**Files Modified**:
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/xml_sanitizer.py` — NEW MODULE (helper + regex constant)
+- `pipelines/xml-to-sql/src/xml_to_sql/parser/scenario_parser.py` line 85 — read bytes → sanitize → `etree.parse(BytesIO(...))`
+- `pipelines/xml-to-sql/src/xml_to_sql/web/api/routes.py` lines 90, 214, 436 — sanitize after `file.read()`
+- `pipelines/xml-to-sql/src/xml_to_sql/web/services/converter.py` line 172 — defensive sanitize before validation parse
+- `pipelines/xml-to-sql/src/xml_to_sql/cli/app.py` line 139 — sanitize secondary format-detection parse
+
+**Scope**: UNIVERSAL — any future HANA Studio re-export with this pattern is auto-fixed. No source XML editing needed.
+
+---
+
 ### 🔴 BUG-053: Integer-Declared Calc Columns Returning String Literals Break Downstream SUM/AVG
 
 **Priority**: High
@@ -1607,12 +1666,13 @@ Added two entries to `src/xml_to_sql/catalog/data/functions.yaml`:
 
 ## Bug Statistics
 
-**Total Bugs Tracked**: 53
+**Total Bugs Tracked**: 54
 **Open**: 1 (BUG-019)
-**Fixed - Awaiting Validation**: 6 (BUG-036, BUG-037, BUG-038, BUG-039, BUG-049, BUG-050)
+**Fixed - Awaiting Validation**: 7 (BUG-036, BUG-037, BUG-038, BUG-039, BUG-049, BUG-050, BUG-054)
 **Workaround Only**: 1 (BUG-041 - HANA version limitation)
 **Solved**: 40 (see SOLVED_BUGS.md) - BUG-053 VALIDATED 2026-05-10 (CV_E2E_VST.xml, 75ms)
 **Deferred**: 2 (BUG-002, BUG-003)
+**SESSION 17 Additions**: BUG-054 ✅ FIXED (HANA Studio malformed-quote XML pre-processor — sanitizer module)
 **SESSION 16 Additions**: BUG-053 ✅ VALIDATED (Integer calc columns → TO_INTEGER wrap, CV_E2E_VST.xml 75ms)
 **SESSION 15 Additions**: BUG-051 ✅ VALIDATED (BOOLEAN calc columns → CASE WHEN), BUG-052 ✅ VALIDATED (SqlScriptView + auto schema resolution)
 **SESSION 14 Additions**: BUG-047 ✅ VALIDATED, BUG-048 ✅ VALIDATED, BUG-049 ✅ FIXED (awaiting validation), BUG-050 ✅ FIXED (awaiting validation)
@@ -1639,6 +1699,7 @@ Added two entries to `src/xml_to_sql/catalog/data/functions.yaml`:
 - Boolean Expression Rendering: 1 (BUG-051 ✅ VALIDATED - BOOLEAN calc columns need CASE WHEN)
 - Script View Support: 1 (BUG-052 ✅ VALIDATED - SqlScriptView definition extraction + auto schema resolution)
 - Integer Type Coercion: 1 (BUG-053 ✅ VALIDATED - integer calc columns need TO_INTEGER wrap)
+- Malformed Source XML Handling: 1 (BUG-054 ✅ FIXED awaiting validation - HANA Studio unescaped-quote pre-processor)
 
 **By XML**:
 - CV_CNCLD_EVNTS: 0 bugs ✅ (clean)
@@ -1658,7 +1719,7 @@ Added two entries to `src/xml_to_sql/catalog/data/functions.yaml`:
 - ADSO: 2 bugs (BUG-047 ✅ VALIDATED, BUG-048 ✅ VALIDATED) - SESSION 14
 - TRANFORMATIONS: 1 bug (BUG-051 ✅ VALIDATED - BOOLEAN calc column) - SESSION 15
 - USED_HIERARCHIES: 1 bug (BUG-052 ✅ VALIDATED - SqlScriptView + auto schema resolution) - SESSION 15
-- CV_E2E_VST: 1 bug (BUG-053 ✅ VALIDATED 75ms - integer calc columns w/ string-literal formulas) - SESSION 16
+- CV_E2E_VST: 2 bugs (BUG-053 ✅ VALIDATED 75ms - integer calc columns w/ string-literal formulas / SESSION 16; BUG-054 ✅ FIXED awaiting validation - HANA Studio malformed-quote pre-processor / SESSION 17)
 
 ---
 

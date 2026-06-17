@@ -82,7 +82,12 @@ class ParseContext:
 def parse_scenario(path: Path) -> Scenario:
     """Parse an XML calculation scenario into a Scenario IR object."""
 
-    tree = etree.parse(str(path))
+    # BUG-054: Pre-process bytes to fix HANA Studio's unescaped-quote export bug
+    # before lxml sees them. No-op for clean XMLs.
+    from io import BytesIO
+    from .xml_sanitizer import sanitize_hana_xml_bytes
+    xml_bytes = sanitize_hana_xml_bytes(Path(path).read_bytes())
+    tree = etree.parse(BytesIO(xml_bytes))
     root = tree.getroot()
 
     try:

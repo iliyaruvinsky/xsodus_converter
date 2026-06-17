@@ -88,6 +88,9 @@ async def convert_single_stream(
 
     # Read file content
     xml_content_bytes = await file.read()
+    # BUG-054: Sanitize HANA Studio's unescaped-quote export bug at the HTTP boundary.
+    from ...parser.xml_sanitizer import sanitize_hana_xml_bytes
+    xml_content_bytes = sanitize_hana_xml_bytes(xml_content_bytes)
 
     # Auto-detect package if not provided and database mode is HANA
     hana_package = config.hana_package
@@ -212,10 +215,13 @@ async def convert_single(
     # Read file content
     try:
         xml_content_bytes = await file.read()
+        # BUG-054: Sanitize HANA Studio's unescaped-quote export bug at the HTTP boundary.
+        from ...parser.xml_sanitizer import sanitize_hana_xml_bytes
+        xml_content_bytes = sanitize_hana_xml_bytes(xml_content_bytes)
         file_size = len(xml_content_bytes)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error reading file: {str(e)}")
-    
+
     # Format XML for storage
     xml_content_formatted = prettify_xml(xml_content_bytes)
 
@@ -434,6 +440,9 @@ async def convert_batch(
         
         try:
             xml_content_bytes = await file.read()
+            # BUG-054: Sanitize HANA Studio's unescaped-quote export bug at the HTTP boundary.
+            from ...parser.xml_sanitizer import sanitize_hana_xml_bytes
+            xml_content_bytes = sanitize_hana_xml_bytes(xml_content_bytes)
             file_size = len(xml_content_bytes)
         except Exception as e:
             results.append(BatchFileResult(

@@ -170,7 +170,12 @@ def convert_xml_to_sql(
         
         # Stage 1: Parse and Validate XML
         start_ms, start_dt = _start_stage("Parse XML")
-        
+
+        # BUG-054: Sanitize HANA Studio's unescaped-quote export bug before lxml sees it.
+        # No-op when route handlers already sanitized; cheap defensive layer otherwise.
+        from ...parser.xml_sanitizer import sanitize_hana_xml_bytes
+        xml_content = sanitize_hana_xml_bytes(xml_content)
+
         # Parse XML from bytes
         tree = etree.parse(BytesIO(xml_content))
         root = tree.getroot()

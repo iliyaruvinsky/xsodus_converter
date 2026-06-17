@@ -136,7 +136,10 @@ def convert(
             
             # Detect XML format for context
             try:
-                tree = etree.parse(source_path)
+                # BUG-054: Sanitize HANA Studio's unescaped-quote export bug.
+                from io import BytesIO
+                from ..parser.xml_sanitizer import sanitize_hana_xml_bytes
+                tree = etree.parse(BytesIO(sanitize_hana_xml_bytes(Path(source_path).read_bytes())))
                 root = tree.getroot()
                 xml_format = detect_xml_format(root)
                 # Auto-detect version if needed
